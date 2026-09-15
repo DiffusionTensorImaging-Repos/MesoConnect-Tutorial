@@ -5,33 +5,37 @@ title: "Workflow overview"
 
 # Workflow overview
 
-Nine steps, run one tract at a time. Steps 1 and 2 are per subject and are reused across tracts. Steps 3 to 9 repeat for each tract by re-sourcing the configuration with a different seed, target and atlas file.
+The workflow comprises nine steps applied to one tract at a time (Figure 1). Steps 1 and 2 are performed once per participant and reused across tracts. Steps 3 through 9 are repeated for each tract by changing the seed, target and atlas file in the configuration.
 
 ```mermaid
 flowchart TD
-  A[Preprocessed DWI and T1<br/>TUBRIC or QSIPrep] --> B[1 Register MNI to T1<br/>ANTs SyN]
-  B --> C[2 Warp seed, target, atlas<br/>nearest-neighbour, binarize]
-  C --> D[3 Corridor mask<br/>dilate, add seed and target, invert]
-  D --> E[4 Cutoff selection<br/>sweep on pilot subjects, inspect]
-  E --> F[5 Tractography<br/>tckgen through the corridor]
-  F --> G[6 Bundle cleaning<br/>pyAFQ Mahalanobis; QuickBundles if needed]
-  G --> H[7 Visual QC<br/>TDI overlays, automatic flags]
-  H --> I[8 Node profiles<br/>orient, 100 nodes, FA and NODDI]
-  I --> J[9 Node-wise statistics<br/>Freedman–Lane cluster FWE]
-  J --> K[Explorer]
+  A[Preprocessed diffusion data and T1<br/>TUBRIC or QSIPrep] --> B[1 Registration<br/>ANTs SyN, MNI to T1]
+  B --> C[2 Region warping<br/>seed, target, atlas]
+  C --> D[3 Corridor construction<br/>dilate, add seed and target, invert]
+  D --> E[4 Cutoff selection<br/>pilot sweep and comparison]
+  E --> F[5 Tractography<br/>tckgen within the corridor]
+  F --> G[6 Bundle cleaning<br/>Mahalanobis outlier removal]
+  G --> H[7 Quality control<br/>tract-density overlays]
+  H --> I[8 Node profiles<br/>100 nodes, FA and NODDI]
+  I --> J[9 Group-level inference<br/>whole tract, quartiles, nodes]
+  J --> K[Node-wise Tract Explorer<br/>node-wise result visualization]
 ```
 
-## Inputs per subject
+*Figure 1.* Sequence of the corridor workflow. The final stage is the Node-wise Tract Explorer, the browser-based results viewer described in the Explorer section.
 
-| Input | Source | Path used by the scripts |
+## Inputs
+
+**Table 1.** *Per-participant inputs.*
+
+| Input | Origin | Path used by the scripts |
 |---|---|---|
-| Skull-stripped T1 | preprocessing | `$PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz` |
-| Normalized white-matter FOD (`.mif`) | MRtrix MSMT-CSD and `mtnormalise` | `$PROJECT/dwi/<subj>/wm_fod_norm.mif` |
-| Diffusion brain mask | preprocessing | `$PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz` |
-| T1 → diffusion matrix (only if the grids differ) | FLIRT | `$PROJECT/xfm/<subj>/str2diff.mat` |
-| Scalar maps to profile | DTIFIT, AMICO NODDI | `$PROJECT/dwi/<subj>/fa.nii.gz`, `$PROJECT/noddi/<subj>/fit_*.nii.gz` |
+| Skull-stripped T1-weighted image | preprocessing | `$PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz` |
+| Normalized white-matter fibre orientation distribution (FOD; `.mif`) | MRtrix MSMT-CSD and `mtnormalise` | `$PROJECT/dwi/<subj>/wm_fod_norm.mif` |
+| Diffusion-space brain mask | preprocessing | `$PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz` |
+| T1 → diffusion affine matrix (if the grids differ) | FLIRT | `$PROJECT/xfm/<subj>/str2diff.mat` |
+| Scalar maps for profiling | DTIFIT; AMICO NODDI | `$PROJECT/dwi/<subj>/fa.nii.gz`; `$PROJECT/noddi/<subj>/fit_*.nii.gz` |
 
-If the T1 is already on the diffusion grid (as in HCP data), omit the matrix and the warp script resamples directly.
+When the T1 image is already aligned to the diffusion grid, as in HCP data, the affine matrix is omitted and the warp script resamples directly.
 
 ## Outputs
 
@@ -43,16 +47,16 @@ $OUT/<subj>/
   tckgen/<tract>/
                 <tract>_pilot_<cutoff>.tck          (step 4)
                 <tract>_<cutoff>.tck  <tract>_<cutoff>_cleaned.tck
-$OUT/qc/<tract>/               per-subject overlay PNGs and flags
-$OUT/qc/<tract>_cutoff_pilot/  side-by-side cutoff panels, cutoff_summary.csv
+$OUT/qc/<tract>/               per-participant overlay images and flags
+$OUT/qc/<tract>_cutoff_pilot/  cutoff comparison panels, cutoff_summary.csv
 $OUT/nodewise/                 <tract>_nodewise_all_subjects.csv  (Subject, Tract, Node, FA, NDI, ODI, FWF)
 ```
 
-Keep a manifest per analysis recording atlas version and threshold, dilation, interpolation, transform files, cutoff, scalar maps, covariates and software versions.
+A manifest should be kept for each analysis recording the atlas version and threshold, dilation, interpolation, transform files, cutoff, scalar maps, covariates and software versions.
 
-## Running the scripts
+## Scripts
 
-Every script sources `00_config.sh`. Edit that file once for the project, then change `TRACT`, `SEED_MNI`, `TARGET_MNI` and `ATLAS_MNI` for each tract.
+All scripts read a single configuration file, `00_config.sh`, which specifies project paths, the participant list, the tract definition and the tractography parameters. The configuration is edited once per project; the tract fields (`TRACT`, `SEED_MNI`, `TARGET_MNI`, `ATLAS_MNI`) are changed for each tract.
 
 ```bash
 cd scripts
@@ -68,4 +72,4 @@ python 07_visual_qc.py
 python 08_node_profiles.py
 ```
 
-Steps 1 and 5 take hours on a full sample and should run under `tmux` or a job scheduler. The parallelism limits in the scripts were set for a shared 48-core node; lower them on a workstation.
+Steps 1 and 5 require hours on a full sample and should be run under `tmux` or a job scheduler. The concurrency limits in the scripts were set for a shared 48-core node and should be reduced on a workstation.

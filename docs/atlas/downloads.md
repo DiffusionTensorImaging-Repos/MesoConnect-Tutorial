@@ -5,17 +5,21 @@ title: "Downloads"
 
 # Downloads
 
-## Files on this site
+## Files distributed with this site
 
-The VTA → hippocampus files used in the example dataset. All are in FSL MNI152 1 mm space and binary unless marked. Right-click and save, or use the `curl` block below.
+The VTA → hippocampus files used for the example dataset are available below. All files are in FSL MNI152 1 mm space and are binary unless stated otherwise.
+
+**Table 1.** *Atlas and region-of-interest files distributed with this site.*
 
 | File | Contents |
 |---|---|
-| [left_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/left_VTA_0.25_bin.nii.gz) · [right_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/right_VTA_0.25_bin.nii.gz) | VTA seeds (Trutti, 25%) |
-| [HPC_L_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_L_0.5_bin.nii.gz) · [HPC_R_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_R_0.5_bin.nii.gz) | Hippocampus targets (Harvard–Oxford, 50%) |
+| [left_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/left_VTA_0.25_bin.nii.gz) · [right_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/right_VTA_0.25_bin.nii.gz) | VTA seeds (Trutti et al., 2021; 25% threshold) |
+| [HPC_L_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_L_0.5_bin.nii.gz) · [HPC_R_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_R_0.5_bin.nii.gz) | Hippocampus targets (Harvard–Oxford; 50% threshold) |
 | [l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) · [r_…](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Posterior VTA → hippocampus atlas, 50% threshold |
-| [l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) · [r_…](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) | Posterior VTA → hippocampus, probabilistic |
+| [l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) · [r_…](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) | Posterior VTA → hippocampus atlas, probabilistic |
 | [anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) · [anterior_r_…](pathname:///MesoConnect-Tutorial/atlas/anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Anterior VTA → hippocampus atlas, 50% threshold |
+
+The following command retrieves all files listed above.
 
 ```bash
 mkdir -p MesoConnectAtlas && cd MesoConnectAtlas
@@ -29,7 +33,7 @@ done
 
 ## Full release
 
-The complete package will follow the layout below and will be archived with a versioned DOI. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors until then.
+The complete atlas package will follow the layout below and will be archived with a versioned DOI. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors in the interim.
 
 ```
 MesoConnectAtlas_v1.0/
@@ -44,12 +48,12 @@ MesoConnectAtlas_v1.0/
   Scripts/   Examples/   Metadata/   Documentation/
 ```
 
-## Public ROI sources
+## Source atlases
 
-- **Trutti et al. 7 T VTA atlas**: probabilistic VTA in MNI space; threshold at 25% for a seed.
-- **Pauli et al. subcortical atlas**: ventral pallidum; alternative VTA and SN.
-- **Harvard–Oxford subcortical atlas** (FSL): hippocampus, amygdala, accumbens, caudate, putamen, thalamus.
-- **Tziortzi et al. connectivity-based striatal parcellation**: limbic striatum as an accumbens definition.
-- **Murty et al. SN/VTA masks**: functional–anatomical dopaminergic midbrain.
-- **TractSeg**: fornix and major white-matter tracts.
-- **MNI152 templates** (FSL `$FSLDIR/data/standard`): the 1 mm brain and brain mask used for registration.
+- Trutti et al. (2021): probabilistic VTA in MNI space; threshold at 25% for a seed region.
+- Pauli et al. (2018): subcortical atlas including ventral pallidum, VTA and substantia nigra.
+- Harvard–Oxford subcortical atlas (Frazier et al., 2005; Makris et al., 2006), distributed with FSL: hippocampus, amygdala, accumbens, caudate, putamen, thalamus.
+- Tziortzi et al. (2014): connectivity-based striatal parcellation; limbic striatum as an accumbens definition.
+- Murty et al. (2014): functional–anatomical SN/VTA masks.
+- TractSeg (Wasserthal et al., 2018): fornix and major white-matter tracts.
+- MNI152 templates (FSL, `$FSLDIR/data/standard`): the 1 mm brain image and brain mask used for registration.

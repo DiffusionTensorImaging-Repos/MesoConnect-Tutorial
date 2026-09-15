@@ -1,31 +1,33 @@
 ---
 sidebar_position: 1
-title: "Start here"
+title: "Introduction"
 slug: /
 ---
 
-# MesoConnect Atlas tutorial
+# Introduction
 
-The MesoConnect Atlas is a 7 Tesla probabilistic atlas of mesolimbic white-matter pathways connecting the ventral tegmental area, hippocampus, nucleus accumbens, ventral pallidum and amygdala. This site documents one way to use it: warp a tract from the atlas into a subject, dilate it into a corridor, run the subject's own tractography through that corridor, clean the result, and measure microstructure at 100 points along the bundle.
+The MesoConnect Atlas is a probabilistic atlas of mesolimbic white-matter pathways derived from 7 Tesla diffusion MRI (Human Connectome Project; Vu et al., 2015). It covers connections among the ventral tegmental area (VTA), hippocampus, nucleus accumbens, ventral pallidum and amygdala. This tutorial describes how to reconstruct those pathways in new participants using the atlas as an anatomical constraint on subject-specific tractography, and how to quantify microstructure along the reconstructed bundles.
 
-The atlas can also be warped in and averaged over, or used as a scaffold for synthetic streamlines. Both are described in the appendix. The corridor method is the recommended one because the streamlines come from the subject's data and support node-wise analysis.
+## Scope
 
-## Requirements
+The procedure has nine steps. The atlas map for a tract is registered to each participant and dilated into a corridor; probabilistic tractography is run through the corridor from the pathway's seed region to its target; the resulting bundle is cleaned of outlying streamlines; and scalar maps (fractional anisotropy and NODDI indices) are sampled at 100 equidistant points along the bundle. Group-level inference can be performed at three resolutions, the whole tract, quartiles of the tract, or individual nodes, and the tutorial describes the model and correction for each. Node-wise results can be inspected in the Node-wise Tract Explorer, a browser-based viewer distributed with this site that renders t-value profiles, clusters and hemispheric comparisons from a results file.
 
-Preprocessed diffusion data (denoised, distortion and eddy corrected, brain masked), a T1-weighted image, and a Unix shell with FSL, ANTs, MRtrix3 and Python with DIPY and pyAFQ installed. Prior tractography experience is not assumed.
+Two alternative uses of the atlas, averaging a scalar map within the warped atlas mask and sampling along an atlas-derived centerline, are described in the appendix. Corridor-constrained tractography is presented as the primary method because the streamlines are estimated from each participant's own data and support along-tract analysis.
 
-## Preprocessing
+## Prerequisites
 
-Preprocessing is documented separately in the [TUBRIC DTI tutorial](https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/), which covers DICOM conversion through eddy correction, tensor fitting and registration. QSIPrep produces equivalent outputs. The corridor workflow starts from three files per subject: a skull-stripped T1, a normalized white-matter FOD image from MRtrix, and a diffusion-space brain mask. The [software page](reference/software) gives the MRtrix commands that produce the FOD image if your preprocessing ended at the tensor fit.
+The tutorial assumes preprocessed diffusion data (denoised, corrected for susceptibility and eddy-current distortion, brain-masked), a T1-weighted anatomical image, and a Unix environment with FSL, ANTs, MRtrix3 (Tournier et al., 2019) and Python with DIPY (Garyfallidis et al., 2014) and pyAFQ (Kruper et al., 2021). Preprocessing itself is documented in the [TUBRIC DTI tutorial](https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/). QSIPrep produces equivalent inputs. Estimation of fibre orientation distributions, which the TUBRIC pipeline does not include, is described on the [software page](reference/software).
 
-## Site contents
+## Organization
 
-- **Atlas**: file types, tract families, ROI sources, downloads.
-- **Workflow**: nine steps, each with the command, an audit that runs over every subject, and the images to inspect. Step 4 covers how to choose the tracking threshold on pilot subjects before running everyone.
-- **Explorer**: a browser page that reads node-wise results as a CSV and plots profiles, clusters and the left–right comparison.
-- **Alternative uses**: whole-tract extraction and atlas-guided synthetic streamlines.
-- **Reference**: parameters, troubleshooting, software, scripts, citation.
+| Section | Contents |
+|---|---|
+| Atlas | File types, tract families, region-of-interest sources, downloads |
+| Workflow | The nine steps, with parameters, verification criteria and results from an example dataset |
+| Explorer | The results viewer and its input format |
+| Alternative approaches | Whole-tract extraction; atlas-guided synthetic streamlines |
+| Reference | Consolidated parameters, troubleshooting, software, scripts, citation, references |
 
 ## Example dataset
 
-The numbers and figures on the workflow pages come from one dataset: 57 adults scanned at 3 T with a multi-shell protocol (b = 1000, 2000, 3250, 5000 s/mm²), processed for the posterior and anterior VTA → hippocampus tracts. The atlas itself was built from 7 T data. The example is included so that users can compare their own output against a completed run at a common field strength.
+Numerical results and figures on the workflow pages are drawn from a single dataset: 57 adults scanned at 3 T with a multi-shell protocol (b = 1000, 2000, 3250 and 5000 s/mm²), processed for the posterior and anterior VTA → hippocampus pathways. The atlas was constructed at 7 T. The example dataset is included to illustrate expected output at a field strength typical of most studies.

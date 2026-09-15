@@ -5,18 +5,12 @@ title: "Atlas-guided synthetic streamlines"
 
 # Atlas-guided synthetic streamlines
 
-For studies that require along-tract profiles but cannot reconstruct the tract in every subject. The warped atlas is used as a geometric scaffold: an ordered centerline is estimated from one endpoint to the other inside the mask, 100 nodes are placed along it, jittered streamlines may be generated inside the mask, and scalar maps are sampled at each node.
+This approach is intended for studies that require along-tract profiles but cannot reconstruct the tract in every participant. The warped atlas serves as a geometric scaffold: an ordered centerline is estimated from one endpoint to the other within the mask, 100 nodes are placed along it, jittered streamlines may be generated within the mask, and scalar maps are sampled at each node. The resulting streamlines constitute a reproducible sampling coordinate system rather than a tractography reconstruction, and the approach is less established than corridor-constrained tractography.
 
-The resulting streamlines are a reproducible coordinate system for sampling. They are not tractography reconstructions, and the approach is less established than the corridor method.
+## Procedure
 
-## Steps
+The probabilistic map is warped onto the scalar grid with linear interpolation and thresholded, at 50% for a conservative core or 25% when the core is short or discontinuous; lower thresholds require justification. The scaffold is built from the mask, the probability map, and native-space start and end regions, with node 0 assigned to the seed side and node 99 to the target side for every participant; an image of the node ordering is saved. Each scalar map is sampled at every node using pyAFQ, DIPY or a custom function, producing one row per participant, tract, metric and node in the long format read by the Explorer. Modelling proceeds as in step 9 of the main workflow, with cluster or permutation correction.
 
-1. Warp the probabilistic map onto the scalar grid with linear interpolation.
-2. Threshold: 50% for a conservative core, 25% if the core is short or discontinuous. Lower thresholds require a stated reason.
-3. Build the scaffold from the mask, the probability map, and native-space start and end ROIs. Node 0 is the seed side and node 99 the target side for every subject. Save an image of the node ordering.
-4. Sample every scalar map at every node with pyAFQ, DIPY or a custom function. Output one row per subject, tract, metric and node, the same long format the Explorer reads.
-5. Model as in step 9 of the main workflow, with cluster or permutation correction.
+## Reporting
 
-## Reporting language
-
-"Atlas-guided streamline scaffolds were used to define a consistent along-tract coordinate system for node-wise sampling." The scaffold should not be described as subject-specific tractography.
+Recommended language: "Atlas-guided streamline scaffolds were used to define a consistent along-tract coordinate system for node-wise sampling." The scaffold should not be described as participant-specific tractography.

@@ -7,15 +7,15 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
 const STEPS = [
-  {num: 1, title: 'Register MNI to T1', tools: 'ANTs', link: '/docs/workflow/registration'},
-  {num: 2, title: 'Warp seed, target and atlas', tools: 'ANTs · FSL', link: '/docs/workflow/warp-rois'},
-  {num: 3, title: 'Corridor mask', tools: 'FSL', link: '/docs/workflow/corridor-mask'},
+  {num: 1, title: 'Registration', tools: 'ANTs', link: '/docs/workflow/registration'},
+  {num: 2, title: 'Region warping', tools: 'ANTs · FSL', link: '/docs/workflow/warp-rois'},
+  {num: 3, title: 'Corridor construction', tools: 'FSL', link: '/docs/workflow/corridor-mask'},
   {num: 4, title: 'Cutoff selection', tools: 'MRtrix3 · Python', link: '/docs/workflow/tune-cutoff'},
   {num: 5, title: 'Tractography', tools: 'MRtrix3', link: '/docs/workflow/tractography'},
   {num: 6, title: 'Bundle cleaning', tools: 'pyAFQ · DIPY', link: '/docs/workflow/cleaning'},
-  {num: 7, title: 'Visual QC', tools: 'Python · FSLeyes', link: '/docs/workflow/visual-qc'},
+  {num: 7, title: 'Quality control', tools: 'Python · FSLeyes', link: '/docs/workflow/visual-qc'},
   {num: 8, title: 'Node profiles', tools: 'DIPY', link: '/docs/workflow/node-profiles'},
-  {num: 9, title: 'Node-wise statistics', tools: 'R', link: '/docs/workflow/nodewise-stats'},
+  {num: 9, title: 'Group-level inference', tools: 'R · Python', link: '/docs/workflow/nodewise-stats'},
 ];
 
 const iconProps = {width: 48, height: 48, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
@@ -26,9 +26,9 @@ const ChartIcon = () => (<svg {...iconProps} aria-hidden="true"><path d="M3 3v18
 
 type FeatureItem = {title: string; icon: ReactNode; description: ReactNode; link: string; linkText: string; external?: boolean};
 const FEATURES: FeatureItem[] = [
-  {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, the seed and target ROIs, and the source of each.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
-  {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps covering registration, corridor construction, tractography, cleaning, quality control and 100-node profiles. Each step includes a per-subject audit and the images to inspect.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
-  {title: 'Explorer', icon: <ChartIcon/>, description: <>Loads a node-wise results CSV in the browser and plots profiles, clusters and the left–right comparison. Files are parsed locally.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
+  {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, the seed and target regions, and their sources.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
+  {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps from registration through corridor-constrained tractography, bundle cleaning, quality control, along-tract profiling and group-level inference, with verification criteria and results from an example dataset.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
+  {title: 'Node-wise Tract Explorer', icon: <ChartIcon/>, description: <>A browser-based viewer for along-tract results. It reads a results file locally and presents t-value profiles, clusters and the left–right comparison for each analysis.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
 ];
 
 function Feature({title, icon, description, link, linkText, external}: FeatureItem) {
@@ -45,7 +45,7 @@ function Pipeline() {
   return (<section className={styles.pipelineSection}><div className="container">
     <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>Workflow</Heading>
     <p className="text--center" style={{marginBottom: '2rem', color: 'var(--ifm-color-emphasis-600)'}}>
-      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/">TUBRIC tutorial</a>. The steps below start from a T1, a white-matter FOD image and a brain mask.
+      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/">TUBRIC DTI tutorial</a>. The steps below begin from a T1-weighted image, a white-matter fibre orientation distribution and a brain mask.
     </p>
     <div className="pipeline-explorer">{STEPS.map((s, i) => (<div key={s.num}>
       <Link to={s.link} className="pipeline-explorer__stage">
@@ -62,7 +62,7 @@ function Header() {
     <Heading as="h1" className="hero__title">{siteConfig.title}</Heading>
     <p className="hero__subtitle">{siteConfig.tagline}</p>
     <div className={styles.buttons}>
-      <Link className="button button--secondary button--lg" to="/docs/">Start here</Link>
+      <Link className="button button--secondary button--lg" to="/docs/">Introduction</Link>
       <Link className="button button--outline button--lg" to="/docs/workflow/overview" style={{color: 'white', borderColor: 'rgba(255,255,255,0.5)', marginLeft: '1rem'}}>Workflow</Link>
     </div></div></div></header>);
 }

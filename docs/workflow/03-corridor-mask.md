@@ -1,15 +1,13 @@
 ---
 sidebar_position: 4
-title: "3. Corridor mask"
+title: "3. Corridor construction"
 ---
 
-# 3. Corridor mask
+# Step 3. Corridor construction
 
-Atlas construction used a dozen hand-tidied exclusion ROIs per tract. The corridor workflow replaces them with one mask derived from the atlas:
+Atlas construction used approximately a dozen individually prepared exclusion regions per tract. The corridor workflow replaces them with a single mask derived from the warped atlas. The atlas is dilated, the seed and target regions are added, the union is binarized to form an inclusion zone, and the inclusion zone is inverted. The inverted image serves as the sole exclusion mask for tractography: any streamline leaving the corridor is discarded.
 
-1. Dilate the warped atlas by one or two voxels.
-2. Add the seed and target and binarize. This is the inclusion zone.
-3. Invert it. Everything outside the zone becomes a single exclusion mask for `tckgen`.
+## Procedure
 
 ```bash
 fslmaths "$d/${TRACT}_atlas_diff.nii.gz" -dilM -dilM "$d/${TRACT}_atlas_dilated.nii.gz"
@@ -18,22 +16,20 @@ fslmaths "$d/${TRACT}_atlas_dilated.nii.gz" -add "$d/${TRACT}_seed_diff.nii.gz" 
 fslmaths "$d/${TRACT}_inclusion_zone.nii.gz" -binv "$d/${TRACT}_exclusion_mask.nii.gz"
 ```
 
-The seed and target must be added before inversion. Otherwise the corridor ends short of them and tracking terminates at the boundary.
+The seed and target must be added before inversion; otherwise the corridor terminates short of them and tracking stops at the boundary.
 
-Script: [`03_build_corridor_mask.sh`](pathname:///MesoConnect-Tutorial/scripts/03_build_corridor_mask.sh). Seconds per subject. `DILATE_VOX` in the configuration sets the number of `-dilM` passes.
+The corresponding script is [`03_build_corridor_mask.sh`](pathname:///MesoConnect-Tutorial/scripts/03_build_corridor_mask.sh). The `DILATE_VOX` setting in the configuration controls the number of `-dilM` passes.
 
 ## Dilation
 
-Two voxels is the default and was used in the example dataset at 2 mm resolution. One voxel is appropriate when registration is good and pilot tracts appear loose. Four voxels is a sensitivity setting for uncertain registration. The 50% atlas is slightly wider than the median subject's core, which is why two voxels suffice. Report the dilation used.
+A dilation of two voxels was used in the example dataset at 2 mm isotropic resolution. One voxel is appropriate when registration is accurate and pilot reconstructions appear loose; four voxels serves as a sensitivity setting when registration is uncertain. The 50% atlas is already somewhat wider than the median participant's core, which is why two voxels is generally sufficient. The dilation used should be reported.
 
-## Audit
+## Verification
 
-The script confirms that the seed and target have value 0 in the exclusion mask (are not excluded) and prints the corridor size. Additional checks: binariness, dimensions matching the DWI, and inclusion zone below 20% of brain volume. Example dataset: corridor sizes ranged from 1,526 to 1,934 voxels (mean 1,720) for the posterior tract and about 1,400 for the anterior tract. An automated coverage check that flags zones below 1% of brain volume will flag every subject, since the corridor is that small by design.
+The script confirms that the seed and target voxels have value 0 in the exclusion mask (that is, are not excluded) and reports the corridor size. Additional checks confirm binariness, agreement of dimensions with the diffusion image, and an inclusion zone below 20% of brain volume. In the example dataset corridor sizes ranged from 1,526 to 1,934 voxels (M = 1,720) for the posterior tract and approximately 1,400 voxels for the anterior tract. An automated coverage check that flags inclusion zones below 1% of brain volume flags every participant; the corridor is that small by design.
 
-## Inspection
-
-Inclusion zone in cyan over the mean b0, with seed and target inside it:
+Visual inspection confirms that the corridor follows a plausible path from seed to target and contains both regions (Figure 1). Contact with the ventricle or extension into cortex indicates excessive dilation or a registration error.
 
 ![Anterior inclusion zone](/img/anterior_step22a_incl.png)
 
-The corridor should follow a plausible path from seed to target and contain both. Contact with the ventricle or extension into cortex indicates excessive dilation or a registration error.
+*Figure 1.* Inclusion zone (cyan) for the anterior VTA → hippocampus tract over the mean b0 image, with the seed and target contained within it.

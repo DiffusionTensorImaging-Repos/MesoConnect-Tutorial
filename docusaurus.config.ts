@@ -40,9 +40,9 @@ const config: Config = {
       style: 'dark',
       links: [
         {title: 'Tutorial', items: [
-          {label: 'Start here', to: '/docs/'},
+          {label: 'Introduction', to: '/docs/'},
           {label: 'Workflow', to: '/docs/workflow/overview'},
-          {label: 'Every parameter', to: '/docs/reference/parameters'},
+          {label: 'Parameters', to: '/docs/reference/parameters'},
           {label: 'Scripts', to: '/docs/reference/scripts'},
         ]},
         {title: 'Tools', items: [
