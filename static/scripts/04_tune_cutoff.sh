@@ -15,4 +15,4 @@ for s in $PILOT; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"
     printf "%-10s %-8s %-12s %-12s %-10s\n" "$s" "$c" "$n" "$sd" "$ml"
   done
 done
-echo "Pick the most permissive cutoff that reaches the streamline target in every pilot subject; the corridor mask keeps a low cutoff anatomically constrained."
+echo "Select the most permissive cutoff that reaches the streamline target in every pilot subject."

@@ -25,11 +25,11 @@ th:hover{color:var(--ink)}td{padding:8px 10px;border-bottom:1px solid var(--line
 .legend{color:var(--mut);font-size:12.5px;margin-top:10px}
 </style></head><body>
 <header><h1>Node-wise Tract Explorer</h1><a class="home" href="../">← MesoConnect tutorial</a>
-<div class="sub">An in-browser viewer for along-tract statistical results. Drop in a results file, filter by any dimension in your data, click a row for the node profile, clusters and hemisphere comparison. Nothing leaves your machine.</div></header>
+<div class="sub">A browser viewer for along-tract statistical results. Load a results file, filter by any column, and click a row for the node profile, clusters and left–right comparison. Files are parsed locally.</div></header>
 <div class="wrap">
 <div class="section" id="loader"><h2>Load results</h2>
-<div id="drop" class="drop">Drop your results <b>.csv</b> here, or <label class="flink">choose a file<input type="file" id="file" accept=".csv,text/csv,.json" hidden></label></div>
-<div style="margin-top:10px;font-size:13px;color:var(--mut)">New here? <a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> to see how to structure yours, or <a href="#" id="loadex" class="flink">load the example dataset</a>.</div>
+<div id="drop" class="drop">Drop a results <b>.csv</b> here, or <label class="flink">choose a file<input type="file" id="file" accept=".csv,text/csv,.json" hidden></label></div>
+<div style="margin-top:10px;font-size:13px;color:var(--mut)"><a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> for the expected structure, or <a href="#" id="loadex" class="flink">load the example dataset</a>.</div>
 <div id="loaderr" class="loaderr" style="display:none"></div>
 <details style="margin-top:14px" open><summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:13px">Data format</summary>
 <div class="doc"><b>One row per node.</b> Six required columns, <code>outcome, tract, metric, node, t, p</code>; everything else optional. Column names from <code>permutation_one.R</code> (<code>Node</code>, <code>t_value</code>, <code>p_value</code>) are accepted as they are.
@@ -39,7 +39,7 @@ th:hover{color:var(--ink)}td{padding:8px 10px;border-bottom:1px solid var(--line
 <tr><td><code>hemisphere</code></td><td>no</td><td>L / R; enables the left–right panel</td></tr><tr><td><code>N</code>, <code>covariates</code></td><td>no</td><td>shown per analysis</td></tr>
 <tr><td><code>extent_threshold</code></td><td>no</td><td>permutation cluster-size threshold; clusters at least this long are marked FWE-significant</td></tr><tr><td><code>cluster_p</code>, <code>passed</code></td><td>no</td><td>your FWE cluster p and verdict</td></tr>
 <tr><td><b>any other column</b></td><td></td><td>becomes a filter (family, condition, cohort, site …)</td></tr></tbody></table>
-Clusters, significant-node counts and the hemisphere comparison are derived here from your node rows. Optional page labels via URL: <code>?title=…&amp;method=Freedman–Lane&amp;node0=VTA&amp;node1=hippocampus&amp;n_perms=5000</code>; <code>?data=URL</code> auto-loads a hosted CSV.</div>
+Clusters, significant-node counts and the hemisphere comparison are derived from the node rows. Optional page labels via URL: <code>?title=…&amp;method=Freedman–Lane&amp;node0=VTA&amp;node1=hippocampus&amp;n_perms=5000</code>; <code>?data=URL</code> auto-loads a hosted CSV.</div>
 <div class="script">outcome,tract,metric,node,t,p,hemisphere,N,covariates,extent_threshold,cluster_p,passed
 memory_score,l_vta_l_hipp,NDI,0,2.040,0.0472,L,52,"ICV, length, count, motion, age",26,0.0032,1
 memory_score,l_vta_l_hipp,NDI,1,2.057,0.0455,L,52,"ICV, length, count, motion, age",26,0.0032,1
@@ -124,7 +124,7 @@ function detail(r){const lat=r.laterality;const sib=HAS_HEMI?sibOf(r):null;
   latHTML=`<h4 style="margin-top:16px">Left and right, same outcome and metric</h4>
    <div class="nodeviz">${tPlot(L,88,'Left',lat.overlap_nodes||[])}${tPlot(R,88,'Right',lat.overlap_nodes||[])}</div>
    <div class="latbar"><div class="L" style="width:${Lp}%">L ${lat.L_sig} sig nodes (${Lp}%)</div><div class="R" style="width:${Rp}%">R ${lat.R_sig} (${Rp}%)</div></div>
-   <div class="note">Descriptive only. Both hemispheres' full t-profiles are drawn; green bars are nodes significant on both sides${(lat.overlap_nodes&&lat.overlap_nodes.length)?' ('+lat.overlap_nodes.join(', ')+')':' (none)'}. The bar counts significant nodes per side; it is not a statistical test of lateralization. Test a hemisphere difference directly if you need to claim one.</div>`;}
+   <div class="note">Descriptive panel. Both hemispheres' full t-profiles are drawn; green bars mark nodes significant on both sides${(lat.overlap_nodes&&lat.overlap_nodes.length)?' ('+lat.overlap_nodes.join(', ')+')':' (none)'}. The bar counts significant nodes per side; it is not a statistical test of lateralization. A hemisphere difference requires a direct test.</div>`;}
  const cov=r.covariates?`<h4 style="margin-top:16px">Covariates</h4><div class="tag">${r.covariates}</div>`:'';const prov=META.scripts_note?`<h4 style="margin-top:18px">Provenance</h4><div class="script">${META.scripts_note}</div>`:'';
  return `<td colspan="99" class="detail"><div class="dbox"><div class="dgrid"><div class="dcol">
   <h4>${r.outcome_label} · ${r.tract_label}${r.hemisphere?' ('+r.hemisphere+')':''} · ${r.metric}</h4>

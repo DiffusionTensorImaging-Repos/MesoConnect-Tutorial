@@ -9,10 +9,10 @@ import styles from './index.module.css';
 const STEPS = [
   {num: 1, title: 'Register MNI to T1', tools: 'ANTs', link: '/docs/workflow/registration'},
   {num: 2, title: 'Warp seed, target and atlas', tools: 'ANTs · FSL', link: '/docs/workflow/warp-rois'},
-  {num: 3, title: 'Build the corridor', tools: 'FSL', link: '/docs/workflow/corridor-mask'},
-  {num: 4, title: 'Tune the cutoff, and look', tools: 'MRtrix3 · Python', link: '/docs/workflow/tune-cutoff'},
+  {num: 3, title: 'Corridor mask', tools: 'FSL', link: '/docs/workflow/corridor-mask'},
+  {num: 4, title: 'Cutoff selection', tools: 'MRtrix3 · Python', link: '/docs/workflow/tune-cutoff'},
   {num: 5, title: 'Tractography', tools: 'MRtrix3', link: '/docs/workflow/tractography'},
-  {num: 6, title: 'Clean the bundles', tools: 'pyAFQ · DIPY', link: '/docs/workflow/cleaning'},
+  {num: 6, title: 'Bundle cleaning', tools: 'pyAFQ · DIPY', link: '/docs/workflow/cleaning'},
   {num: 7, title: 'Visual QC', tools: 'Python · FSLeyes', link: '/docs/workflow/visual-qc'},
   {num: 8, title: 'Node profiles', tools: 'DIPY', link: '/docs/workflow/node-profiles'},
   {num: 9, title: 'Node-wise statistics', tools: 'R', link: '/docs/workflow/nodewise-stats'},
@@ -26,9 +26,9 @@ const ChartIcon = () => (<svg {...iconProps} aria-hidden="true"><path d="M3 3v18
 
 type FeatureItem = {title: string; icon: ReactNode; description: ReactNode; link: string; linkText: string; external?: boolean};
 const FEATURES: FeatureItem[] = [
-  {title: 'Get the atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, with the seed and target ROIs and where every one of them came from.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
-  {title: 'Run the corridor workflow', icon: <StepsIcon/>, description: <>Nine steps from a warped atlas to cleaned subject-specific streamlines and 100-node profiles, with an audit and something to look at after each one.</>, link: '/docs/workflow/overview', linkText: 'Start the workflow'},
-  {title: 'Explore your results', icon: <ChartIcon/>, description: <>Drop a node-wise results CSV into the browser and read the profiles, clusters and hemisphere comparison. Nothing is uploaded.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
+  {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, the seed and target ROIs, and the source of each.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
+  {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps covering registration, corridor construction, tractography, cleaning, quality control and 100-node profiles. Each step includes a per-subject audit and the images to inspect.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
+  {title: 'Explorer', icon: <ChartIcon/>, description: <>Loads a node-wise results CSV in the browser and plots profiles, clusters and the left–right comparison. Files are parsed locally.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
 ];
 
 function Feature({title, icon, description, link, linkText, external}: FeatureItem) {
@@ -43,9 +43,9 @@ function Feature({title, icon, description, link, linkText, external}: FeatureIt
 
 function Pipeline() {
   return (<section className={styles.pipelineSection}><div className="container">
-    <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>The corridor workflow</Heading>
+    <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>Workflow</Heading>
     <p className="text--center" style={{marginBottom: '2rem', color: 'var(--ifm-color-emphasis-600)'}}>
-      Preprocessing is covered by the <a href="https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/">TUBRIC tutorial</a>. This site starts from a T1, a white-matter FOD and a brain mask.
+      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/">TUBRIC tutorial</a>. The steps below start from a T1, a white-matter FOD image and a brain mask.
     </p>
     <div className="pipeline-explorer">{STEPS.map((s, i) => (<div key={s.num}>
       <Link to={s.link} className="pipeline-explorer__stage">
@@ -68,7 +68,7 @@ function Header() {
 }
 
 export default function Home(): ReactNode {
-  return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: corridor-guided tractography of mesolimbic pathways, cleaning, node-wise microstructure and statistics.">
+  return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: subject-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
     <Header/><main>
       <section className={styles.features}><div className="container"><div className="row" style={{gap: '1.5rem 0'}}>{FEATURES.map((p, i) => <Feature key={i} {...p}/>)}</div></div></section>
       <Pipeline/></main></Layout>);

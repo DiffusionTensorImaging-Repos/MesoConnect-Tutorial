@@ -1,25 +1,25 @@
 ---
 sidebar_position: 5
-title: "4. Tune the cutoff, and look"
+title: "4. Cutoff selection"
 ---
 
-# 4. Tune the FOD cutoff on pilot subjects, and look at the result
+# 4. Cutoff selection on pilot subjects
 
-The FOD amplitude cutoff decides when tracking stops. Too high and the tract breaks up before reaching the target; too low and, without constraints, you get streamlines everywhere. The corridor changes that trade-off completely: with tracking confined to an anatomically plausible zone, a very permissive cutoff produces clean bundles, and it does so far more efficiently than a conservative one. But that is a claim to verify on your data, not assume. This step runs a small sweep, tabulates it, and renders the results side by side so you decide with your eyes.
+The FOD amplitude cutoff determines when tracking stops. A high cutoff terminates streamlines before they reach the target; a low cutoff, without constraints, produces streamlines throughout the brain. The corridor changes this trade-off. With tracking confined to the corridor, a permissive cutoff produces well-formed bundles and uses far fewer seeds than a conservative one. This should be verified on each dataset and tract family rather than assumed. The procedure is to run a small sweep on a few subjects, tabulate the results, and inspect the reconstructions side by side.
 
-The atlas was built at 7 T with a cutoff of 0.06 for VTA → hippocampus and 0.08 for hippocampus → accumbens. MRtrix's default for FOD-based tracking is 0.05. Lower field strength gives noisier FODs, so the expectation going in was that 3 T would need a *higher* cutoff, around 0.08. That expectation was wrong, which is the point of testing.
+During atlas construction at 7 T the cutoff was 0.06 for VTA → hippocampus and 0.08 for hippocampus → accumbens. The MRtrix default for FOD-based tracking is 0.05. Lower field strength produces noisier FOD estimates, so a higher cutoff (around 0.08) was expected to be necessary at 3 T. The sweep showed otherwise.
 
-## Run the sweep
+## Sweep
 
-Five subjects, four cutoffs, reduced budgets so it finishes in an hour or two: `-select 1000`, `-seeds 5000000`, everything else as production.
+Five subjects, four cutoffs, reduced budgets (`-select 1000`, `-seeds 5000000`), all other parameters as in production.
 
 ```bash
 bash 04_tune_cutoff.sh "s169 s4222 s4418 s606 s1000" "0.1 0.08 0.06 0.01"
 ```
 
-Script: [`04_tune_cutoff.sh`](pathname:///MesoConnect-Tutorial/scripts/04_tune_cutoff.sh). It prints streamlines reached, seeds consumed and mean length per subject and cutoff.
+Script: [`04_tune_cutoff.sh`](pathname:///MesoConnect-Tutorial/scripts/04_tune_cutoff.sh). It prints streamlines reached, seeds consumed and mean length for each subject and cutoff.
 
-## Tabulate
+## Results table
 
 Example dataset, posterior VTA → hippocampus, target 1,000 streamlines, seed limit 5 million:
 
@@ -34,39 +34,39 @@ Example dataset, posterior VTA → hippocampus, target 1,000 streamlines, seed l
 | s606 | L | 88 | 309 | 1000 | 1000 |
 | s606 | R | 731 | 1000 | 1000 | 1000 |
 
-- **0.1**: too strict at 3 T; most runs exhausted the seed budget short of target.
-- **0.08**: inconsistent; some subjects fine, one at 309.
-- **0.06**: reached target in every run.
-- **0.01**: reached target in every run, using about a fifth of the seeds (roughly 415 K versus 2.1 M or more at 0.06).
+- 0.1: most runs exhausted the seed budget before reaching the target.
+- 0.08: some subjects reached the target; one stopped at 309.
+- 0.06: all runs reached the target.
+- 0.01: all runs reached the target using about one fifth of the seeds (approximately 415 K versus 2.1 M or more at 0.06).
 
-A cutoff that reaches target in every pilot subject is necessary. It is not sufficient; the streamlines have to look like the tract.
+Reaching the target in every pilot subject is a necessary condition. The reconstructions also have to correspond to the tract, which is checked next.
 
-## Look
+## Side-by-side comparison
 
-Render each cutoff's tract-density image on the same slices, one column per cutoff, and put numbers on the differences: Dice overlap of each cutoff against the most conservative one, TDI voxel count, and the mean and standard deviation of streamline length.
+Render each cutoff's tract-density image on the same slices, one column per cutoff, and compute Dice overlap of each cutoff against the most conservative one, TDI voxel count, and mean and standard deviation of streamline length.
 
 ```bash
 python 04b_compare_cutoffs.py "s169 s4222 s4418 s606 s1000" "0.1 0.08 0.06 0.01"
 ```
 
-Script: [`04b_compare_cutoffs.py`](pathname:///MesoConnect-Tutorial/scripts/04b_compare_cutoffs.py). Writes one panel per subject and a `cutoff_summary.csv` plus a summary chart.
+Script: [`04b_compare_cutoffs.py`](pathname:///MesoConnect-Tutorial/scripts/04b_compare_cutoffs.py). It writes one panel per subject, `cutoff_summary.csv`, and a summary chart.
 
-0.06 (left) against 0.01 (right) for one subject, uncleaned:
+0.06 (left) and 0.01 (right) for one subject, uncleaned:
 
 ![Cutoff comparison](/img/cutoff_compare_s169_l.png)
 
-Across the five pilot subjects:
+Summary across the five pilot subjects:
 
 ![Cutoff statistics](/img/cutoff_stats_comparison.png)
 
-What the comparison showed in the example: the two paths are the same arc in axial and coronal views; 0.01 is a little thicker (mean Dice 0.66 against 0.06, broader spread through the corridor); mean lengths are nearly identical (about 44 mm versus 47 mm); the length SD is marginally higher at 0.01 (7 mm versus 6 mm). None of that is a problem, because cleaning in step 6 removes exactly the outlying streamlines that make the permissive cutoff look thicker, and the cleaned 0.01 bundle ends up tighter than the uncleaned 0.06 one. That comparison is shown on the cleaning page.
+In the example dataset the two cutoffs traced the same arc in axial and coronal views. The 0.01 reconstruction was somewhat thicker (mean Dice 0.66 against 0.06, broader spread through the corridor). Mean lengths were similar (about 44 mm versus 47 mm) and the length SD was slightly higher at 0.01 (7 mm versus 6 mm). The cleaning step removes the outlying streamlines responsible for the extra thickness; the cleaned 0.01 bundle is tighter than the uncleaned 0.06 bundle. That comparison is on the cleaning page.
 
-## Decide
+## Selection
 
-Pick the most permissive cutoff that reaches target in every pilot subject and whose TDI is the same tract as the conservative one. In the example that was 0.01, which other users of the atlas have also settled on for VTA → accumbens. The corridor is what makes this safe; the same cutoff without the exclusion mask would track into everything.
+Choose the most permissive cutoff that reaches the target in every pilot subject and whose reconstruction matches the conservative one. In the example dataset that was 0.01. Other users of the atlas have used 0.01 for VTA → accumbens. The corridor mask is what allows this; the same cutoff without an exclusion mask produces streamlines throughout the brain.
 
-Do the sweep per tract family. A cutoff chosen for VTA → hippocampus is a starting point for VTA → amygdala, not an answer.
+Repeat the sweep for each tract family. A cutoff chosen for VTA → hippocampus is a starting value for VTA → amygdala.
 
-## What not to add
+## Options that were not used
 
-Anatomically constrained tractography (ACT) was tried during atlas construction and abandoned: the tissue segmentation's white-matter mask was too tight relative to gray matter and nothing reconstructed. `-backtrack`, `-crop_at_gmwmi`, custom `-angle` and `-step_size` were left at MRtrix defaults for the same reason. Add them only if you have a specific failure they fix.
+Anatomically constrained tractography (ACT) was tested during atlas construction and abandoned: the segmentation's white-matter mask was too restrictive relative to the gray-matter mask and tracts did not reconstruct. `-backtrack`, `-crop_at_gmwmi`, and custom `-angle` and `-step_size` values were left at MRtrix defaults. Add them only in response to a specific failure.

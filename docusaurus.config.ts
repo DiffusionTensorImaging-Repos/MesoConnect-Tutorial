@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'MesoConnect Atlas Tutorial',
-  tagline: 'Corridor-guided tractography of mesolimbic pathways: from a group atlas to subject-specific streamlines and node-wise microstructure',
+  tagline: 'Subject-level tractography and along-tract microstructure with the MesoConnect mesolimbic atlas',
   favicon: 'img/favicon.ico',
   future: {v4: true},
   url: 'https://diffusiontensorimaging-repos.github.io',

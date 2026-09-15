@@ -5,9 +5,9 @@ title: "Citation"
 
 # Citation
 
-The atlas manuscript is in preparation. Until it and the archived release are out, cite the atlas as a working resource from the Temple University collaboration that produced it, with the version and date, and link this site. The final release will carry a manuscript citation, a Zenodo DOI, the GitHub URL and a version number.
+The atlas manuscript is in preparation. Until the manuscript and archived release are available, cite the atlas as a working resource from the Temple University collaboration that produced it, with version and date, and link this site. The final release will include a manuscript citation, a Zenodo DOI, the GitHub URL and a version number.
 
-## Sources to cite alongside it
+## Sources to cite with the atlas
 
 - Human Connectome Project 7 T diffusion acquisition and preprocessing.
 - MRtrix3; multi-shell multi-tissue CSD; the dhollander response-function estimator; iFOD2.
@@ -21,4 +21,4 @@ The atlas manuscript is in preparation. Until it and the archived release are ou
 
 | Version | Date | Changes |
 |---|---|---|
-| Tutorial v0.1 | September 2026 | First public draft of the corridor workflow with the 3 T worked example, scripts and Explorer. |
+| Tutorial v0.1 | September 2026 | First public version of the corridor workflow with the 3 T example dataset, scripts and Explorer. |

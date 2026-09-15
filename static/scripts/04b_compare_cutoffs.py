@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Step 4b — LOOK at the cutoff pilot: side-by-side tract-density images, Dice, lengths.
+"""Step 4b — Cutoff pilot comparison: side-by-side tract-density images, Dice, lengths.
 
 Run after 04_tune_cutoff.sh.  For each pilot subject it renders one row per view (axial,
 coronal) with one column per cutoff, and writes a summary CSV + bar chart of streamline

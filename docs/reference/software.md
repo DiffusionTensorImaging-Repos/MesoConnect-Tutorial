@@ -5,20 +5,20 @@ title: "Software"
 
 # Software
 
-| Software | Needed for |
+| Software | Used for |
 |---|---|
-| FSL | templates, `fslmaths`, `fslstats`, `flirt`; `probtrackx2` if you go the FSL route |
+| FSL | templates, `fslmaths`, `fslstats`, `flirt`; `probtrackx2` for the FSL route |
 | ANTs | `antsRegistrationSyNQuick.sh`, `antsApplyTransforms` |
 | MRtrix3 | `mrconvert`, `dwi2response`, `responsemean`, `dwi2fod`, `mtnormalise`, `tckgen`, `tckinfo`, `tckstats`, `tckmap`, `mrview` |
-| Python 3 with DIPY, pyAFQ, nibabel, numpy, pandas, matplotlib | cleaning, profiling, QC, the helper scripts |
+| Python 3 with DIPY, pyAFQ, nibabel, numpy, pandas, matplotlib | cleaning, profiling, QC, helper scripts |
 | AMICO (`dmri-amico`) | NODDI fitting |
 | R | `permutation_one.R` |
-| FSLeyes, mrview or ITK-SNAP | looking |
+| FSLeyes, mrview or ITK-SNAP | inspection |
 | TractSeg (optional) | fornix and control tracts |
 
-## From a tensor-ready dataset to a FOD
+## FOD estimation after tensor-level preprocessing
 
-If your preprocessing ended at `dtifit` (the TUBRIC tutorial does), these are the MRtrix steps that produce `wm_fod_norm.mif`. Run per subject, then average the response functions across subjects before `dwi2fod`.
+If preprocessing ended at `dtifit` (as in the TUBRIC tutorial), the following MRtrix commands produce `wm_fod_norm.mif`. Run per subject, and average the response functions across subjects before `dwi2fod`.
 
 ```bash
 # 1. convert with gradients embedded
@@ -41,8 +41,8 @@ dwi2fod msmt_csd dwi.mif group_wm_response.txt wm_fod.mif \
 mtnormalise wm_fod.mif wm_fod_norm.mif gm_fod.mif gm_fod_norm.mif csf_fod.mif csf_fod_norm.mif -mask mask.mif
 ```
 
-Single-shell data can use `dwi2response tournier` and `dwi2fod csd`; the corridor workflow does not care how the FOD was made.
+Single-shell data can use `dwi2response tournier` and `dwi2fod csd`. The corridor workflow is independent of how the FOD was estimated.
 
-## The FSL route
+## FSL route
 
-`probtrackx2` accepts the dilated corridor as a `--waypoints` mask and the exclusions as `--avoid`, with a BEDPOSTX model as input. It produces voxel-wise connectivity, not streamlines, so node-wise profiling is not available from it; use it only if a whole-tract summary is all you need.
+`probtrackx2` accepts the dilated corridor as a `--waypoints` mask and the exclusions as `--avoid`, with a BEDPOSTX model as input. It produces voxel-wise connectivity rather than streamlines, so node-wise profiling is not available from its output. Use it when a whole-tract summary is sufficient.

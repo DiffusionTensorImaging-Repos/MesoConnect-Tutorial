@@ -1,18 +1,18 @@
 ---
 sidebar_position: 7
-title: "6. Clean the bundles"
+title: "6. Bundle cleaning"
 ---
 
-# 6. Clean the bundles
+# 6. Bundle cleaning
 
-Even inside the corridor some streamlines take odd routes. pyAFQ's `clean_bundle` resamples every streamline to 100 points, computes each one's Mahalanobis distance from the bundle's mean shape, and drops outliers iteratively, along with streamlines whose length is far from the mean.
+Some streamlines inside the corridor follow atypical routes. pyAFQ's `clean_bundle` resamples each streamline to 100 points, computes its Mahalanobis distance from the bundle's mean shape, and removes outliers iteratively, together with streamlines whose length is far from the mean.
 
 | Parameter | Value | Meaning |
 |---|---|---|
-| `n_points` | 100 | Resample before comparison. |
-| `clean_rounds` | 5 | Iterate up to five times or until nothing is removed. |
-| `distance_threshold` | 3 | Drop streamlines more than 3 SD (Mahalanobis) from the bundle centroid. |
-| `length_threshold` | 2 | Drop streamlines more than 2 SD from the mean length. |
+| `n_points` | 100 | Resampling before comparison. |
+| `clean_rounds` | 5 | Iterate up to five times or until no streamlines are removed. |
+| `distance_threshold` | 3 | Remove streamlines more than 3 SD (Mahalanobis) from the bundle centroid. |
+| `length_threshold` | 2 | Remove streamlines more than 2 SD from the mean length. |
 | `stat` | `mean` | Centroid statistic. |
 
 ```python
@@ -22,13 +22,13 @@ cleaned, keep = clean_bundle(sft, n_points=100, clean_rounds=5,
                              stat="mean", return_idx=True)
 ```
 
-Script: [`06_clean_bundles.py`](pathname:///MesoConnect-Tutorial/scripts/06_clean_bundles.py). Needs `pyAFQ` and `dipy`; if `pip` complains about `zipp` on an older system, upgrade it.
+Script: [`06_clean_bundles.py`](pathname:///MesoConnect-Tutorial/scripts/06_clean_bundles.py). Requires `pyAFQ` and `dipy`. On older systems `pip` may require `zipp` to be upgraded first.
 
-## What retention looks like
+## Retention
 
-Example dataset: 26% to 58% of streamlines retained, mean 39%, lowest cleaned count 659. That is typical for these thresholds. Every subject kept hundreds of streamlines, which is what the corridor buys you: the raw tracts are clean enough that aggressive cleaning does not empty them.
+Example dataset: 26% to 58% of streamlines retained, mean 39%, lowest cleaned count 659. These values are typical for the thresholds above. Every subject retained several hundred streamlines.
 
-The comparison the cutoff step promised. Left: 0.06, uncleaned (1,000 streamlines). Middle: 0.01, uncleaned (2,500). Right: 0.01, cleaned (824). The cleaned permissive bundle is tighter than the conservative one:
+The comparison referred to on the cutoff page. Left: 0.06, uncleaned (1,000 streamlines). Middle: 0.01, uncleaned (2,500). Right: 0.01, cleaned (824). The cleaned 0.01 bundle is more compact than the uncleaned 0.06 bundle:
 
 ![Three-way comparison](/img/cleaned_compare_s169_l.png)
 
@@ -36,14 +36,14 @@ Length SD per condition across the pilot subjects, cleaned 0.01 in green:
 
 ![Cleaned statistics](/img/cleaned_stats_comparison.png)
 
-Cleaned bundles land at roughly 3.5 to 4.5 mm length SD against 5 to 7 mm for either uncleaned option.
+Cleaned bundles had a length SD of roughly 3.5 to 4.5 mm; both uncleaned options had 5 to 7 mm.
 
-## When a tract has two bundles
+## Tracts with two bundles
 
-Some tracts sometimes reconstruct as two distinct bundles rather than one with outliers. VTA → hippocampus has a ventral secondary bundle in a subset of subjects; hippocampus → accumbens does this often. Mahalanobis cleaning on the mixture keeps the wrong one or a blend. The fix used in atlas construction: cluster first with QuickBundles (threshold 5 mm, streamlines resampled to 100 points), clean each of the two largest clusters separately, then look at both and keep the anatomically correct one. Set `QB_SPLIT = True` in the script to get `_qb_cluster1_cleaned.tck` and `_qb_cluster2_cleaned.tck` per subject, and record which was chosen per subject in your manifest.
+Some tracts reconstruct as two distinct bundles rather than one bundle with outliers. VTA → hippocampus has a ventral secondary bundle in a subset of subjects; hippocampus → accumbens frequently produces two. Mahalanobis cleaning applied to the mixture retains the wrong bundle or a blend. The procedure used in atlas construction: cluster with QuickBundles (threshold 5 mm, streamlines resampled to 100 points), clean the two largest clusters separately, inspect both, and keep the anatomically correct one. Set `QB_SPLIT = True` in the script to write `_qb_cluster1_cleaned.tck` and `_qb_cluster2_cleaned.tck` per subject, and record the selection per subject in the manifest.
 
-In the 3 T example the corridor plus cleaning was enough for VTA → hippocampus and the split was not needed.
+In the 3 T example dataset the corridor and cleaning were sufficient for VTA → hippocampus and the split was not used.
 
 ## Audit
 
-Cleaned file exists and has more than zero streamlines, for every subject. Print before and after counts and the retention percentage; a subject retaining under 15% or over 80% is worth a look.
+Cleaned file exists with more than zero streamlines for every subject. Print the before and after counts and the retention percentage. Retention below 15% or above 80% warrants inspection.

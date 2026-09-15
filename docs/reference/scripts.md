@@ -5,7 +5,7 @@ title: "Scripts"
 
 # Scripts
 
-All scripts read one config file. Download the set, edit `00_config.sh`, run in order.
+All scripts read one configuration file. Download the set, edit `00_config.sh`, and run in order.
 
 | File | Step | Language |
 |---|---|---|
@@ -32,4 +32,4 @@ for f in 00_config.sh 01_register_mni_to_t1.sh 02_warp_rois.sh 03_build_corridor
 done
 ```
 
-The example dataset's own per-step scripts, with its cluster paths and all 57 subjects, are in the [SDN-IMPACT-DTI repository](https://github.com/DiffusionTensorImaging-Repos/SDN-IMPACT-DTI), Steps 20 to 30 of the ReadMe.
+The example dataset's own per-step scripts, with its cluster paths and subject list, are in the [SDN-IMPACT-DTI repository](https://github.com/DiffusionTensorImaging-Repos/SDN-IMPACT-DTI), Steps 20 to 30 of the ReadMe.
