@@ -1,0 +1,247 @@
+/**
+ * TUBRIC DTI Tutorial — Custom Styles
+ * Clean, professional palette — Temple Cherry as a subtle accent only
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Calm slate-blue primary — softer, less intense */
+  --ifm-color-primary: #3A6B8C;
+  --ifm-color-primary-dark: #34607E;
+  --ifm-color-primary-darker: #315A77;
+  --ifm-color-primary-darkest: #284A62;
+  --ifm-color-primary-light: #40769A;
+  --ifm-color-primary-lighter: #437BA1;
+  --ifm-color-primary-lightest: #5590B5;
+
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --docusaurus-highlighted-code-line-bg: rgba(58, 107, 140, 0.07);
+
+  /* Temple Cherry — accent only */
+  --tubric-cherry: #9D2235;
+  --tubric-cherry-soft: #C7657A;
+  --tubric-bg-subtle: #f8f9fb;
+  --tubric-border: #e4e7ec;
+  --tubric-accent-gold: #C8A951;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #82B4D4;
+  --ifm-color-primary-dark: #6DA7CC;
+  --ifm-color-primary-darker: #62A0C8;
+  --ifm-color-primary-darkest: #428DBB;
+  --ifm-color-primary-light: #97C1DC;
+  --ifm-color-primary-lighter: #A2C8E0;
+  --ifm-color-primary-lightest: #C2DBEC;
+  --docusaurus-highlighted-code-line-bg: rgba(130, 180, 212, 0.1);
+
+  --tubric-bg-subtle: rgba(255, 255, 255, 0.03);
+  --tubric-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Hero banner — soft gradient, not overpowering */
+.hero--primary {
+  background: linear-gradient(135deg, #3A6B8C 0%, #2C4460 60%, #5C2434 100%);
+}
+
+.hero--primary .hero__title {
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.hero--primary .hero__subtitle {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Feature cards */
+.feature-card {
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--tubric-border);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Pipeline stage cards in overview */
+.pipeline-stage {
+  border-left: 4px solid var(--ifm-color-primary);
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Code blocks */
+.theme-code-block {
+  border-radius: 8px;
+}
+
+/* Admonition customizations */
+.admonition {
+  border-radius: 8px;
+}
+
+/* Navbar tweaks */
+.navbar__title {
+  font-weight: 700;
+}
+
+/* Footer */
+.footer--dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* Mermaid diagram styling */
+.mermaid {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Table styling */
+table {
+  display: table;
+  width: 100%;
+}
+
+table th {
+  background: var(--tubric-bg-subtle);
+}
+
+[data-theme='dark'] table th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Pipeline explorer component */
+.pipeline-explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.pipeline-explorer__stage {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--tubric-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pipeline-explorer__stage:hover {
+  border-color: var(--ifm-color-primary);
+  background: var(--tubric-bg-subtle);
+  transform: translateX(4px);
+  text-decoration: none;
+  color: inherit;
+}
+
+[data-theme='dark'] .pipeline-explorer__stage:hover {
+  background: rgba(130, 180, 212, 0.06);
+}
+
+.pipeline-explorer__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.pipeline-explorer__content {
+  flex: 1;
+}
+
+.pipeline-explorer__title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.pipeline-explorer__tools {
+  font-size: 0.8rem;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0;
+}
+
+.pipeline-explorer__arrow {
+  text-align: center;
+  color: var(--ifm-color-emphasis-400);
+  font-size: 1.2rem;
+}
+
+/* KaTeX math formulas — ensure visibility in both modes */
+.katex {
+  color: var(--ifm-font-color-base);
+}
+
+.katex-display {
+  color: var(--ifm-font-color-base);
+}
+
+/* Ensure KaTeX SVG elements (sqrt radicals, fraction bars) inherit color */
+.katex .sqrt .sqrt-sign {
+  color: var(--ifm-font-color-base);
+}
+
+.katex .mord,
+.katex .mbin,
+.katex .mrel,
+.katex .mopen,
+.katex .mclose,
+.katex .mfrac .frac-line,
+.katex .overline .overline-line,
+.katex .sqrt .sqrt-line {
+  color: inherit;
+}
+
+/* SVG-based elements (radicals, fraction rules) */
+.katex svg {
+  fill: var(--ifm-font-color-base);
+  stroke: var(--ifm-font-color-base);
+}
+
+.katex .sqrt-sign svg path {
+  fill: var(--ifm-font-color-base);
+}
+
+/* Dark mode specific overrides */
+[data-theme='dark'] .katex {
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .katex-display {
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .katex svg {
+  fill: #e0e0e0;
+  stroke: #e0e0e0;
+}
+
+[data-theme='dark'] .katex .sqrt-sign svg path {
+  fill: #e0e0e0;
+}
+
+/* Ensure KaTeX inside tables is readable */
+table .katex {
+  font-size: 0.9em;
+}

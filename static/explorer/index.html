@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Node-wise Tract Explorer · MesoConnect</title>
+<style>
+:root{--bg:#faf9f6;--panel:#ffffff;--ink:#232020;--mut:#767066;--line:#e5e1d8;--shade:#f4f2ec;--accent:#3A6B8C;--accent-soft:#e9f0f5;
+--pos:#b3512f;--neg:#2f6aa8;--sig:#3a8a5f;--sigbg:rgba(58,138,95,.10);--ns:#c7c1b6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}header{padding:18px 26px;border-bottom:1px solid var(--line);background:var(--panel);display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}header .sub{color:var(--mut);font-size:13px;flex:1 1 100%}header a.home{font-size:13px;margin-left:auto}
+.wrap{padding:20px 26px;max-width:1400px;margin:0 auto}.section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+.section h2{margin:0 0 10px;font-size:16px;color:var(--ink)}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:26px 20px;text-align:center;color:var(--mut);background:var(--shade);transition:border-color .15s}.drop.over{border-color:var(--accent);color:var(--ink)}
+.flink{color:var(--accent);cursor:pointer;text-decoration:underline}.loaderr{color:var(--pos);font-size:13px;margin-top:8px;white-space:pre-wrap}.ok{color:var(--sig);font-size:13px;margin-top:8px}
+.doc{font-size:13px;line-height:1.6}.doc code{background:var(--shade);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px}.doc table{width:auto;margin:6px 0}.doc td,.doc th{padding:4px 10px;font-size:12.5px}
+.script{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--shade);border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:4px;white-space:pre-wrap}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}.controls select,.controls input{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:13px}
+.controls label{color:var(--mut);font-size:12px;margin-right:3px}.count{color:var(--mut);font-size:13px;margin-left:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border-bottom:1.5px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--ink)}td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}tr.row{cursor:pointer}tr.row:hover{background:var(--shade)}tr.sig td{background:var(--sigbg)}
+.badge{display:inline-block;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600}.b-sig{background:var(--sigbg);color:var(--sig)}.b-ns{background:var(--shade);color:var(--mut)}.b-pos{background:rgba(179,81,47,.12);color:var(--pos)}.b-neg{background:rgba(47,106,168,.12);color:var(--neg)}
+.tag{color:var(--mut);font-size:12px}.detail{background:var(--shade);border-top:2px solid var(--accent)}.detail td{padding:0}.dbox{padding:18px 22px}.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:900px){.dgrid{grid-template-columns:1fr}}.dcol h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px}.kv .k{color:var(--mut)}.nodeviz{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.latbar{display:flex;height:24px;border-radius:6px;overflow:hidden;border:1px solid var(--line);margin-top:6px}.latbar .L{background:var(--neg);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}.latbar .R{background:var(--pos);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+.note{font-size:12px;color:var(--mut);margin-top:6px;border-left:3px solid var(--line);padding-left:8px}
+.legend{color:var(--mut);font-size:12.5px;margin-top:10px}
+</style></head><body>
+<header><h1>Node-wise Tract Explorer</h1><a class="home" href="../">← MesoConnect tutorial</a>
+<div class="sub">An in-browser viewer for along-tract statistical results. Drop in a results file, filter by any dimension in your data, click a row for the node profile, clusters and hemisphere comparison. Nothing leaves your machine.</div></header>
+<div class="wrap">
+<div class="section" id="loader"><h2>Load results</h2>
+<div id="drop" class="drop">Drop your results <b>.csv</b> here, or <label class="flink">choose a file<input type="file" id="file" accept=".csv,text/csv,.json" hidden></label></div>
+<div style="margin-top:10px;font-size:13px;color:var(--mut)">New here? <a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> to see how to structure yours, or <a href="#" id="loadex" class="flink">load the example dataset</a>.</div>
+<div id="loaderr" class="loaderr" style="display:none"></div>
+<details style="margin-top:14px" open><summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:13px">Data format</summary>
+<div class="doc"><b>One row per node.</b> Six required columns, <code>outcome, tract, metric, node, t, p</code>; everything else optional. Column names from <code>permutation_one.R</code> (<code>Node</code>, <code>t_value</code>, <code>p_value</code>) are accepted as they are.
+<table><thead><tr><th>Column</th><th>Required</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>outcome</code></td><td>yes</td><td>what was predicted</td></tr><tr><td><code>tract</code></td><td>yes</td><td>tract label, any number of tracts</td></tr><tr><td><code>metric</code></td><td>yes</td><td>the along-tract measure (FA, NDI, ODI, FWF, MD …)</td></tr>
+<tr><td><code>node</code></td><td>yes</td><td>0-based node index, any node count</td></tr><tr><td><code>t</code>, <code>p</code></td><td>yes</td><td>that node's statistic and uncorrected p</td></tr>
+<tr><td><code>hemisphere</code></td><td>no</td><td>L / R; enables the left–right panel</td></tr><tr><td><code>N</code>, <code>covariates</code></td><td>no</td><td>shown per analysis</td></tr>
+<tr><td><code>extent_threshold</code></td><td>no</td><td>permutation cluster-size threshold; clusters at least this long are marked FWE-significant</td></tr><tr><td><code>cluster_p</code>, <code>passed</code></td><td>no</td><td>your FWE cluster p and verdict</td></tr>
+<tr><td><b>any other column</b></td><td></td><td>becomes a filter (family, condition, cohort, site …)</td></tr></tbody></table>
+Clusters, significant-node counts and the hemisphere comparison are derived here from your node rows. Optional page labels via URL: <code>?title=…&amp;method=Freedman–Lane&amp;node0=VTA&amp;node1=hippocampus&amp;n_perms=5000</code>; <code>?data=URL</code> auto-loads a hosted CSV.</div>
+<div class="script">outcome,tract,metric,node,t,p,hemisphere,N,covariates,extent_threshold,cluster_p,passed
+memory_score,l_vta_l_hipp,NDI,0,2.040,0.0472,L,52,"ICV, length, count, motion, age",26,0.0032,1
+memory_score,l_vta_l_hipp,NDI,1,2.057,0.0455,L,52,"ICV, length, count, motion, age",26,0.0032,1
+...   one row per node, then the next tract / metric / outcome</div></details></div>
+
+<div class="section" id="explorer" style="display:none"><h2 id="exptitle">Results</h2><div id="expsub" class="tag" style="margin-bottom:12px"></div>
+<div class="controls" id="filters"></div>
+<table id="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+<div class="legend">FWE = cluster passes the permutation extent threshold. Direction: <span class="badge b-pos">Positive</span> higher metric, higher outcome · <span class="badge b-neg">Negative</span> higher metric, lower outcome. Bars in the profile: coloured = node p &lt; .05, grey = not; green band = FWE cluster.</div></div>
+</div>
+<script>
+let DATA=[],META={},GROUPS=[],NN=100,HAS_HEMI=false;
+const RESERVED=['outcome','tract','metric','node','t','p','hemisphere','n','covariates','extent_threshold','cluster_p','passed','dir','id'];
+const norm=s=>String(s??'').trim();const num=v=>{const x=parseFloat(v);return isNaN(x)?null:x;};
+const truthy=v=>['1','true','yes','y','t','pass','sig'].includes(norm(v).toLowerCase());
+function parseCSV(text){const rows=[];let row=[],cur='',q=false;for(let i=0;i<text.length;i++){const c=text[i];
+ if(q){if(c=='"'){if(text[i+1]=='"'){cur+='"';i++;}else q=false;}else cur+=c;}else if(c=='"')q=true;else if(c==','){row.push(cur);cur='';}
+ else if(c=='\n'||c=='\r'){if(c=='\r'&&text[i+1]=='\n')i++;row.push(cur);rows.push(row);row=[];cur='';}else cur+=c;}
+ if(cur!==''||row.length){row.push(cur);rows.push(row);}const ne=rows.filter(r=>r.some(x=>norm(x)!==''));if(ne.length<2)throw new Error('CSV has no data rows.');
+ const hdr=ne[0].map(norm);return ne.slice(1).map(r=>Object.fromEntries(hdr.map((h,i)=>[h,r[i]??''])));}
+function fromLong(rows){const cols=Object.keys(rows[0]);
+ const ALIAS={node:['node'],t:['t','t_value','tvalue','tstat','statistic'],p:['p','p_value','pvalue','pval'],n:['n','n_subjects','nsubjects'],covariates:['covariates','covariate'],
+  extent_threshold:['extent_threshold','extentthresholdnodes','extent_thr'],cluster_p:['cluster_p','clusterpvalue','cluster_pvalue','fwe_p'],passed:['passed','passextentthreshold','fwe','significant','sig'],
+  outcome:['outcome','outcome_label','dv'],tract:['tract','tract_label','bundle'],metric:['metric','measure'],hemisphere:['hemisphere','hemi','side']};
+ const lc={};cols.forEach(c=>{const l=c.toLowerCase();lc[l]=c;for(const k in ALIAS)if(ALIAS[k].includes(l))lc[k]=c;});const aliasAll=new Set(Object.values(ALIAS).flat());
+ const missing=['outcome','tract','metric','node','t','p'].filter(k=>!(k in lc));if(missing.length)throw new Error('Missing required column(s): '+missing.join(', ')+'.\nRequired: outcome, tract, metric, node, t, p (one row per node).');
+ const C=k=>lc[k];HAS_HEMI=('hemisphere' in lc);GROUPS=cols.filter(c=>{const l=c.toLowerCase();return !aliasAll.has(l)&&!RESERVED.includes(l)&&!['estimate','df','clusterid'].includes(l);});
+ const keyOf=r=>[r[C('outcome')],r[C('tract')],r[C('metric')],HAS_HEMI?r[C('hemisphere')]:'',...GROUPS.map(g=>r[g])].map(norm).join('||');
+ const by=new Map();rows.forEach(r=>{const k=keyOf(r);if(!by.has(k))by.set(k,[]);by.get(k).push(r);});const out=[];
+ by.forEach((rs,k)=>{rs.sort((a,b)=>num(a[C('node')])-num(b[C('node')]));const nn=Math.max(...rs.map(r=>num(r[C('node')])))+1;const tv=new Array(nn).fill(null),pv=new Array(nn).fill(null);
+  rs.forEach(r=>{const i=num(r[C('node')]);tv[i]=num(r[C('t')]);pv[i]=num(r[C('p')]);});const f=rs[0];
+  const a={id:k,outcome_label:norm(f[C('outcome')]),tract_label:norm(f[C('tract')]),metric:norm(f[C('metric')]),hemisphere:HAS_HEMI?norm(f[C('hemisphere')]).toUpperCase():'',tvals:tv,pvals:pv,
+   N:('n' in lc)?num(f[C('n')]):null,covariates:('covariates' in lc)?norm(f[C('covariates')]):'',extent_threshold:('extent_threshold' in lc)?num(f[C('extent_threshold')]):null,
+   best_p:('cluster_p' in lc)?num(f[C('cluster_p')]):null,passed:('passed' in lc)?truthy(f[C('passed')]):null};GROUPS.forEach(g=>a[g]=norm(f[g]));
+  const sig=pv.map(x=>x!=null&&x<0.05);a.n_sig_nodes=sig.filter(Boolean).length;a.sig_node_list=sig.map((s,i)=>s?i:-1).filter(i=>i>=0);a.clusters=[];let s=null;
+  for(let i=0;i<=nn;i++){const on=i<nn&&sig[i];if(on&&s==null)s=i;else if(!on&&s!=null){const e=i-1;const ts=tv.slice(s,e+1).map(x=>x??0);const mt=ts.reduce((u,v)=>u+v,0)/ts.length;
+   const mi=ts.map(Math.abs).indexOf(Math.max(...ts.map(Math.abs)));a.clusters.push({start:s,end:e,size:e-s+1,dir:mt>=0?'Positive':'Negative',mean_t:+mt.toFixed(2),max_abs_t:+ts[mi].toFixed(2),max_abs_t_node:s+mi,p:null,passes:false});s=null;}}
+  a.obs_max_cluster=a.clusters.length?Math.max(...a.clusters.map(c=>c.size)):0;
+  if(a.extent_threshold!=null){a.clusters.forEach(c=>c.passes=c.size>=a.extent_threshold);a.passed=a.clusters.some(c=>c.passes);}
+  else if(a.passed===true&&a.clusters.length){const big=a.clusters.reduce((x,y)=>y.size>x.size?y:x);big.passes=true;big.p=a.best_p;}else if(a.passed==null)a.passed=false;
+  if(a.best_p!=null)a.clusters.filter(c=>c.passes).forEach(c=>c.p=a.best_p);a.n_perms=META.n_perms||null;out.push(a);});
+ NN=Math.max(...out.map(a=>a.tvals.length));
+ if(HAS_HEMI)out.forEach(a=>{const sib=sibOf(a,out);const L=a.hemisphere==='L'?a:sib,R=a.hemisphere==='R'?a:sib;const Ls=L?L.n_sig_nodes:0,Rs=R?R.n_sig_nodes:0,tot=Ls+Rs;
+  const ov=(L&&R)?L.sig_node_list.filter(i=>R.sig_node_list.includes(i)):[];a.laterality={L_sig:Ls,R_sig:Rs,pct_left:tot?+(100*Ls/tot).toFixed(0):0,pct_right:tot?+(100*Rs/tot).toFixed(0):0,overlap_nodes:ov};});
+ return out;}
+function tractBase(t){return norm(t).replace(/\b(left|right|L|R|lh|rh)\b/ig,'').replace(/^(l|r)_|_(l|r)_/g,'_').replace(/[_\-\s]+/g,' ').trim().toLowerCase();}
+function sibOf(a,pool){pool=pool||DATA;return pool.find(x=>x!==a&&x.outcome_label===a.outcome_label&&x.metric===a.metric&&x.hemisphere&&x.hemisphere!==a.hemisphere&&tractBase(x.tract_label)===tractBase(a.tract_label)&&GROUPS.every(g=>x[g]===a[g]));}
+function fromJSON(o){const arr=Array.isArray(o)?o:(o.results||[]);if(!arr.length)throw new Error('No result records found.');META=Object.assign({},META,Array.isArray(o)?{}:(o.meta||{}));
+ HAS_HEMI=arr.some(a=>a.hemisphere==='L'||a.hemisphere==='R');const std=['id','outcome','outcome_label','tract','tract_label','hemisphere','metric','N','dropped','covariates','n_sig_nodes','obs_max_cluster','extent_threshold','n_passing','n_perms','passed','best_p','clusters','sig_node_list','tvals','pvals','laterality','tract_type','family','condition'];
+ GROUPS=Object.keys(arr[0]).filter(k=>!std.includes(k)&&typeof arr[0][k]!=='object');NN=Math.max(...arr.map(a=>(a.tvals||[]).length));return arr;}
+function uniq(k){return [...new Set(DATA.map(r=>r[k]).filter(v=>v!=null&&v!==''))].sort();}
+function buildFilters(){const host=document.getElementById('filters');host.innerHTML='';
+ const dims=[['tract_label','Tract'],['metric','Metric'],...(HAS_HEMI?[['hemisphere','Hemisphere']]:[]),['outcome_label','Outcome'],...GROUPS.map(g=>[g,g])];
+ dims.forEach(([k,lab])=>{const vals=uniq(k);if(vals.length<2)return;const s=document.createElement('span');s.innerHTML=`<label>${lab}</label><select data-k="${k}"><option value="">All</option>${vals.map(v=>`<option>${v}</option>`).join('')}</select>`;host.appendChild(s);});
+ const sig=document.createElement('span');sig.innerHTML=`<label>Show</label><select id="f_sig"><option value="all">All</option><option value="sig">FWE-significant only</option><option value="trend">≥5 significant nodes</option></select>`;host.appendChild(sig);
+ const q=document.createElement('input');q.id='f_search';q.placeholder='search…';q.style.minWidth='130px';host.appendChild(q);const c=document.createElement('span');c.className='count';c.id='count';host.appendChild(c);
+ host.querySelectorAll('select,input').forEach(el=>el.oninput=render);}
+function passFilters(r){for(const s of document.querySelectorAll('#filters select[data-k]')){if(s.value&&norm(r[s.dataset.k])!==s.value)return false;}
+ const sg=document.getElementById('f_sig').value,q=document.getElementById('f_search').value.toLowerCase();if(sg==='sig'&&!r.passed)return false;if(sg==='trend'&&r.n_sig_nodes<5)return false;
+ if(q&&!Object.values(r).filter(v=>typeof v==='string').join(' ').toLowerCase().includes(q))return false;return true;}
+let sortK='best_p',sortDir=1;
+function dirBadge(d){return d==='Positive'?'<span class="badge b-pos">Positive</span>':'<span class="badge b-neg">Negative</span>'}
+function fmtP(p){if(p==null)return '—';return p===0?'<1/n_perm':p}
+// --- profile plot with a labelled t axis and ±2 reference lines ---
+function tPlot(r,H,label,overlap){const W=600,padL=40,padR=14,top=8,bot=16,n=r?r.tvals.length:NN;const ts=r?r.tvals.map(x=>x==null?0:x):new Array(n).fill(0);
+ const mx=Math.max(3,...ts.map(Math.abs));const plotH=H-top-bot,mid=top+plotH/2,bw=(W-padL-padR)/n;const y=t=>mid-(t/mx)*(plotH/2);let bars='';
+ for(let i=0;i<n;i++){const t=ts[i];const sig=r&&r.pvals[i]!=null&&r.pvals[i]<0.05;const ov=overlap&&overlap.includes(i);
+  const col=ov&&sig?'var(--sig)':(sig?(t>=0?'var(--pos)':'var(--neg)'):'var(--ns)');const h=Math.abs(y(t)-mid);
+  bars+=`<rect x="${padL+i*bw}" y="${t>=0?y(t):mid}" width="${Math.max(bw-0.4,0.6)}" height="${h}" fill="${col}"><title>node ${i}: t = ${t}</title></rect>`;}
+ let shade='';if(r)r.clusters.forEach(c=>{if(c.passes)shade+=`<rect x="${padL+c.start*bw}" y="${top}" width="${(c.end-c.start+1)*bw}" height="${plotH}" fill="var(--sigbg)" stroke="var(--sig)" stroke-opacity=".5"/>`;});
+ const grid=[2,-2].filter(v=>Math.abs(v)<mx).map(v=>`<line x1="${padL}" y1="${y(v)}" x2="${W-padR}" y2="${y(v)}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="${padL-4}" y="${y(v)+3}" fill="var(--mut)" font-size="9" text-anchor="end">${v>0?'+2':'−2'}</text>`).join('');
+ const ticks=`<text x="${padL-4}" y="${y(mx)+3}" fill="var(--mut)" font-size="9" text-anchor="end">+${mx.toFixed(0)}</text><text x="${padL-4}" y="${mid+3}" fill="var(--mut)" font-size="9" text-anchor="end">0</text><text x="${padL-4}" y="${y(-mx)+3}" fill="var(--mut)" font-size="9" text-anchor="end">−${mx.toFixed(0)}</text>`;
+ return `<div style="display:flex;align-items:center;gap:6px">${label?`<div style="width:44px;font-size:11px;color:var(--mut);text-align:right;font-weight:600">${label}</div>`:''}
+  <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${shade}${grid}<line x1="${padL}" y1="${mid}" x2="${W-padR}" y2="${mid}" stroke="var(--mut)"/>${bars}${ticks}
+  <text x="10" y="${mid}" fill="var(--mut)" font-size="10" text-anchor="middle" transform="rotate(-90 10 ${mid})">t-value</text>
+  <text x="${padL}" y="${H-3}" fill="var(--mut)" font-size="9">${META.node0||'node 0 (seed)'}</text><text x="${W-padR}" y="${H-3}" fill="var(--mut)" font-size="9" text-anchor="end">${META.node1||('node '+(n-1)+' (target)')}</text></svg></div>`;}
+function detail(r){const lat=r.laterality;const sib=HAS_HEMI?sibOf(r):null;
+ const clusters=r.clusters.length?('<table style="width:auto"><thead><tr><th>Nodes</th><th>Size</th><th>Dir</th><th>mean t</th><th>max|t|</th><th>@node</th><th>cluster p</th><th>FWE</th></tr></thead><tbody>'+
+  r.clusters.map(c=>`<tr><td>${c.start}–${c.end}</td><td>${c.size}</td><td>${dirBadge(c.dir)}</td><td>${c.mean_t}</td><td>${c.max_abs_t}</td><td>${c.max_abs_t_node}</td><td>${fmtP(c.p)}</td><td>${c.passes?'<span class="badge b-sig">✓</span>':'<span class="badge b-ns">·</span>'}</td></tr>`).join('')+'</tbody></table>'):'<span class="tag">No contiguous clusters formed.</span>';
+ const groupsKV=GROUPS.map(g=>`<div class="k">${g}</div><div>${r[g]||'—'}</div>`).join('');let latHTML='';
+ if(HAS_HEMI&&lat){const Lp=lat.pct_left||0,Rp=lat.pct_right||0;const L=r.hemisphere==='L'?r:sib,R=r.hemisphere==='R'?r:sib;
+  latHTML=`<h4 style="margin-top:16px">Left and right, same outcome and metric</h4>
+   <div class="nodeviz">${tPlot(L,88,'Left',lat.overlap_nodes||[])}${tPlot(R,88,'Right',lat.overlap_nodes||[])}</div>
+   <div class="latbar"><div class="L" style="width:${Lp}%">L ${lat.L_sig} sig nodes (${Lp}%)</div><div class="R" style="width:${Rp}%">R ${lat.R_sig} (${Rp}%)</div></div>
+   <div class="note">Descriptive only. Both hemispheres' full t-profiles are drawn; green bars are nodes significant on both sides${(lat.overlap_nodes&&lat.overlap_nodes.length)?' ('+lat.overlap_nodes.join(', ')+')':' (none)'}. The bar counts significant nodes per side; it is not a statistical test of lateralization. Test a hemisphere difference directly if you need to claim one.</div>`;}
+ const cov=r.covariates?`<h4 style="margin-top:16px">Covariates</h4><div class="tag">${r.covariates}</div>`:'';const prov=META.scripts_note?`<h4 style="margin-top:18px">Provenance</h4><div class="script">${META.scripts_note}</div>`:'';
+ return `<td colspan="99" class="detail"><div class="dbox"><div class="dgrid"><div class="dcol">
+  <h4>${r.outcome_label} · ${r.tract_label}${r.hemisphere?' ('+r.hemisphere+')':''} · ${r.metric}</h4>
+  <div class="kv">${groupsKV}<div class="k">Metric</div><div>${r.metric}</div>${r.N!=null?`<div class="k">N</div><div>${r.N}</div>`:''}${r.n_perms?`<div class="k">Permutations</div><div>${r.n_perms}${META.method?' ('+META.method+')':''}</div>`:''}
+   <div class="k">Significant nodes (p &lt; .05)</div><div>${r.n_sig_nodes} / ${r.tvals.length}</div><div class="k">Largest cluster</div><div>${r.obs_max_cluster} nodes</div>
+   ${r.extent_threshold!=null?`<div class="k">Extent threshold</div><div>${r.extent_threshold} nodes</div>`:''}
+   <div class="k">FWE verdict</div><div>${r.passed?'<span class="badge b-sig">SIGNIFICANT</span>'+(r.best_p!=null?' (cluster p = '+fmtP(r.best_p)+')':''):'<span class="badge b-ns">n.s.</span>'}</div></div>${cov}${latHTML}</div>
+  <div class="dcol"><h4>Node-wise t-values <span class="tag">(each bar is a separate regression across subjects at that node; a profile of the effect along the tract, not the tract's shape)</span></h4>
+   <div class="nodeviz">${tPlot(r,110,'',[])}</div><h4 style="margin-top:14px">Clusters</h4>${clusters}
+   <h4 style="margin-top:14px">Significant nodes, uncorrected</h4><div class="tag" style="line-height:1.6">${r.sig_node_list.length?r.sig_node_list.join(', '):'none'}</div></div></div>${prov}</div></td>`;}
+function buildHeader(){const cols=[['outcome_label','Outcome'],...GROUPS.map(g=>[g,g]),['tract_label','Tract'],...(HAS_HEMI?[['hemisphere','Hemi']]:[]),['metric','Metric'],['N','N'],['n_sig_nodes','Sig nodes'],['obs_max_cluster','Max cluster'],['extent_threshold','Threshold'],['best_p','Cluster p'],['passed','FWE']];
+ const showN=DATA.some(r=>r.N!=null),showT=DATA.some(r=>r.extent_threshold!=null);const use=cols.filter(([k])=>!(k==='N'&&!showN)&&!(k==='extent_threshold'&&!showT));
+ document.getElementById('thead').innerHTML='<tr>'+use.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join('')+'</tr>';
+ document.querySelectorAll('#thead th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=1}render()});return use;}
+let COLS=[];
+function render(){let rows=DATA.filter(passFilters);rows.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(sortK==='best_p'){x=x==null?9:x;y=y==null?9:y}if(typeof x==='string')return sortDir*x.localeCompare(y);return sortDir*((x>y)-(x<y));});
+ const tb=document.getElementById('tbody');tb.innerHTML='';
+ rows.forEach(r=>{const tr=document.createElement('tr');tr.className='row'+(r.passed?' sig':'');const dir=r.clusters.find(c=>c.passes);
+  tr.innerHTML=COLS.map(([k])=>{let v=r[k];if(k==='outcome_label')return `<td><b>${v}</b></td>`;if(k==='best_p')return `<td>${v!=null?fmtP(v)+' '+(dir?dirBadge(dir.dir):''):(dir?dirBadge(dir.dir):'<span class="tag">—</span>')}</td>`;
+   if(k==='passed')return `<td>${r.passed?'<span class="badge b-sig">✓</span>':'<span class="badge b-ns">·</span>'}</td>`;return `<td>${v==null||v===''?'—':v}</td>`;}).join('');
+  tr.onclick=()=>{const nx=tr.nextSibling;if(nx&&nx.classList&&nx.classList.contains('detail-row')){nx.remove();return}document.querySelectorAll('.detail-row').forEach(e=>e.remove());const dr=document.createElement('tr');dr.className='detail-row';dr.innerHTML=detail(r);tr.after(dr);};
+  tb.appendChild(tr);});
+ document.getElementById('count').textContent=`${rows.length} of ${DATA.length} analyses · ${rows.filter(r=>r.passed).length} FWE-significant`;}
+function boot(){buildFilters();COLS=buildHeader();document.getElementById('exptitle').textContent=META.title||'Results';
+ const dims=[`${DATA.length} analyses`,`${uniq('outcome_label').length} outcomes`,`${uniq('tract_label').length} tracts`,`${uniq('metric').length} metrics`,`${NN} nodes`,...(HAS_HEMI?['hemispheres detected']:[]),...GROUPS.map(g=>`${uniq(g).length} ${g}`)];
+ document.getElementById('expsub').textContent=META.sub||dims.join(' · ');document.getElementById('explorer').style.display='';render();document.getElementById('explorer').scrollIntoView({behavior:'smooth',block:'start'});}
+function showMsg(m,ok){const e=document.getElementById('loaderr');e.className=ok?'ok':'loaderr';e.textContent=m;e.style.display=m?'':'none';}
+function loadText(text,name){try{META=Object.assign({},urlMeta());if(/^\s*[\[{]/.test(text)){DATA=fromJSON(JSON.parse(text));}else{DATA=fromLong(parseCSV(text));}
+ showMsg(`Loaded ${name||'data'}: ${DATA.length} analyses${GROUPS.length?' · grouping columns: '+GROUPS.join(', '):''}${HAS_HEMI?' · hemisphere detected':' · no hemisphere column (left–right panel hidden)'}`,true);boot()}catch(x){showMsg('Could not load: '+x.message,false);}}
+function urlMeta(){const u=new URLSearchParams(location.search);const m={};['title','sub','method','node0','node1','n_perms','scripts_note'].forEach(k=>{if(u.get(k))m[k]=u.get(k)});return m;}
+function readFile(f){const rd=new FileReader();rd.onload=()=>loadText(rd.result,f.name);rd.readAsText(f);}
+document.getElementById('file').onchange=e=>{if(e.target.files[0])readFile(e.target.files[0]);};const dz=document.getElementById('drop');
+['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over');}));['dragleave','dragend'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over');}));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0]);});
+document.getElementById('loadex').onclick=e=>{e.preventDefault();fetch('example_results_long.csv').then(r=>r.text()).then(t=>loadText(t,'example dataset')).catch(()=>showMsg('Could not load the example.',false));};
+const _durl=new URLSearchParams(location.search).get('data');if(_durl)fetch(_durl).then(r=>r.text()).then(t=>loadText(t,_durl)).catch(()=>showMsg('Could not load '+_durl,false));
+</script></body></html>
