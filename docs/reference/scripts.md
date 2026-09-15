@@ -5,7 +5,7 @@ title: "Scripts"
 
 # Scripts
 
-All scripts read a single configuration file. The set is downloaded, `00_config.sh` is edited, and the scripts are run in order. Each step script writes a log to `$OUT/logs/`, skips participants whose output already exists (set `FORCE=1` to recompute), and reports missing inputs by participant.
+Every script is shown in full on the workflow page for its step; this page lists them for download. All scripts read a single configuration file. The set is downloaded, `00_config.sh` is edited, and the scripts are run in order. Each step script writes a log to `$OUT/logs/`, skips participants whose output already exists (set `FORCE=1` to recompute), and reports missing inputs by participant.
 
 **Table 1.** *Scripts distributed with this site.*
 

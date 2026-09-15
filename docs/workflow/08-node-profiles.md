@@ -20,6 +20,149 @@ profile = dsa.afq_profile(data, oriented, affine, nb_points=100, weights=w)
 
 The corresponding script is [`08_node_profiles.py`](pathname:///MesoConnect-Tutorial/scripts/08_node_profiles.py). The `METRICS` dictionary specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 minutes.
 
+## Scripts
+
+<!-- script:08a_noddi_fit.py -->
+<details>
+<summary><code>08a_noddi_fit.py</code> (36 lines)</summary>
+
+```python title="08a_noddi_fit.py"
+#!/usr/bin/env python3
+"""Step 8a — NODDI fit with AMICO (run before step 8 if NODDI maps are wanted).
+
+Writes $PROJECT/noddi/<subj>/fit_{NDI,ODI,FWF}.nii.gz plus fit_NDI_modulated / fit_ODI_modulated
+(tissue-weighted partial-volume correction) and fit_RMSE.  Kernels are generated once; run this
+script serially for the first participant before starting parallel jobs so that concurrent runs do
+not regenerate the shared kernel directory.  Set NODDI_DPAR=1.1e-3 to refit for gray-matter ROIs
+(white-matter default 1.7e-3).
+"""
+import os, sys
+from pathlib import Path
+import amico
+
+PROJECT = Path(os.environ["PROJECT"]); subjects = [l.strip() for l in open(os.environ["SUBJECTS_FILE"]) if l.strip()]
+if len(sys.argv) > 1: subjects = sys.argv[1:]
+nthreads = int(os.environ.get("NODDI_NTHREADS", "4")); dpar = os.environ.get("NODDI_DPAR")
+os.environ["OPENBLAS_NUM_THREADS"] = os.environ["OMP_NUM_THREADS"] = str(nthreads)
+study = PROJECT / "noddi"; study.mkdir(exist_ok=True); amico.core.setup()
+
+for s in subjects:
+    d = PROJECT / "dwi" / s; out = study / s; out.mkdir(exist_ok=True)
+    if os.environ.get("FORCE", "0") != "1" and (out / "fit_NDI_modulated.nii.gz").exists(): print(f"[{s}] exists"); continue
+    dwi = Path(os.path.expandvars(os.environ.get("DWI_NII", "$PROJECT/dwi/$s/data.nii.gz").replace("$s", s)))
+    bval = Path(os.path.expandvars(os.environ.get("BVALS", "$PROJECT/dwi/$s/bvals").replace("$s", s)))
+    bvec = Path(os.path.expandvars(os.environ.get("BVECS", "$PROJECT/dwi/$s/bvecs").replace("$s", s)))
+    mask = d / "nodif_brain_mask.nii.gz"
+    if not all(p.exists() for p in (dwi, bval, bvec, mask)): print(f"[{s}] SKIP missing inputs"); continue
+    scheme = out / f"{s}.scheme"; amico.util.fsl2scheme(str(bval), str(bvec), str(scheme), bStep=200)
+    ae = amico.Evaluation(str(study), s, output_path=str(out))
+    ae.set_config("doSaveModulatedMaps", True); ae.set_config("doComputeRMSE", True); ae.set_config("BLAS_nthreads", 1)
+    ae.load_data(str(dwi), str(scheme), mask_filename=str(mask), b0_thr=100)
+    ae.set_model("NODDI")
+    if dpar: ae.model.set(float(dpar), 3.0e-3, ae.model.IC_VFs, ae.model.IC_ODs, False)   # dPar, dIso, IC volume fractions, ODs, isExvivo
+    ae.generate_kernels(regenerate=False); ae.load_kernels(); ae.fit(); ae.save_results()
+    print(f"[{s}] done")
+print("DONE ->", study)
+```
+
+</details>
+<!-- /script:08a_noddi_fit.py -->
+
+<!-- script:08_node_profiles.py -->
+<details>
+<summary><code>08_node_profiles.py</code> (48 lines)</summary>
+
+```python title="08_node_profiles.py"
+#!/usr/bin/env python3
+"""Step 8 — 100-node tract profiles (AFQ-style, Gaussian-weighted) for any scalar map.
+
+METRICS maps a column name to the scalar image per subject. Streamlines are oriented to a
+QuickBundles centroid first so node 0 is always the seed end and node 99 the target end.
+Output: one long CSV per tract — Subject, Tract, Node, <metric columns>.
+"""
+import os, csv
+from pathlib import Path
+import numpy as np
+import dipy.stats.analysis as dsa, dipy.tracking.streamline as dts
+from dipy.io.streamline import load_tractogram
+from dipy.io.image import load_nifti
+from dipy.segment.clustering import QuickBundles
+from dipy.segment.metricspeed import AveragePointwiseEuclideanMetric
+from dipy.segment.featurespeed import ResampleFeature
+
+PROJECT = Path(os.environ["PROJECT"]); OUT = Path(os.environ["OUT"]); TRACT = os.environ["TRACT"]; CUTOFF = os.environ["CUTOFF"]
+subjects = [l.strip() for l in open(os.environ["SUBJECTS_FILE"]) if l.strip()]
+NODES, MIN_STREAMLINES = 100, 5
+METRICS = {  # column -> path template; add or remove freely
+    "FA":  "dwi/{s}/fa.nii.gz",
+    "NDI": "noddi/{s}/fit_NDI_modulated.nii.gz",
+    "ODI": "noddi/{s}/fit_ODI_modulated.nii.gz",
+    "FWF": "noddi/{s}/fit_FWF.nii.gz",
+}
+
+def orient_to_centroid(sl):
+    qb = QuickBundles(threshold=np.inf, metric=AveragePointwiseEuclideanMetric(ResampleFeature(nb_points=NODES)))
+    return dts.Streamlines(dts.orient_by_streamline(sl, qb.cluster(sl).centroids[0]))
+
+def profile(img, sl):
+    data, aff = load_nifti(str(img)); w = dsa.gaussian_weights(sl)
+    return np.asarray(dsa.afq_profile(data, sl, aff, nb_points=NODES, weights=w), float)
+
+out_dir = OUT / "nodewise"; out_dir.mkdir(exist_ok=True)
+with open(out_dir / f"{TRACT}_nodewise_all_subjects.csv", "w", newline="") as f:
+    w = csv.writer(f); w.writerow(["Subject", "Tract", "Node"] + list(METRICS))
+    for s in subjects:
+        tck = OUT / s / "tckgen" / TRACT / f"{TRACT}_{CUTOFF}_cleaned.tck"
+        maps = {m: PROJECT / p.format(s=s) for m, p in METRICS.items()}
+        if not tck.exists() or not all(p.exists() for p in maps.values()): print(f"[{s}] SKIP missing inputs"); continue
+        sl = load_tractogram(str(tck), str(next(iter(maps.values()))), bbox_valid_check=False).streamlines
+        if len(sl) < MIN_STREAMLINES: print(f"[{s}] SKIP {len(sl)} streamlines"); continue
+        sl = orient_to_centroid(sl); prof = {m: profile(p, sl) for m, p in maps.items()}
+        for n in range(NODES): w.writerow([s, TRACT, n] + [float(prof[m][n]) for m in METRICS])
+        print(f"[{s}] {NODES} nodes x {len(METRICS)} metrics")
+print("DONE ->", out_dir)
+```
+
+</details>
+<!-- /script:08_node_profiles.py -->
+
+<!-- script:08b_build_analysis_csv.py -->
+<details>
+<summary><code>08b_build_analysis_csv.py</code> (26 lines)</summary>
+
+```python title="08b_build_analysis_csv.py"
+#!/usr/bin/env python3
+"""Step 8b — Build the wide analysis CSV that permutation_one.R and final_models.py read.
+
+Inputs: $OUT/nodewise/<TRACT>_nodewise_all_subjects.csv (long, from step 8),
+        $OUT/nodewise/<TRACT>_tract_stats.csv (Subject, Count_tckstats, Mean_tckstats, from step 5),
+        $COVARIATES_CSV (Subject + covariates + outcomes; e.g. ICV, absolute_motion, age, outcome columns).
+Output: $OUT/analysis/<TRACT>__<METRIC>__analysis.csv, one row per participant, with columns
+        Subject, <covariates>, <outcomes>, Count_tckstats, Mean_tckstats, <METRIC>_0 ... <METRIC>_99.
+"""
+import os
+from pathlib import Path
+import pandas as pd
+
+OUT = Path(os.environ["OUT"]); TRACT = os.environ["TRACT"]; COV = Path(os.environ["COVARIATES_CSV"])
+long = pd.read_csv(OUT / "nodewise" / f"{TRACT}_nodewise_all_subjects.csv")
+stats = pd.read_csv(OUT / "nodewise" / f"{TRACT}_tract_stats.csv")
+cov = pd.read_csv(COV)
+metrics = [c for c in long.columns if c not in ("Subject", "Tract", "Node")]
+(OUT / "analysis").mkdir(exist_ok=True)
+for m in metrics:
+    wide = long.pivot(index="Subject", columns="Node", values=m)
+    wide.columns = [f"{m}_{int(n)}" for n in wide.columns]; wide = wide.reset_index()
+    df = cov.merge(stats, on="Subject", how="inner").merge(wide, on="Subject", how="inner")
+    p = OUT / "analysis" / f"{TRACT}__{m}__analysis.csv"; df.to_csv(p, index=False)
+    print(f"{p.name}: {len(df)} participants x {wide.shape[1]-1} nodes (+ {len(cov.columns)-1} covariate/outcome columns)")
+print("Then, per outcome:  Rscript permutation_one.R <analysis.csv> <outcome> <METRIC>_ <out_dir> <label>")
+```
+
+</details>
+<!-- /script:08b_build_analysis_csv.py -->
+
+
 ## Node range
 
 Nodes near the ends of the profile (0 to 4 and 95 to 99) lie in or adjacent to gray matter and are affected by partial-volume contamination from the seed and target regions. Deep white matter spans approximately nodes 25 to 75. Whether end nodes are trimmed should be decided before modelling.
