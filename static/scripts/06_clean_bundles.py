@@ -27,6 +27,7 @@ for s in subjects:
     tdir = OUT / s / "tckgen" / TRACT; in_tck = tdir / f"{TRACT}_{CUTOFF}.tck"
     ref = PROJECT / "dwi" / s / "nodif_brain_mask.nii.gz"
     if not in_tck.exists(): print(f"[{s}] SKIP missing {in_tck}"); continue
+    if os.environ.get("FORCE","0")!="1" and (tdir / f"{TRACT}_{CUTOFF}_cleaned.tck").exists(): print(f"[{s}] cleaned file exists"); continue
     sft = load_tractogram(str(in_tck), str(ref), bbox_valid_check=False)
     n0 = len(sft.streamlines)
     if n0 == 0: print(f"[{s}] SKIP 0 streamlines"); continue

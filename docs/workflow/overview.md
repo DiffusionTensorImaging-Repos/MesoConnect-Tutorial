@@ -50,6 +50,9 @@ $OUT/<subj>/
 $OUT/qc/<tract>/               per-participant overlay images and flags
 $OUT/qc/<tract>_cutoff_pilot/  cutoff comparison panels, cutoff_summary.csv
 $OUT/nodewise/                 <tract>_nodewise_all_subjects.csv  (Subject, Tract, Node, FA, NDI, ODI, FWF)
+                               <tract>_tract_stats.csv            (Subject, Count_tckstats, Mean_tckstats; step 5)
+$OUT/analysis/                 <tract>__<metric>__analysis.csv    (wide; one row per participant; step 8b)
+$OUT/logs/                     one log per step script
 ```
 
 A manifest should be kept for each analysis recording the atlas version and threshold, dilation, interpolation, transform files, cutoff, scalar maps, covariates and software versions.
@@ -61,6 +64,7 @@ All scripts read a single configuration file, `00_config.sh`, which specifies pr
 ```bash
 cd scripts
 nano 00_config.sh
+bash 00b_fod_estimation.sh        # only if wm_fod_norm.mif does not yet exist
 bash 01_register_mni_to_t1.sh
 bash 02_warp_rois.sh
 bash 03_build_corridor_mask.sh
@@ -69,7 +73,9 @@ python 04b_compare_cutoffs.py "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
 bash 05_tractography.sh
 python 06_clean_bundles.py
 python 07_visual_qc.py
+python 08a_noddi_fit.py           # only if NODDI maps are wanted
 python 08_node_profiles.py
+python 08b_build_analysis_csv.py  # wide file for step 9
 ```
 
-Steps 1 and 5 require hours on a full sample and should be run under `tmux` or a job scheduler. The concurrency limits in the scripts were set for a shared 48-core node and should be reduced on a workstation.
+Every step script logs to `$OUT/logs/` and skips participants whose output already exists, so an interrupted run can be restarted with the same command (`FORCE=1` recomputes). Steps 0b, 1 and 5 require hours on a full sample and should be run under `tmux` or a job scheduler. The concurrency limits in the scripts were set for a shared 48-core node and should be reduced on a workstation.

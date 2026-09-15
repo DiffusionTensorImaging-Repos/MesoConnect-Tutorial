@@ -11,6 +11,7 @@ for s in subjects:
     tck = OUT / s / "tckgen" / TRACT / f"{TRACT}_{CUTOFF}_cleaned.tck"; ref = PROJECT / "dwi" / s / "nodif_brain_mask.nii.gz"
     bg_f = PROJECT / "dwi" / s / "mean_b0.nii.gz"
     if not tck.exists(): flags.append((s, "MISSING")); continue
+    if os.environ.get("FORCE","0")!="1" and (qc / f"{s}_{TRACT}_qc.png").exists(): print(f"[{s}] QC image exists"); continue
     tdi = qc / f"{s}_tdi.nii.gz"
     subprocess.run(["tckmap", str(tck), str(tdi), "-template", str(ref), "-force", "-quiet"], check=True)
     d = nib.load(str(tdi)).get_fdata(); nvox = int((d > 0).sum()); mx = float(d.max())

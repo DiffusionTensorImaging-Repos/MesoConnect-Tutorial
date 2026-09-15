@@ -1,10 +1,11 @@
 #!/bin/bash
 # Step 3 — Build the corridor: dilate the warped atlas, add seed + target, binarize, invert.
 # The inverted image is a single exclusion mask for tckgen (everything outside the corridor).
-source "$(dirname "$0")/00_config.sh"
+source "$(dirname "$0")/00_config.sh"; start_log "$0"
 DIL=""; for ((i=0;i<DILATE_VOX;i++)); do DIL="$DIL -dilM"; done
 run_one() {
   s=$1; d="$OUT/$s/rois"
+  [[ "$FORCE" = 1 || ! -f "$d/${TRACT}_exclusion_mask.nii.gz" ]] || { echo "== $s corridor exists"; return; }
   [[ -f "$d/${TRACT}_atlas_diff.nii.gz" ]] || { echo "!! $s missing warped atlas"; return; }
   fslmaths "$d/${TRACT}_atlas_diff.nii.gz" $DIL "$d/${TRACT}_atlas_dilated.nii.gz"
   fslmaths "$d/${TRACT}_atlas_dilated.nii.gz" -add "$d/${TRACT}_seed_diff.nii.gz" -add "$d/${TRACT}_target_diff.nii.gz" -bin "$d/${TRACT}_inclusion_zone.nii.gz"

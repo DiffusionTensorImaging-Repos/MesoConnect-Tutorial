@@ -1,6 +1,6 @@
 # =========================================================================
-# IMPACT — Cluster-extent permutation testing (Freedman-Lane)
-# Adapted from the reference vta_hippocampus_substance_use_noddi_permutation_testing.R
+# Node-wise cluster-extent permutation test (Freedman–Lane)
+# Adapted from a reference implementation used in atlas construction
 # =========================================================================
 # Args (positional):
 #   1. data_csv       — path to analysis-ready CSV
@@ -22,9 +22,8 @@ metric_prefix <- args[3]
 out_dir       <- args[4]
 base          <- args[5]
 
-# Adjust covariates per Danny's IMPACT setup
-covariate_cols <- c("ICV", "Mean_tckstats", "Count_tckstats",
-                    "absolute_motion", "maternal_age")
+# Covariates: edit COVARIATES below to match the columns in your analysis CSV
+covariate_cols <- strsplit(Sys.getenv("R_COVARIATES", unset = "ICV,Mean_tckstats,Count_tckstats,absolute_motion,maternal_age"), ",")[[1]]
 
 alpha_node       <- 0.05
 alpha_familywise <- 0.05

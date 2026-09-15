@@ -34,7 +34,7 @@ The corresponding script is [`05_tractography.sh`](pathname:///MesoConnect-Tutor
 | `-stop` | on | Tracking terminates on entering the target. |
 | gradient table | embedded in the `.mif` | `-fslgrad` is omitted when the FOD image was built from a `.mif` containing gradients. |
 
-Streamline count and mean length per participant are recorded for later use as covariates; both index reconstruction quality and vary across participants.
+Streamline count and mean length per participant are written to `$OUT/nodewise/<tract>_tract_stats.csv` for later use as covariates; both index reconstruction quality and vary across participants.
 
 **Table 2.** *Parameters by tract family.*
 

@@ -54,4 +54,4 @@ The corridor workflow does not require these masks. They are listed so that user
 - Contralateral hemisphere, enforcing ipsilateral tracking.
 - Anterior commissure inclusion and exclusion masks, defining the superior and inferior VTA → accumbens divisions.
 
-The region-tidying operations (subtractions and hemisphere divisions) are contained in the reference pipeline script linked from the [scripts page](../reference/scripts).
+The region-tidying operations (subtractions and hemisphere divisions) will be distributed as a script with the full atlas release.

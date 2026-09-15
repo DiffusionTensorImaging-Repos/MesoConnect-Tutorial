@@ -23,7 +23,7 @@ residualised on criterion c), FABias (positive − negative false-alarm rate).
 
 Out: data.check/final_models_summary.csv
 """
-import warnings
+import os, warnings
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
@@ -31,7 +31,7 @@ from scipy.stats import chi2, pearsonr
 
 warnings.filterwarnings('ignore')
 
-BASE = '/Users/dannyzweben/Desktop/SDN/DTI/'
+BASE = os.environ.get('MC_EXAMPLE_ROOT', './example_dataset/')  # root of the example dataset's analysis-ready files
 BIL  = BASE + 'data.check/analysis_ready_bilateral/'
 HPC  = BASE + 'Impact-Analyses/hpc_density_gm.csv'
 VOL  = BASE + 'Impact-Analyses/hpc_volumes.csv'

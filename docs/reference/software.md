@@ -20,7 +20,7 @@ title: "Software"
 
 ## Fibre orientation distribution estimation
 
-When preprocessing ends at the tensor fit, as in the TUBRIC pipeline, the following MRtrix3 commands produce the normalized white-matter FOD image required by the workflow. Response functions are estimated per participant with the unsupervised method of Dhollander et al. (2016), averaged across participants, and used for multi-shell multi-tissue constrained spherical deconvolution (Jeurissen et al., 2014) followed by intensity normalisation (Raffelt et al., 2017).
+When preprocessing ends at the tensor fit, as in the TUBRIC pipeline, the following MRtrix3 commands produce the normalized white-matter FOD image required by the workflow; the script [`00b_fod_estimation.sh`](pathname:///MesoConnect-Tutorial/scripts/00b_fod_estimation.sh) runs them across participants. Response functions are estimated per participant with the unsupervised method of Dhollander et al. (2016), averaged across participants, and used for multi-shell multi-tissue constrained spherical deconvolution (Jeurissen et al., 2014) followed by intensity normalisation (Raffelt et al., 2017).
 
 ```bash
 # 1. conversion with gradients embedded

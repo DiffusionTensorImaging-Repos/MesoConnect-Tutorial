@@ -1,9 +1,10 @@
 #!/bin/bash
 # Step 2 — Warp seed, target and tract atlas from MNI -> T1 (ANTs) -> diffusion (FLIRT).
 # Nearest-neighbour throughout; outputs re-binarized as a safety step.
-source "$(dirname "$0")/00_config.sh"
+source "$(dirname "$0")/00_config.sh"; start_log "$0"
 run_one() {
   s=$1; d="$OUT/$s/rois"; mkdir -p "$d"
+  [[ "$FORCE" = 1 || ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]] || { echo "== $s already warped"; return; }
   t1="$PROJECT/anat/$s/${s}_T1w_brain.nii.gz"; ref="$PROJECT/dwi/$s/nodif_brain_mask.nii.gz"
   warp="$OUT/$s/reg/mni2t1_1Warp.nii.gz"; aff="$OUT/$s/reg/mni2t1_0GenericAffine.mat"; mat="$PROJECT/xfm/$s/str2diff.mat"
   [[ -f "$warp" && -f "$aff" && -f "$ref" ]] || { echo "!! $s missing registration or reference"; return; }

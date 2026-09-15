@@ -15,6 +15,10 @@ export PROJECT="/path/to/project"
 export SUBJECTS_FILE="$PROJECT/subjects.txt"          # one subject ID per line
 export ATLAS_DIR="/path/to/MesoConnectAtlas"           # downloaded atlas + ROI files (MNI 1mm)
 export OUT="$PROJECT/derivatives/mesoconnect"          # everything this workflow writes
+export COVARIATES_CSV="$PROJECT/covariates.csv"        # Subject + covariates + outcomes, one row per participant
+# raw diffusion inputs, used only by 00b (FOD estimation) and 08a (NODDI fit)
+export DWI_NII='$PROJECT/dwi/$s/data.nii.gz'; export BVALS='$PROJECT/dwi/$s/bvals'; export BVECS='$PROJECT/dwi/$s/bvecs'
+export FORCE=0               # 1 = recompute outputs that already exist
 
 # --- tract definition (one tract per run; re-source with different values for another tract) ---
 export TRACT="l_vta_l_hipp"                                   # output name
@@ -35,3 +39,6 @@ export NTHREADS=8
 export MNI_TEMPLATE="$FSLDIR/data/standard/MNI152_T1_1mm_brain.nii.gz"
 export ANTSPATH="${ANTSPATH:-/usr/local/ants/bin}"; export PATH="$ANTSPATH:$PATH"
 export MAXJOBS=8             # parallel subjects for lightweight steps
+
+# --- logging: every step script calls this once after sourcing the config ---
+start_log(){ mkdir -p "$OUT/logs"; exec > >(tee -a "$OUT/logs/$(basename "$1").log") 2>&1; echo "== $(date '+%F %T') $(basename "$1") TRACT=$TRACT =="; }

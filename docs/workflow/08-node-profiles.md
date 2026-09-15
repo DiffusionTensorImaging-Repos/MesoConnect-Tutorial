@@ -26,7 +26,7 @@ Nodes near the ends of the profile (0 to 4 and 95 to 99) lie in or adjacent to g
 
 ## NODDI inputs
 
-NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered b-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
+NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; the script [`08a_noddi_fit.py`](pathname:///MesoConnect-Tutorial/scripts/08a_noddi_fit.py) performs the fit with the settings below. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered b-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
 
 When NODDI is sampled within a gray-matter region (for example the hippocampus), the model should be refitted with the gray-matter intrinsic parallel diffusivity (approximately 1.1 × 10⁻³ mm²/s rather than the white-matter default of 1.7 × 10⁻³). The white-matter fit is not appropriate in gray matter and the two fits can yield different results.
 
@@ -45,6 +45,10 @@ When NODDI is sampled within a gray-matter region (for example the hippocampus),
 ![Anterior NDI](/img/step30_NDI_profile_s1000_anterior_l.png)
 
 *Figure 3.* NDI along the anterior tract for the same participant, sharing the early trajectory and diverging late.
+
+## Analysis file
+
+Inference in step 9 reads a wide file with one row per participant: the covariates and outcomes, the tract's streamline count and mean length from step 5, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script [`08b_build_analysis_csv.py`](pathname:///MesoConnect-Tutorial/scripts/08b_build_analysis_csv.py) builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
 
 ## Verification
 

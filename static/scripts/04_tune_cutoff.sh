@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 4 — Pilot the FOD cutoff on a handful of subjects before the full run.
 # Usage: 04_tune_cutoff.sh "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
-source "$(dirname "$0")/00_config.sh"
+source "$(dirname "$0")/00_config.sh"; start_log "$0"
 PILOT=${1:-"$(head -5 "$SUBJECTS_FILE" | tr '\n' ' ')"}; CUTOFFS=${2:-"0.1 0.08 0.06 0.01"}
 printf "%-10s %-8s %-12s %-12s %-10s\n" Subject Cutoff Streamlines Seeds MeanLen_mm
 for s in $PILOT; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"
