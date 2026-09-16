@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
-title: "1. Registration"
+title: "Step 1. Registration"
 ---
 
 # Step 1. Registration of the MNI template to native T1 space
 
-The atlas and region-of-interest files are defined in MNI space, whereas tractography is performed in each participant's diffusion space. Moving an MNI-space image into a participant therefore requires two transforms: a nonlinear warp from MNI to the participant's T1 image, computed in this step, and a linear transform from T1 to diffusion space, obtained during preprocessing and applied in step 2.
+The atlas and region files are defined in Montreal Neurological Institute (MNI) space, whereas tractography is performed in each participant's diffusion space. Moving an MNI-space image into a participant therefore requires two transforms: a nonlinear warp from MNI to the participant's T1 image, computed in this step, and a linear transform from T1 to diffusion space, obtained during preprocessing and applied in Step 2.
 
-A nonlinear registration is necessary because affine transforms account for global rotation, scaling and shear but not for individual differences in the size and position of subcortical structures. Positional errors of a few millimetres in the midbrain displace the VTA region outside the VTA.
+A nonlinear registration is necessary because affine transforms account for global rotation, scaling and shear but not for individual differences in the size and position of subcortical structures. Positional errors of a few millimetres in the midbrain displace the ventral tegmental area (VTA) region outside the VTA.
 
 ## Procedure
 
@@ -20,13 +20,11 @@ antsRegistrationSyNQuick.sh -d 3 \
   -o "$OUT/$s/reg/mni2t1_" -n 4
 ```
 
-The outputs are the affine component (`mni2t1_0GenericAffine.mat`), the forward warp from MNI to T1 (`mni2t1_1Warp.nii.gz`, used in step 2), the inverse warp from T1 to MNI (`mni2t1_1InverseWarp.nii.gz`, used to return participant-level results to atlas space) and the template resampled into participant space (`mni2t1_Warped.nii.gz`).
+The outputs are the affine component (`mni2t1_0GenericAffine.mat`), the forward warp from MNI to T1 (`mni2t1_1Warp.nii.gz`, used in Step 2), the inverse warp from T1 to MNI (`mni2t1_1InverseWarp.nii.gz`, used to return participant-level results to atlas space) and the template resampled into participant space (`mni2t1_Warped.nii.gz`).
 
 If the T1 image has not been skull-stripped, this should be done first; atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion grid, this warp is the only transform required.
 
-The full script, `01_register_mni_to_t1.sh`, follows; each participant requires approximately 10 to 15 minutes with four threads; the script runs four participants concurrently.
-
-## Script
+The full script follows. Each participant requires approximately 10 to 15 min with four threads, and the script runs four participants concurrently.
 
 <!-- script:01_register_mni_to_t1.sh -->
 ```bash title="01_register_mni_to_t1.sh"
@@ -49,7 +47,6 @@ while read -r s; do d="$OUT/$s/reg"; printf "%s\t%s\t%s\t%s\n" "$s" $( [ -f "$d/
 ```
 <!-- /script:01_register_mni_to_t1.sh -->
 
-
 ## Verification
 
-The script concludes with a per-participant table of the three transform files. Registration quality is assessed by overlaying `mni2t1_Warped.nii.gz` on the participant's T1 image; the ventricles, corpus callosum and brainstem outline should coincide. A registration that is globally acceptable but locally displaced in the midbrain will manifest in step 2 as a misplaced VTA region, so this inspection supplements rather than replaces the region-level inspection described there. In the example dataset all 57 participants produced complete transforms.
+The script concludes with a per-participant table of the three transform files. Registration quality is assessed by overlaying `mni2t1_Warped.nii.gz` on the participant's T1 image; the ventricles, corpus callosum and brainstem outline should coincide. A registration that is globally acceptable but locally displaced in the midbrain will manifest in Step 2 as a misplaced VTA region, so this inspection supplements rather than replaces the region-level inspection described there. In the example dataset all 57 participants produced complete transforms.

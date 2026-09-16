@@ -5,13 +5,13 @@ title: "Explorer"
 
 # Node-wise Tract Explorer
 
-The Node-wise Tract Explorer is a browser-based viewer for node-wise statistical results distributed with this site. Whole-tract and quartile results are tabular and do not require it. It reads a results file in the browser, without uploading it, and presents each analysis as a table row that expands to show the node-wise *t*-value profile, the clusters identified, and, where both hemispheres are present, a left–right comparison.
+The Node-wise Tract Explorer is a browser-based viewer for node-wise statistical results distributed with this site. It reads a results file in the browser, without uploading it, and presents each analysis as a table row that expands to show the node-wise *t*-value profile, the clusters identified, and, where both hemispheres are present, a left–right comparison. Whole-tract and quartile results are tabular and do not require it.
 
 **[Open the Explorer](pathname:///MesoConnect-Tutorial/explorer/)** · [sample file](pathname:///MesoConnect-Tutorial/explorer/sample_results.csv) · [example dataset](pathname:///MesoConnect-Tutorial/explorer/example_results_long.csv)
 
 ## Input format
 
-The input is a long-format CSV with one row per node. Six columns are required: `outcome`, `tract`, `metric`, `node`, `t` and `p`. Optional columns are `hemisphere` (L or R), `N`, `covariates`, `extent_threshold`, `cluster_p` and `passed`. Any additional column is treated as a grouping variable and becomes a filter. The column names produced by `permutation_one.R` (`Node`, `t_value`, `p_value`) are accepted without renaming. The helper script in step 9 produces this file from the permutation outputs.
+The input is a long-format CSV with one row per node. Six columns are required: `outcome`, `tract`, `metric`, `node`, `t` and `p`. Optional columns are `hemisphere` (L or R), `N`, `covariates`, `extent_threshold`, `cluster_p` and `passed`. Any additional column is treated as a grouping variable and becomes a filter. The column names produced by `permutation_one.R` (`Node`, `t_value`, `p_value`) are accepted without renaming. The helper script in Step 9 produces this file from the permutation outputs.
 
 ## Derived quantities
 

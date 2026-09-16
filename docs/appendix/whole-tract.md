@@ -9,7 +9,7 @@ In this approach an atlas map is warped into a participant and a scalar map is a
 
 ## Procedure
 
-The 50% binary map provides a conservative core; the probabilistic map supports probability-weighted extraction. The map is warped to T1 space with the step-1 transforms, using nearest-neighbour interpolation for binary maps and linear interpolation followed by thresholding for probabilistic maps.
+The 50% binary map provides a conservative core; the probabilistic map supports probability-weighted extraction. The map is warped to T1 space with the Step 1 transforms, using nearest-neighbour interpolation for binary maps and linear interpolation followed by thresholding for probabilistic maps.
 
 ```bash
 antsApplyTransforms -d 3 -i "$ATLAS_PROB" -r "$T1" -o prob_in_T1.nii.gz \
@@ -26,4 +26,4 @@ fslstats "$NDI" -k mask_on_scalar_grid.nii.gz -M -S       # mean, SD
 
 ## Reporting
 
-For multi-shell data with a NODDI fit, NDI is generally preferred to FA as a whole-tract summary. It remains a model-derived quantity sensitive to partial volume, registration and mask boundaries, and should be reported with covariates for age, sex, motion, intracranial volume and whole-white-matter NDI and described as a summary measure.
+For multi-shell data with a fitted neurite orientation dispersion and density imaging (NODDI) model, the neurite density index (NDI) is generally preferred to fractional anisotropy (FA) as a whole-tract summary. It remains a model-derived quantity sensitive to partial volume, registration and mask boundaries, and should be reported with covariates for age, sex, motion, intracranial volume and whole-white-matter NDI and described as a summary measure.

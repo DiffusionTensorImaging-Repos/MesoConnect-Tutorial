@@ -1,22 +1,24 @@
 ---
 sidebar_position: 7
-title: "6. Bundle cleaning"
+title: "Step 6. Bundle cleaning"
 ---
 
 # Step 6. Bundle cleaning
 
-Some streamlines within the corridor follow atypical trajectories. Cleaning is performed with `clean_bundle` from pyAFQ (Kruper et al., 2021), which implements the procedure of Yeatman et al. (2012): each streamline is resampled to 100 points, its Mahalanobis distance from the bundle's mean trajectory is computed, and streamlines exceeding a distance threshold or a length threshold are removed iteratively.
+Some streamlines within the corridor follow atypical trajectories. Cleaning is performed with `clean_bundle` from pyAFQ (Kruper et al., 2021), which implements the procedure of Yeatman et al. (2012): each streamline is resampled to 100 points, its Mahalanobis distance from the bundle's mean trajectory is computed, and streamlines exceeding a distance threshold or a length threshold are removed iteratively (Table 1).
 
 ## Procedure
 
-**Table 1.** *Cleaning parameters.*
+**Table 1**
+
+*Cleaning Parameters*
 
 | Parameter | Value | Meaning |
 |---|---|---|
 | `n_points` | 100 | Resampling prior to comparison. |
 | `clean_rounds` | 5 | Maximum iterations; stops earlier when no streamlines are removed. |
-| `distance_threshold` | 3 | Streamlines more than 3 SD (Mahalanobis) from the bundle centroid are removed. |
-| `length_threshold` | 2 | Streamlines more than 2 SD from the mean length are removed. |
+| `distance_threshold` | 3 | Streamlines more than 3 *SD* (Mahalanobis) from the bundle centroid are removed. |
+| `length_threshold` | 2 | Streamlines more than 2 *SD* from the mean length are removed. |
 | `stat` | `mean` | Centroid statistic. |
 
 ```python
@@ -26,9 +28,7 @@ cleaned, keep = clean_bundle(sft, n_points=100, clean_rounds=5,
                              stat="mean", return_idx=True)
 ```
 
-The full script, `06_clean_bundles.py`, follows. It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
-
-## Script
+The full script follows. It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
 
 <!-- script:06_clean_bundles.py -->
 ```python title="06_clean_bundles.py"
@@ -80,18 +80,25 @@ print("DONE")
 ```
 <!-- /script:06_clean_bundles.py -->
 
-
 ## Retention
 
-In the example dataset, cleaning retained 26% to 58% of streamlines (M = 39%), with a minimum cleaned count of 659. These values are typical for the thresholds in Table 1, and every participant retained several hundred streamlines. Figures 1 and 2 present the comparison referred to in step 4: the cleaned 0.01 bundle is more compact than the uncleaned 0.06 bundle, with length standard deviations of approximately 3.5 to 4.5 mm for cleaned bundles against 5 to 7 mm for either uncleaned condition.
+In the example dataset, cleaning retained 26% to 58% of streamlines (*M* = 39%), with a minimum cleaned count of 659. These values are typical for the thresholds in Table 1, and every participant retained several hundred streamlines. Figures 1 and 2 present the comparison referred to in Step 4: the cleaned 0.01 bundle is more compact than the uncleaned 0.06 bundle, with length standard deviations of approximately 3.5 to 4.5 mm for cleaned bundles against 5 to 7 mm for either uncleaned condition.
 
-![Three-way comparison](/img/cleaned_compare_s169_l.png)
+**Figure 1**
 
-*Figure 1.* Left: cutoff 0.06, uncleaned (1,000 streamlines). Middle: cutoff 0.01, uncleaned (2,500). Right: cutoff 0.01, cleaned (824). One participant, left posterior VTA → hippocampus.
+*Effect of Cutoff and Cleaning on One Bundle*
 
-![Cleaned statistics](/img/cleaned_stats_comparison.png)
+![Three-way comparison of cutoff and cleaning](/img/cleaned_compare_s169_l.png)
 
-*Figure 2.* Standard deviation of streamline length by condition across the five pilot participants; cleaned 0.01 in green.
+*Note.* Left: cutoff 0.06, uncleaned (1,000 streamlines). Middle: cutoff 0.01, uncleaned (2,500). Right: cutoff 0.01, cleaned (824). One participant, left posterior VTA → hippocampus. VTA = ventral tegmental area.
+
+**Figure 2**
+
+*Standard Deviation of Streamline Length by Condition Across the Five Pilot Participants*
+
+![Length standard deviation by condition](/img/cleaned_stats_comparison.png)
+
+*Note.* Cleaned 0.01 in green.
 
 ## Tracts with two bundles
 

@@ -9,7 +9,7 @@ This approach is intended for studies that require along-tract profiles but cann
 
 ## Procedure
 
-The probabilistic map is warped onto the scalar grid with linear interpolation and thresholded, at 50% for a conservative core or 25% when the core is short or discontinuous; lower thresholds require justification. The scaffold is built from the mask, the probability map, and native-space start and end regions, with node 0 assigned to the seed side and node 99 to the target side for every participant; an image of the node ordering is saved. Each scalar map is sampled at every node using pyAFQ, DIPY or a custom function, producing one row per participant, tract, metric and node in the long format read by the Explorer. Modelling proceeds as in step 9 of the main workflow, with cluster or permutation correction.
+The probabilistic map is warped onto the scalar grid with linear interpolation and thresholded, at 50% for a conservative core or 25% when the core is short or discontinuous; lower thresholds require justification. The scaffold is built from the mask, the probability map, and native-space start and end regions, with node 0 assigned to the seed side and node 99 to the target side for every participant; an image of the node ordering is saved. Each scalar map is sampled at every node using pyAFQ, DIPY or a custom function, producing one row per participant, tract, metric and node in the long format read by the Explorer. Modelling proceeds as in Step 9 of the main workflow, with cluster or permutation correction.
 
 ## Reporting
 

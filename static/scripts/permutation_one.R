@@ -22,7 +22,7 @@ metric_prefix <- args[3]
 out_dir       <- args[4]
 base          <- args[5]
 
-# Covariates: edit COVARIATES below to match the columns in your analysis CSV
+# Covariates: set R_COVARIATES (comma-separated) to match the columns in the analysis CSV
 covariate_cols <- strsplit(Sys.getenv("R_COVARIATES", unset = "ICV,Mean_tckstats,Count_tckstats,absolute_motion,maternal_age"), ",")[[1]]
 
 alpha_node       <- 0.05

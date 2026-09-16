@@ -27,7 +27,7 @@ const ChartIcon = () => (<svg {...iconProps} aria-hidden="true"><path d="M3 3v18
 type FeatureItem = {title: string; icon: ReactNode; description: ReactNode; link: string; linkText: string; external?: boolean};
 const FEATURES: FeatureItem[] = [
   {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, the seed and target regions, and their sources.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
-  {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps from registration through corridor-constrained tractography, bundle cleaning, quality control, along-tract profiling and group-level inference, with verification criteria and results from an example dataset.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
+  {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps: registration, region warping, corridor construction, cutoff selection, tractography, bundle cleaning, quality control, along-tract profiling and group-level inference. Each step gives the procedure, the full script, verification criteria and results from an example dataset.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
   {title: 'Node-wise Tract Explorer', icon: <ChartIcon/>, description: <>A browser-based viewer for along-tract results. It reads a results file locally and presents t-value profiles, clusters and the left–right comparison for each analysis.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
 ];
 

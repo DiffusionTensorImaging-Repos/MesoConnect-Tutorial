@@ -5,15 +5,15 @@ title: "Tract families and regions of interest"
 
 # Tract families and regions of interest
 
-The atlas contains ten tract families. Each is processed with the same nine-step workflow; the seed, target and atlas file differ per family. The exclusion masks used during atlas construction are already reflected in each atlas corridor and are listed here so that users can anticipate where a reconstruction may leak when the corridor is dilated too far.
+The atlas contains 10 tract families (Table 1). Each is processed with the same nine-step workflow; the seed, target and atlas file differ per family. The exclusion masks used during atlas construction are already reflected in each atlas corridor. They are listed here so that users can anticipate where a reconstruction may leak when the corridor is dilated too far. Throughout, the ventral tegmental area is abbreviated VTA and a region of interest is abbreviated ROI.
 
-## Families
+**Table 1**
 
-**Table 1.** *Tract families in the MesoConnect Atlas.*
+*Tract Families in the MesoConnect Atlas*
 
 | Family | Files (left / right) | Seed | Target | Construction notes |
 |---|---|---|---|---|
-| VTA → posterior (body) hippocampus | `l_vta_l_hipp`, `r_vta_r_hipp` | VTA | hippocampus | Exclusions: fornix, optic tract and nerve, amygdala, ventral pallidum, accumbens, dorsal striatum, thalamus, cortex and cerebellum, brainstem inferior to the VTA, red nucleus, contralateral hemisphere. A ventral secondary bundle occurs in some participants (see bundle cleaning). |
+| VTA → posterior (body) hippocampus | `l_vta_l_hipp`, `r_vta_r_hipp` | VTA | hippocampus | Exclusions: fornix, optic tract and nerve, amygdala, ventral pallidum, accumbens, dorsal striatum, thalamus, cortex and cerebellum, brainstem inferior to the VTA, red nucleus, contralateral hemisphere. A ventral secondary bundle occurs in some participants (see Step 6). |
 | VTA → anterior hippocampus | `anterior_l_vta_l_hipp`, `anterior_r_vta_r_hipp` | VTA | hippocampus | Shares its course with the posterior tract for approximately the first 60 to 80 of 100 nodes. Same exclusions. |
 | VTA → amygdala | `l_vta_l_amygdala`, `r_vta_r_amygdala` | VTA | amygdala (hippocampus subtracted) | Optic tract exclusion is required. Fornix excluded. |
 | Superior VTA → nucleus accumbens | `superior_l_vta_l_accumbens`, `superior_r_vta_r_accumbens` | VTA | accumbens (ventral pallidum subtracted) | Superior and inferior divisions are defined by anterior-commissure inclusion and exclusion masks. |
@@ -24,22 +24,26 @@ The atlas contains ten tract families. Each is processed with the same nine-step
 | Precommissural fornix | TractSeg fornix ∩ hippocampus–accumbens overlap | | | Derived map, not a corridor target. Currently on an HCP 1.05 mm grid; resample before use. |
 | Postcommissural fornix | TractSeg fornix minus hippocampus–accumbens overlap | | | As above. |
 
-The example dataset covers the first two families. The [downloads page](downloads) lists the files packaged with this site.
+*Note.* HCP = Human Connectome Project. The example dataset covers the first two families; the [downloads page](downloads) lists the files distributed with this site.
 
 ## Regions of interest
 
-Seeds and targets are derived from published atlases, thresholded and binarized in MNI 1 mm space (Table 2). Where a source cannot be redistributed, the region should be rebuilt from the source and the source cited.
+Seeds and targets are derived from published atlases, thresholded and binarized in Montreal Neurological Institute (MNI) 1 mm space (Table 2). Where a source cannot be redistributed, the region should be rebuilt from the source and the source cited.
 
-**Table 2.** *Region-of-interest sources and preparation.*
+**Table 2**
+
+*Sources and Preparation of the Regions of Interest*
 
 | Region | Source | File stem | Preparation |
 |---|---|---|---|
-| VTA | Trutti et al. (2021) 7 T probabilistic VTA atlas, 25% threshold | `left_VTA_0.25_bin`, `right_VTA_0.25_bin` | Red nucleus subtracted where overlapping. The VTA is also subtracted from the lateral hypothalamus and mammillary body exclusion masks. |
+| VTA | 7 T probabilistic VTA atlas (Trutti et al., 2021), 25% threshold | `left_VTA_0.25_bin`, `right_VTA_0.25_bin` | Red nucleus subtracted where overlapping. The VTA is also subtracted from the lateral hypothalamus and mammillary body exclusion masks. |
 | Hippocampus | Harvard–Oxford subcortical atlas (Frazier et al., 2005; Makris et al., 2006), 50% threshold | `HPC_L_0.5_bin`, `HPC_R_0.5_bin` | |
 | Amygdala | Harvard–Oxford subcortical atlas, 50% threshold | `amygdala_0.5_bin` → `left_amygdala_bin`, `right_amygdala_bin` | Hippocampus subtracted; divided by hemisphere masks. |
-| Nucleus accumbens (limbic striatum) | Tziortzi et al. (2014) connectivity-based striatal parcellation, or FSL accumbens | `left_accumbens_bin`, `right_accumbens_bin` | Ventral pallidum subtracted. |
-| Ventral pallidum | Pauli et al. (2018) subcortical atlas | `ventral_pallidum_bin` → `left_`, `right_` | Divided by hemisphere masks. |
-| SN/VTA (alternative) | Murty et al. (2014) functional–anatomical SN/VTA masks | | Comparison resource for the dopaminergic midbrain. |
+| Nucleus accumbens (limbic striatum) | Connectivity-based striatal parcellation (Tziortzi et al., 2014), or FSL accumbens | `left_accumbens_bin`, `right_accumbens_bin` | Ventral pallidum subtracted. |
+| Ventral pallidum | Subcortical atlas (Pauli et al., 2018) | `ventral_pallidum_bin` → `left_`, `right_` | Divided by hemisphere masks. |
+| SN/VTA (alternative) | Functional–anatomical SN/VTA masks (Murty et al., 2014) | | Comparison resource for the dopaminergic midbrain. |
+
+*Note.* SN = substantia nigra.
 
 ## Exclusion masks used during atlas construction
 

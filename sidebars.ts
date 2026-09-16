@@ -9,7 +9,7 @@ const sidebars: SidebarsConfig = {
       'workflow/node-profiles', 'workflow/nodewise-stats']},
     'explorer',
     {type: 'category', label: 'Alternative approaches', items: ['appendix/whole-tract', 'appendix/synthetic-streamlines']},
-    {type: 'category', label: 'Reference', items: ['reference/parameters', 'reference/troubleshooting', 'reference/software', 'reference/scripts', 'reference/citation', 'reference/references']},
+    {type: 'category', label: 'Reference', items: ['reference/parameters', 'reference/troubleshooting', 'reference/software', 'reference/scripts', 'reference/abbreviations', 'reference/citation', 'reference/references']},
   ],
 };
 export default sidebars;

@@ -5,14 +5,16 @@ title: "Scripts"
 
 # Scripts
 
-Each script appears in full on the workflow page for its step. This page lists the set. All scripts read a single configuration file, `00_config.sh`, which is edited once per project; the scripts are then run in the order shown. Each step script writes a log to `$OUT/logs/`, skips participants whose output already exists (set `FORCE=1` to recompute), and reports missing inputs by participant.
+Each script appears in full on the workflow page for its step. Table 1 lists the set in run order. All scripts read a single configuration file, `00_config.sh`, which is edited once per project; each step script writes a log to `$OUT/logs/`, skips participants whose output already exists (`FORCE=1` recomputes), and reports missing inputs by participant.
 
-**Table 1.** *Scripts, in run order.*
+**Table 1**
+
+*Scripts, in Run Order*
 
 | File | Step | Language |
 |---|---|---|
 | `00_config.sh` | Project paths, tract definition, parameters | bash |
-| `00b_fod_estimation.sh` | 0, FOD estimation when preprocessing ended at the tensor | bash, MRtrix3 |
+| `00b_fod_estimation.sh` | 0, fibre orientation distribution estimation when preprocessing ended at the tensor | bash, MRtrix3 |
 | `01_register_mni_to_t1.sh` | 1 | bash, ANTs |
 | `02_warp_rois.sh` | 2 | bash, ANTs, FSL |
 | `03_build_corridor_mask.sh` | 3 | bash, FSL |
@@ -27,6 +29,8 @@ Each script appears in full on the workflow page for its step. This page lists t
 | `permutation_one.R` | 9 | R |
 | `09_stack_for_explorer.py` | 9, Explorer input | Python |
 | `final_models.py` | Whole-tract, quartile and subregion models for the example dataset | Python, statsmodels |
+
+*Note.* NODDI = neurite orientation dispersion and density imaging.
 
 The complete set can be retrieved with the following command.
 

@@ -7,9 +7,11 @@ title: "Downloads"
 
 ## Files distributed with this site
 
-The VTA → hippocampus files used for the example dataset are available below. All files are in FSL MNI152 1 mm space and are binary unless stated otherwise.
+The ventral tegmental area (VTA) → hippocampus files used for the example dataset are listed in Table 1. All files are in Montreal Neurological Institute (MNI) space on the FSL MNI152 1 mm grid and are binary unless stated otherwise.
 
-**Table 1.** *Atlas and region-of-interest files distributed with this site.*
+**Table 1**
+
+*Atlas and Region Files Distributed With This Site*
 
 | File | Contents |
 |---|---|
@@ -33,7 +35,7 @@ done
 
 ## Full release
 
-The complete atlas package will follow the layout below and will be archived with a versioned DOI. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors in the interim.
+The complete atlas package will follow the layout below and will be archived with a versioned digital object identifier. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors in the interim.
 
 ```
 MesoConnectAtlas_v1.0/
@@ -54,6 +56,6 @@ MesoConnectAtlas_v1.0/
 - Pauli et al. (2018): subcortical atlas including ventral pallidum, VTA and substantia nigra.
 - Harvard–Oxford subcortical atlas (Frazier et al., 2005; Makris et al., 2006), distributed with FSL: hippocampus, amygdala, accumbens, caudate, putamen, thalamus.
 - Tziortzi et al. (2014): connectivity-based striatal parcellation; limbic striatum as an accumbens definition.
-- Murty et al. (2014): functional–anatomical SN/VTA masks.
+- Murty et al. (2014): functional–anatomical substantia nigra/VTA masks.
 - TractSeg (Wasserthal et al., 2018): fornix and major white-matter tracts.
 - MNI152 templates (FSL, `$FSLDIR/data/standard`): the 1 mm brain image and brain mask used for registration.

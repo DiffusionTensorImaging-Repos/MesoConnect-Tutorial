@@ -3,7 +3,7 @@
 # MesoConnect corridor workflow — shared configuration
 # ============================================================
 # Source this file at the top of every step script:  source 00_config.sh
-# Edit ONLY this file to point the workflow at your project.
+# Edit ONLY this file to point the workflow at the project.
 # ------------------------------------------------------------
 # Project root. Expected layout (per subject):
 #   $PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz        skull-stripped T1

@@ -1,11 +1,11 @@
 ---
 sidebar_position: 9
-title: "8. Node profiles"
+title: "Step 8. Node profiles"
 ---
 
 # Step 8. Along-tract profiles
 
-Each cleaned bundle is converted to a 100-point profile of a scalar map: fractional anisotropy from the tensor fit, the neurite density index (NDI), orientation dispersion index (ODI) and free-water fraction (FWF) from NODDI (Zhang et al., 2012), or any other map on the diffusion grid. Profiling follows the tract-profile approach of Yeatman et al. (2012) as implemented in DIPY (Garyfallidis et al., 2014).
+Each cleaned bundle is converted to a 100-point profile of a scalar map: fractional anisotropy (FA) from the tensor fit; the neurite density index (NDI), orientation dispersion index (ODI) and free-water fraction (FWF) from neurite orientation dispersion and density imaging (NODDI; Zhang et al., 2012); or any other map on the diffusion grid. Profiling follows the tract-profile approach of Yeatman et al. (2012) as implemented in DIPY (Garyfallidis et al., 2014).
 
 Two operations make profiles comparable across participants. First, because streamlines from `tckgen` run in either direction, each bundle is oriented against a QuickBundles centroid (Garyfallidis et al., 2012; `threshold=np.inf`, yielding one cluster) so that node 0 corresponds to the seed end and node 99 to the target end. The orientation should be confirmed once per tract by locating endpoint features in the profile. Second, `afq_profile` with `gaussian_weights` weights each streamline's contribution at a node by its Mahalanobis distance from the bundle core, reducing the influence of outlying streamlines.
 
@@ -18,50 +18,7 @@ w = dsa.gaussian_weights(oriented)
 profile = dsa.afq_profile(data, oriented, affine, nb_points=100, weights=w)
 ```
 
-The full script, `08_node_profiles.py`, follows. The `METRICS` dictionary specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 minutes.
-
-## Scripts
-
-<!-- script:08a_noddi_fit.py -->
-```python title="08a_noddi_fit.py"
-#!/usr/bin/env python3
-"""Step 8a — NODDI fit with AMICO (run before step 8 if NODDI maps are wanted).
-
-Writes $PROJECT/noddi/<subj>/fit_{NDI,ODI,FWF}.nii.gz plus fit_NDI_modulated / fit_ODI_modulated
-(tissue-weighted partial-volume correction) and fit_RMSE.  Kernels are generated once; run this
-script serially for the first participant before starting parallel jobs so that concurrent runs do
-not regenerate the shared kernel directory.  Set NODDI_DPAR=1.1e-3 to refit for gray-matter ROIs
-(white-matter default 1.7e-3).
-"""
-import os, sys
-from pathlib import Path
-import amico
-
-PROJECT = Path(os.environ["PROJECT"]); subjects = [l.strip() for l in open(os.environ["SUBJECTS_FILE"]) if l.strip()]
-if len(sys.argv) > 1: subjects = sys.argv[1:]
-nthreads = int(os.environ.get("NODDI_NTHREADS", "4")); dpar = os.environ.get("NODDI_DPAR")
-os.environ["OPENBLAS_NUM_THREADS"] = os.environ["OMP_NUM_THREADS"] = str(nthreads)
-study = PROJECT / "noddi"; study.mkdir(exist_ok=True); amico.core.setup()
-
-for s in subjects:
-    d = PROJECT / "dwi" / s; out = study / s; out.mkdir(exist_ok=True)
-    if os.environ.get("FORCE", "0") != "1" and (out / "fit_NDI_modulated.nii.gz").exists(): print(f"[{s}] exists"); continue
-    dwi = Path(os.path.expandvars(os.environ.get("DWI_NII", "$PROJECT/dwi/$s/data.nii.gz").replace("$s", s)))
-    bval = Path(os.path.expandvars(os.environ.get("BVALS", "$PROJECT/dwi/$s/bvals").replace("$s", s)))
-    bvec = Path(os.path.expandvars(os.environ.get("BVECS", "$PROJECT/dwi/$s/bvecs").replace("$s", s)))
-    mask = d / "nodif_brain_mask.nii.gz"
-    if not all(p.exists() for p in (dwi, bval, bvec, mask)): print(f"[{s}] SKIP missing inputs"); continue
-    scheme = out / f"{s}.scheme"; amico.util.fsl2scheme(str(bval), str(bvec), str(scheme), bStep=200)
-    ae = amico.Evaluation(str(study), s, output_path=str(out))
-    ae.set_config("doSaveModulatedMaps", True); ae.set_config("doComputeRMSE", True); ae.set_config("BLAS_nthreads", 1)
-    ae.load_data(str(dwi), str(scheme), mask_filename=str(mask), b0_thr=100)
-    ae.set_model("NODDI")
-    if dpar: ae.model.set(float(dpar), 3.0e-3, ae.model.IC_VFs, ae.model.IC_ODs, False)   # dPar, dIso, IC volume fractions, ODs, isExvivo
-    ae.generate_kernels(regenerate=False); ae.load_kernels(); ae.fit(); ae.save_results()
-    print(f"[{s}] done")
-print("DONE ->", study)
-```
-<!-- /script:08a_noddi_fit.py -->
+The `METRICS` dictionary in the script specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 min.
 
 <!-- script:08_node_profiles.py -->
 ```python title="08_node_profiles.py"
@@ -116,6 +73,61 @@ print("DONE ->", out_dir)
 ```
 <!-- /script:08_node_profiles.py -->
 
+## Node range
+
+Nodes near the ends of the profile (0 to 4 and 95 to 99) lie in or adjacent to gray matter and are affected by partial-volume contamination from the seed and target regions. Deep white matter spans approximately nodes 25 to 75. Whether end nodes are trimmed should be decided before modelling.
+
+## NODDI inputs
+
+NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; the script `08a_noddi_fit.py`, shown below, performs the fit. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered *b*-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
+
+When NODDI is sampled within a gray-matter region (for example the hippocampus), the model should be refitted with the gray-matter intrinsic parallel diffusivity (approximately 1.1 × 10⁻³ mm²/s rather than the white-matter default of 1.7 × 10⁻³ mm²/s). The white-matter fit is not appropriate in gray matter and the two fits can yield different results.
+
+<!-- script:08a_noddi_fit.py -->
+```python title="08a_noddi_fit.py"
+#!/usr/bin/env python3
+"""Step 8a — NODDI fit with AMICO (run before step 8 if NODDI maps are wanted).
+
+Writes $PROJECT/noddi/<subj>/fit_{NDI,ODI,FWF}.nii.gz plus fit_NDI_modulated / fit_ODI_modulated
+(tissue-weighted partial-volume correction) and fit_RMSE.  Kernels are generated once; run this
+script serially for the first participant before starting parallel jobs so that concurrent runs do
+not regenerate the shared kernel directory.  Set NODDI_DPAR=1.1e-3 to refit for gray-matter ROIs
+(white-matter default 1.7e-3).
+"""
+import os, sys
+from pathlib import Path
+import amico
+
+PROJECT = Path(os.environ["PROJECT"]); subjects = [l.strip() for l in open(os.environ["SUBJECTS_FILE"]) if l.strip()]
+if len(sys.argv) > 1: subjects = sys.argv[1:]
+nthreads = int(os.environ.get("NODDI_NTHREADS", "4")); dpar = os.environ.get("NODDI_DPAR")
+os.environ["OPENBLAS_NUM_THREADS"] = os.environ["OMP_NUM_THREADS"] = str(nthreads)
+study = PROJECT / "noddi"; study.mkdir(exist_ok=True); amico.core.setup()
+
+for s in subjects:
+    d = PROJECT / "dwi" / s; out = study / s; out.mkdir(exist_ok=True)
+    if os.environ.get("FORCE", "0") != "1" and (out / "fit_NDI_modulated.nii.gz").exists(): print(f"[{s}] exists"); continue
+    dwi = Path(os.path.expandvars(os.environ.get("DWI_NII", "$PROJECT/dwi/$s/data.nii.gz").replace("$s", s)))
+    bval = Path(os.path.expandvars(os.environ.get("BVALS", "$PROJECT/dwi/$s/bvals").replace("$s", s)))
+    bvec = Path(os.path.expandvars(os.environ.get("BVECS", "$PROJECT/dwi/$s/bvecs").replace("$s", s)))
+    mask = d / "nodif_brain_mask.nii.gz"
+    if not all(p.exists() for p in (dwi, bval, bvec, mask)): print(f"[{s}] SKIP missing inputs"); continue
+    scheme = out / f"{s}.scheme"; amico.util.fsl2scheme(str(bval), str(bvec), str(scheme), bStep=200)
+    ae = amico.Evaluation(str(study), s, output_path=str(out))
+    ae.set_config("doSaveModulatedMaps", True); ae.set_config("doComputeRMSE", True); ae.set_config("BLAS_nthreads", 1)
+    ae.load_data(str(dwi), str(scheme), mask_filename=str(mask), b0_thr=100)
+    ae.set_model("NODDI")
+    if dpar: ae.model.set(float(dpar), 3.0e-3, ae.model.IC_VFs, ae.model.IC_ODs, False)   # dPar, dIso, IC volume fractions, ODs, isExvivo
+    ae.generate_kernels(regenerate=False); ae.load_kernels(); ae.fit(); ae.save_results()
+    print(f"[{s}] done")
+print("DONE ->", study)
+```
+<!-- /script:08a_noddi_fit.py -->
+
+## Analysis file
+
+Inference in Step 9 reads a wide file with one row per participant: the covariates and outcomes, the tract's streamline count and mean length from Step 5, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script `08b_build_analysis_csv.py`, shown below, builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
+
 <!-- script:08b_build_analysis_csv.py -->
 ```python title="08b_build_analysis_csv.py"
 #!/usr/bin/env python3
@@ -147,39 +159,38 @@ print("Then, per outcome:  Rscript permutation_one.R <analysis.csv> <outcome> <M
 ```
 <!-- /script:08b_build_analysis_csv.py -->
 
-
-## Node range
-
-Nodes near the ends of the profile (0 to 4 and 95 to 99) lie in or adjacent to gray matter and are affected by partial-volume contamination from the seed and target regions. Deep white matter spans approximately nodes 25 to 75. Whether end nodes are trimmed should be decided before modelling.
-
-## NODDI inputs
-
-NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; the script `08a_noddi_fit.py` performs the fit with the settings below. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered b-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
-
-When NODDI is sampled within a gray-matter region (for example the hippocampus), the model should be refitted with the gray-matter intrinsic parallel diffusivity (approximately 1.1 × 10⁻³ mm²/s rather than the white-matter default of 1.7 × 10⁻³). The white-matter fit is not appropriate in gray matter and the two fits can yield different results.
-
 ## Example profiles
+
+Figures 1 to 3 show profiles from one participant in the example dataset.
+
+**Figure 1**
+
+*Fractional Anisotropy Along the Left Posterior VTA → Hippocampus Tract*
 
 ![FA profile](/img/step27_fa_profile_s1000_posterior_l.png)
 
-*Figure 1.* Fractional anisotropy along the left posterior VTA → hippocampus tract, one participant. FA peaks in deep white matter and declines toward the hippocampal end.
+*Note.* FA peaks in deep white matter and declines toward the hippocampal end. VTA = ventral tegmental area.
 
-![NDI](/img/step30_NDI_profile_s1000_posterior_l.png)
-![ODI](/img/step30_ODI_profile_s1000_posterior_l.png)
-![FWF](/img/step30_FWF_profile_s1000_posterior_l.png)
+**Figure 2**
 
-*Figure 2.* NDI (top), ODI (middle) and FWF (bottom) for the same bundle. NDI is high near the VTA and increases again toward the hippocampus; ODI is higher at both ends where fibres fan; FWF rises sharply at the hippocampal end adjacent to cerebrospinal fluid.
+*NODDI Indices Along the Same Bundle*
 
-![Anterior NDI](/img/step30_NDI_profile_s1000_anterior_l.png)
+![NDI profile](/img/step30_NDI_profile_s1000_posterior_l.png)
+![ODI profile](/img/step30_ODI_profile_s1000_posterior_l.png)
+![FWF profile](/img/step30_FWF_profile_s1000_posterior_l.png)
 
-*Figure 3.* NDI along the anterior tract for the same participant, sharing the early trajectory and diverging late.
+*Note.* NDI (top), ODI (middle) and FWF (bottom). NDI is high near the VTA and increases again toward the hippocampus; ODI is higher at both ends where fibres fan; FWF rises sharply at the hippocampal end adjacent to cerebrospinal fluid.
 
-## Analysis file
+**Figure 3**
 
-Inference in step 9 reads a wide file with one row per participant: the covariates and outcomes, the tract's streamline count and mean length from step 5, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script `08b_build_analysis_csv.py` builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
+*NDI Along the Anterior Tract for the Same Participant*
+
+![NDI profile, anterior tract](/img/step30_NDI_profile_s1000_anterior_l.png)
+
+*Note.* The anterior tract shares the early trajectory and diverges late.
 
 ## Verification
 
 The row count of each CSV should equal the number of participants × 100. In the example dataset every tract and metric produced 5,700 rows with no skipped participants.
 
-When both hemispheres are processed, alignment should be confirmed before averaging. The across-participant correlation between node *i* on the left and node *i* on the right is strongly positive when the profiles are aligned (approximately +.98 in the example dataset) and strongly negative when one side is reversed. Mid-tract averages (nodes 25 to 74) correlated across hemispheres at approximately .8 to .9 for NDI and ODI and .5 for FA.
+When both hemispheres are processed, alignment should be confirmed before averaging. The across-participant correlation between node *i* on the left and node *i* on the right is strongly positive when the profiles are aligned (approximately *r* = .98 in the example dataset) and strongly negative when one side is reversed. Mid-tract averages (nodes 25 to 74) correlated across hemispheres at approximately *r* = .80 to .90 for NDI and ODI and *r* = .50 for FA.
