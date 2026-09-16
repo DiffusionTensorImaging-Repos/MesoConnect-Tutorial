@@ -21,4 +21,4 @@ From the node rows the viewer derives the number of significant nodes, clusters 
 
 Selecting a row shows the *t*-value profile with a labelled axis and reference lines at ±2, significant nodes highlighted, retained clusters shaded, and a cluster table. For lateralized data the left and right profiles are drawn on a common axis so that both hemispheres' full *t*-value profiles are visible. The hemisphere panel is descriptive: it reports the number of significant nodes per side and their overlap and does not constitute a test of lateralization.
 
-Page labels may be supplied in the URL (`?title=…&method=Freedman–Lane&node0=VTA&node1=hippocampus&n_perms=5000`), and `?data=URL` loads a hosted file directly.
+Page labels may be supplied in the URL, for example `?title=…&method=Freedman–Lane&node0=VTA&node1=hippocampus&n_perms=5000` for a ventral tegmental area (VTA) → hippocampus analysis, and `?data=URL` loads a hosted file directly.

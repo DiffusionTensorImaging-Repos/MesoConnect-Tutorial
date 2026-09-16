@@ -1,6 +1,6 @@
 #!/bin/bash
-# Step 1 — Nonlinear registration, MNI template -> subject T1 (ANTs SyN).
-# Produces the inverse warp needed to bring MNI-space atlas files into each subject.
+# Step 1 — Nonlinear registration, MNI template -> participant T1 (ANTs SyN).
+# Produces the inverse warp needed to bring MNI-space atlas files into each participant.
 source "$(dirname "$0")/00_config.sh"; start_log "$0"
 run_one() {
   s=$1; t1="$PROJECT/anat/$s/${s}_T1w_brain.nii.gz"; d="$OUT/$s/reg"; mkdir -p "$d"

@@ -53,11 +53,11 @@ for (cc in covariate_cols) dat[[cc]] <- as.numeric(dat[[cc]])
 all_model_cols <- c(response_col, covariate_cols, node_cols)
 mask <- complete.cases(dat[, all_model_cols])
 n_dropped <- sum(!mask)
-if (n_dropped) message("Dropping ", n_dropped, " incomplete subjects")
+if (n_dropped) message("Dropping ", n_dropped, " incomplete participants")
 dat <- dat[mask, , drop = FALSE]
 n_subj <- nrow(dat)
 if (n_subj < 5) {
-  message("Fewer than 5 complete subjects (", n_subj, ") — skipping ", base)
+  message("Fewer than 5 complete participants (", n_subj, ") — skipping ", base)
   quit(status = 0)
 }
 

@@ -63,7 +63,7 @@ for s in PILOT:
 
 with open(qc / "cutoff_summary.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
-# summary chart: streamline count, seeds used, length SD per cutoff (mean over pilot subjects)
+# summary chart: streamline count, seeds used, length SD per cutoff (mean over pilot participants)
 import collections
 agg = collections.defaultdict(lambda: collections.defaultdict(list))
 for r in rows:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Step 5 — Full corridor-constrained tractography for every subject.
+# Step 5 — Full corridor-constrained tractography for every participant.
 source "$(dirname "$0")/00_config.sh"; start_log "$0"
 mkdir -p "$OUT/nodewise"; STATS="$OUT/nodewise/${TRACT}_tract_stats.csv"; [[ -f "$STATS" ]] || echo "Subject,Count_tckstats,Mean_tckstats" > "$STATS"
 while read -r s; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"

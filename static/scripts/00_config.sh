@@ -5,7 +5,7 @@
 # Source this file at the top of every step script:  source 00_config.sh
 # Edit ONLY this file to point the workflow at the project.
 # ------------------------------------------------------------
-# Project root. Expected layout (per subject):
+# Project root. Expected layout (per participant):
 #   $PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz        skull-stripped T1
 #   $PROJECT/dwi/<subj>/wm_fod_norm.mif                  normalized WM FOD (MRtrix)
 #   $PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz          diffusion-space brain mask

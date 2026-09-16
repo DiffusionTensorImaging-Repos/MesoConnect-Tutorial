@@ -73,7 +73,7 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 <!-- script:04_tune_cutoff.sh -->
 ```bash title="04_tune_cutoff.sh"
 #!/bin/bash
-# Step 4 — Pilot the FOD cutoff on a handful of subjects before the full run.
+# Step 4 — Pilot the FOD cutoff on a handful of participants before the full run.
 # Usage: 04_tune_cutoff.sh "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
 source "$(dirname "$0")/00_config.sh"; start_log "$0"
 PILOT=${1:-"$(head -5 "$SUBJECTS_FILE" | tr '\n' ' ')"}; CUTOFFS=${2:-"0.1 0.08 0.06 0.01"}
@@ -89,7 +89,7 @@ for s in $PILOT; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"
     printf "%-10s %-8s %-12s %-12s %-10s\n" "$s" "$c" "$n" "$sd" "$ml"
   done
 done
-echo "Select the most permissive cutoff that reaches the streamline target in every pilot subject."
+echo "Select the most permissive cutoff that reaches the streamline target in every pilot participant."
 ```
 <!-- /script:04_tune_cutoff.sh -->
 
@@ -160,7 +160,7 @@ for s in PILOT:
 
 with open(qc / "cutoff_summary.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
-# summary chart: streamline count, seeds used, length SD per cutoff (mean over pilot subjects)
+# summary chart: streamline count, seeds used, length SD per cutoff (mean over pilot participants)
 import collections
 agg = collections.defaultdict(lambda: collections.defaultdict(list))
 for r in rows:
