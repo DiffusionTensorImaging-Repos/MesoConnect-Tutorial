@@ -24,14 +24,11 @@ The outputs are the affine component (`mni2t1_0GenericAffine.mat`), the forward 
 
 If the T1 image has not been skull-stripped, this should be done first; atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion grid, this warp is the only transform required.
 
-The corresponding script is [`01_register_mni_to_t1.sh`](pathname:///MesoConnect-Tutorial/scripts/01_register_mni_to_t1.sh). Each participant requires approximately 10 to 15 minutes with four threads; the script runs four participants concurrently.
+The full script, `01_register_mni_to_t1.sh`, follows; each participant requires approximately 10 to 15 minutes with four threads; the script runs four participants concurrently.
 
 ## Script
 
 <!-- script:01_register_mni_to_t1.sh -->
-<details>
-<summary><code>01_register_mni_to_t1.sh</code> (16 lines)</summary>
-
 ```bash title="01_register_mni_to_t1.sh"
 #!/bin/bash
 # Step 1 — Nonlinear registration, MNI template -> subject T1 (ANTs SyN).
@@ -50,8 +47,6 @@ while read -r s; do run_one "$s" & while [ "$(jobs -r | wc -l)" -ge 4 ]; do slee
 printf "\nSubject\tAffine\tWarp\tInvWarp\n"
 while read -r s; do d="$OUT/$s/reg"; printf "%s\t%s\t%s\t%s\n" "$s" $( [ -f "$d/mni2t1_0GenericAffine.mat" ] && echo ok || echo MISSING ) $( [ -f "$d/mni2t1_1Warp.nii.gz" ] && echo ok || echo MISSING ) $( [ -f "$d/mni2t1_1InverseWarp.nii.gz" ] && echo ok || echo MISSING ); done < "$SUBJECTS_FILE"
 ```
-
-</details>
 <!-- /script:01_register_mni_to_t1.sh -->
 
 

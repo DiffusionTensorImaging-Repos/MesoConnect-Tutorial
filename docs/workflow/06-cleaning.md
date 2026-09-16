@@ -26,14 +26,11 @@ cleaned, keep = clean_bundle(sft, n_points=100, clean_rounds=5,
                              stat="mean", return_idx=True)
 ```
 
-The corresponding script is [`06_clean_bundles.py`](pathname:///MesoConnect-Tutorial/scripts/06_clean_bundles.py). It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
+The full script, `06_clean_bundles.py`, follows. It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
 
 ## Script
 
 <!-- script:06_clean_bundles.py -->
-<details>
-<summary><code>06_clean_bundles.py</code> (45 lines)</summary>
-
 ```python title="06_clean_bundles.py"
 #!/usr/bin/env python3
 """Step 6 — Clean each bundle with pyAFQ (Mahalanobis + length outliers).
@@ -81,8 +78,6 @@ for s in subjects:
         print(f"[{s}] inspect both clusters and copy the anatomically correct one to {TRACT}_{CUTOFF}_cleaned.tck")
 print("DONE")
 ```
-
-</details>
 <!-- /script:06_clean_bundles.py -->
 
 

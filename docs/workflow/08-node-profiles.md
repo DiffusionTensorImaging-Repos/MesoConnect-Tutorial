@@ -18,14 +18,11 @@ w = dsa.gaussian_weights(oriented)
 profile = dsa.afq_profile(data, oriented, affine, nb_points=100, weights=w)
 ```
 
-The corresponding script is [`08_node_profiles.py`](pathname:///MesoConnect-Tutorial/scripts/08_node_profiles.py). The `METRICS` dictionary specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 minutes.
+The full script, `08_node_profiles.py`, follows. The `METRICS` dictionary specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 minutes.
 
 ## Scripts
 
 <!-- script:08a_noddi_fit.py -->
-<details>
-<summary><code>08a_noddi_fit.py</code> (36 lines)</summary>
-
 ```python title="08a_noddi_fit.py"
 #!/usr/bin/env python3
 """Step 8a — NODDI fit with AMICO (run before step 8 if NODDI maps are wanted).
@@ -64,14 +61,9 @@ for s in subjects:
     print(f"[{s}] done")
 print("DONE ->", study)
 ```
-
-</details>
 <!-- /script:08a_noddi_fit.py -->
 
 <!-- script:08_node_profiles.py -->
-<details>
-<summary><code>08_node_profiles.py</code> (48 lines)</summary>
-
 ```python title="08_node_profiles.py"
 #!/usr/bin/env python3
 """Step 8 — 100-node tract profiles (AFQ-style, Gaussian-weighted) for any scalar map.
@@ -122,14 +114,9 @@ with open(out_dir / f"{TRACT}_nodewise_all_subjects.csv", "w", newline="") as f:
         print(f"[{s}] {NODES} nodes x {len(METRICS)} metrics")
 print("DONE ->", out_dir)
 ```
-
-</details>
 <!-- /script:08_node_profiles.py -->
 
 <!-- script:08b_build_analysis_csv.py -->
-<details>
-<summary><code>08b_build_analysis_csv.py</code> (26 lines)</summary>
-
 ```python title="08b_build_analysis_csv.py"
 #!/usr/bin/env python3
 """Step 8b — Build the wide analysis CSV that permutation_one.R and final_models.py read.
@@ -158,8 +145,6 @@ for m in metrics:
     print(f"{p.name}: {len(df)} participants x {wide.shape[1]-1} nodes (+ {len(cov.columns)-1} covariate/outcome columns)")
 print("Then, per outcome:  Rscript permutation_one.R <analysis.csv> <outcome> <METRIC>_ <out_dir> <label>")
 ```
-
-</details>
 <!-- /script:08b_build_analysis_csv.py -->
 
 
@@ -169,7 +154,7 @@ Nodes near the ends of the profile (0 to 4 and 95 to 99) lie in or adjacent to g
 
 ## NODDI inputs
 
-NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; the script [`08a_noddi_fit.py`](pathname:///MesoConnect-Tutorial/scripts/08a_noddi_fit.py) performs the fit with the settings below. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered b-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
+NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; the script `08a_noddi_fit.py` performs the fit with the settings below. The modulated NDI and ODI maps (`fit_NDI_modulated.nii.gz`, `fit_ODI_modulated.nii.gz`), which incorporate the tissue-weighted partial-volume correction of Parker et al. (2021), are used for profiling; FWF has no modulated form and `fit_FWF.nii.gz` is used. Settings used in the example dataset were `bStep=200` during scheme conversion (rounding jittered b-values), `b0_thr=100`, `doSaveModulatedMaps=True`, `doComputeRMSE=True` and `BLAS_nthreads=1`. AMICO regenerates its kernels in a shared directory; when participants are fitted in parallel, kernels should be generated once on a single participant before the pool is started, otherwise concurrent jobs delete one another's files.
 
 When NODDI is sampled within a gray-matter region (for example the hippocampus), the model should be refitted with the gray-matter intrinsic parallel diffusivity (approximately 1.1 × 10⁻³ mm²/s rather than the white-matter default of 1.7 × 10⁻³). The white-matter fit is not appropriate in gray matter and the two fits can yield different results.
 
@@ -191,7 +176,7 @@ When NODDI is sampled within a gray-matter region (for example the hippocampus),
 
 ## Analysis file
 
-Inference in step 9 reads a wide file with one row per participant: the covariates and outcomes, the tract's streamline count and mean length from step 5, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script [`08b_build_analysis_csv.py`](pathname:///MesoConnect-Tutorial/scripts/08b_build_analysis_csv.py) builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
+Inference in step 9 reads a wide file with one row per participant: the covariates and outcomes, the tract's streamline count and mean length from step 5, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script `08b_build_analysis_csv.py` builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
 
 ## Verification
 

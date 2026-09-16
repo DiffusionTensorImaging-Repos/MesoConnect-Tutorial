@@ -10,8 +10,7 @@ def block(name):
     p = SCRIPTS / name
     if not p.exists(): sys.exit(f"missing script: {p}")
     code = p.read_text().rstrip("\n").replace("```", "` ` `")
-    return (f"<!-- script:{name} -->\n<details>\n<summary><code>{name}</code> ({len(code.splitlines())} lines)</summary>\n\n"
-            f"```{LANG[p.suffix]} title=\"{name}\"\n{code}\n```\n\n</details>\n<!-- /script:{name} -->")
+    return (f"<!-- script:{name} -->\n```{LANG[p.suffix]} title=\"{name}\"\n{code}\n```\n<!-- /script:{name} -->")
 n = 0
 for md in (ROOT / "docs").rglob("*.md"):
     s = md.read_text(); new = re.sub(r"<!-- script:([^\s]+) -->.*?<!-- /script:\1 -->", lambda m: block(m.group(1)), s, flags=re.S)

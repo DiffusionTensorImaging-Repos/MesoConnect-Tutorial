@@ -18,14 +18,11 @@ tckgen "$PROJECT/dwi/$s/wm_fod_norm.mif" "$o/${TRACT}_${CUTOFF}.tck" \
   -stop -nthreads 8 -force
 ```
 
-The corresponding script is [`05_tractography.sh`](pathname:///MesoConnect-Tutorial/scripts/05_tractography.sh). At 3 T with eight threads each participant and hemisphere requires approximately two minutes; 57 participants with both hemispheres required about four hours run serially.
+The full script, `05_tractography.sh`, follows. At 3 T with eight threads each participant and hemisphere requires approximately two minutes; 57 participants with both hemispheres required about four hours run serially.
 
 ## Script
 
 <!-- script:05_tractography.sh -->
-<details>
-<summary><code>05_tractography.sh</code> (20 lines)</summary>
-
 ```bash title="05_tractography.sh"
 #!/bin/bash
 # Step 5 — Full corridor-constrained tractography for every subject.
@@ -48,8 +45,6 @@ pass=0; fail=0; while read -r s; do f="$OUT/$s/tckgen/$TRACT/${TRACT}_${CUTOFF}.
   n=$( [ -f "$f" ] && tckinfo "$f" | awk '/^ *count:/{print $2}' || echo 0 ); [ "$n" -ge "$SELECT" ] && pass=$((pass+1)) || { fail=$((fail+1)); echo "SHORT: $s ($n)"; }; done < "$SUBJECTS_FILE"
 echo "reached $SELECT streamlines: $pass / $((pass+fail))"
 ```
-
-</details>
 <!-- /script:05_tractography.sh -->
 
 

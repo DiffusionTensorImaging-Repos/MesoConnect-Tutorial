@@ -22,14 +22,11 @@ fslmaths "$d/${TRACT}_atlas_diff.nii.gz" -thr 0.5 -bin "$d/${TRACT}_atlas_diff.n
 
 Two successive nearest-neighbour resamplings of a binary mask have negligible effect on its extent. If the probabilistic map is required in native space, it should be warped with linear interpolation and thresholded afterwards.
 
-The corresponding script is [`02_warp_rois.sh`](pathname:///MesoConnect-Tutorial/scripts/02_warp_rois.sh); it completes in seconds per participant.
+The full script, `02_warp_rois.sh`, follows; it completes in seconds per participant.
 
 ## Script
 
 <!-- script:02_warp_rois.sh -->
-<details>
-<summary><code>02_warp_rois.sh</code> (30 lines)</summary>
-
 ```bash title="02_warp_rois.sh"
 #!/bin/bash
 # Step 2 — Warp seed, target and tract atlas from MNI -> T1 (ANTs) -> diffusion (FLIRT).
@@ -62,8 +59,6 @@ while read -r s; do d="$OUT/$s/rois"
   ov=$(fslmaths "$d/${TRACT}_seed_diff.nii.gz" -mul "$d/${TRACT}_target_diff.nii.gz" /tmp/_ov_$s -odt char && fslstats /tmp/_ov_$s -V | awk '{print $1}'); rm -f /tmp/_ov_$s.nii.gz
   printf "%s\t%s\t%s\t%s\t%s\n" "$s" "$sv" "$tv" "$av" "$ov"; done < "$SUBJECTS_FILE"
 ```
-
-</details>
 <!-- /script:02_warp_rois.sh -->
 
 

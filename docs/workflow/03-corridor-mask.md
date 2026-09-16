@@ -18,14 +18,11 @@ fslmaths "$d/${TRACT}_inclusion_zone.nii.gz" -binv "$d/${TRACT}_exclusion_mask.n
 
 The seed and target must be added before inversion; otherwise the corridor terminates short of them and tracking stops at the boundary.
 
-The corresponding script is [`03_build_corridor_mask.sh`](pathname:///MesoConnect-Tutorial/scripts/03_build_corridor_mask.sh). The `DILATE_VOX` setting in the configuration controls the number of `-dilM` passes.
+The full script, `03_build_corridor_mask.sh`, follows. The `DILATE_VOX` setting in the configuration controls the number of `-dilM` passes.
 
 ## Script
 
 <!-- script:03_build_corridor_mask.sh -->
-<details>
-<summary><code>03_build_corridor_mask.sh</code> (23 lines)</summary>
-
 ```bash title="03_build_corridor_mask.sh"
 #!/bin/bash
 # Step 3 — Build the corridor: dilate the warped atlas, add seed + target, binarize, invert.
@@ -51,8 +48,6 @@ while read -r s; do d="$OUT/$s/rois"
   rm -f /tmp/_se_$s.nii.gz /tmp/_te_$s.nii.gz
   printf "%s\t%s\t%s\t%s\n" "$s" "$se" "$te" "$(fslstats "$d/${TRACT}_inclusion_zone.nii.gz" -V | awk '{print $1}')"; done < "$SUBJECTS_FILE"
 ```
-
-</details>
 <!-- /script:03_build_corridor_mask.sh -->
 
 

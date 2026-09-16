@@ -44,16 +44,13 @@ Covariates comprise intracranial volume, mean streamline length and streamline c
 
 A hypothesis about a particular segment of a pathway calls for the quartile or node-wise model. A hypothesis about the pathway as a whole calls for the whole-tract model. Exploratory work is often best served by the whole-tract model for inference with the node-wise profile reported as description. Tests across several metrics, tracts and outcomes accumulate rapidly at any resolution; fixing the analytic hierarchy in advance (primary metric, primary outcome family) is more readily justified than correcting across all tests afterwards.
 
-In the example dataset, three social-memory measures were associated with NDI in the whole-tract model with no subregion interaction. In the quartile model one of them (positivity bias in false memories) was significant in all four quartiles and the seed-end versus target-end contrast was null for all three, indicating uniform effects. Node-wise clusters were located at nodes 27 to 55 and changed with covariate specification. The results were therefore reported with the whole-tract model as primary, the quartile model as confirmation of uniformity, and node-wise profiles as description. The script [`final_models.py`](pathname:///MesoConnect-Tutorial/scripts/final_models.py) reproduces the whole-tract and quartile analyses for that dataset.
+In the example dataset, three social-memory measures were associated with NDI in the whole-tract model with no subregion interaction. In the quartile model one of them (positivity bias in false memories) was significant in all four quartiles and the seed-end versus target-end contrast was null for all three, indicating uniform effects. Node-wise clusters were located at nodes 27 to 55 and changed with covariate specification. The results were therefore reported with the whole-tract model as primary, the quartile model as confirmation of uniformity, and node-wise profiles as description. The script `final_models.py` reproduces the whole-tract and quartile analyses for that dataset.
 
 
 
 ## Scripts
 
 <!-- script:permutation_one.R -->
-<details>
-<summary><code>permutation_one.R</code> (214 lines)</summary>
-
 ```r title="permutation_one.R"
 # =========================================================================
 # Node-wise cluster-extent permutation test (Freedman–Lane)
@@ -270,14 +267,9 @@ write_csv(summary_df, file.path(out_dir, paste0(base, "_summary.csv")))
 message("Done: ", base, " — clusters=", num_clusters,
         " sig nodes=", num_sig_nodes, " ext_thr=", extent_threshold)
 ```
-
-</details>
 <!-- /script:permutation_one.R -->
 
 <!-- script:final_models.py -->
-<details>
-<summary><code>final_models.py</code> (170 lines)</summary>
-
 ```python title="final_models.py"
 #!/usr/bin/env python3
 """
@@ -450,14 +442,9 @@ print(f"  r(HVLT trial 1, RAFT social d′) = {pearsonr(hv.iloc[:, 0], hv.iloc[:
 pd.DataFrame(rows).to_csv(OUT, index=False)
 print(f"\n-> wrote {OUT}")
 ```
-
-</details>
 <!-- /script:final_models.py -->
 
 <!-- script:09_stack_for_explorer.py -->
-<details>
-<summary><code>09_stack_for_explorer.py</code> (25 lines)</summary>
-
 ```python title="09_stack_for_explorer.py"
 #!/usr/bin/env python3
 """Step 9 (helper) — stack permutation_one.R outputs into the long CSV the Explorer reads.
@@ -485,8 +472,6 @@ for summ in sorted(glob.glob(f"{R}/*_summary.csv")):
                          extent_threshold=int(s["ExtentThresholdNodes"]), cluster_p=cp, passed=int(passed)))
 pd.DataFrame(rows).to_csv("results_long.csv", index=False); print(f"wrote results_long.csv ({len(rows)} rows)")
 ```
-
-</details>
 <!-- /script:09_stack_for_explorer.py -->
 
 ## Preparing node-wise results for the Explorer

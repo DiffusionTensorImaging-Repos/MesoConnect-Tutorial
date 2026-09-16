@@ -15,14 +15,11 @@ Every participant and hemisphere is inspected after cleaning. The script convert
 | `HIGH_VOXELS` | more than 5,000 tract-density voxels |
 | `LOW_DENSITY` | maximum density below 5 streamlines per voxel |
 
-The corresponding script is [`07_visual_qc.py`](pathname:///MesoConnect-Tutorial/scripts/07_visual_qc.py); flags are printed on the image.
+The full script, `07_visual_qc.py`, follows; flags are printed on the image.
 
 ## Script
 
 <!-- script:07_visual_qc.py -->
-<details>
-<summary><code>07_visual_qc.py</code> (28 lines)</summary>
-
 ```python title="07_visual_qc.py"
 #!/usr/bin/env python3
 """Step 7 — Tract-density overlays for every cleaned bundle, with automatic flags."""
@@ -53,8 +50,6 @@ for s in subjects:
     print(f"[{s}] {'FLAG '+flag if flag else 'ok'} ({nvox} voxels)")
 print("\nflagged:", flags if flags else "none")
 ```
-
-</details>
 <!-- /script:07_visual_qc.py -->
 
 

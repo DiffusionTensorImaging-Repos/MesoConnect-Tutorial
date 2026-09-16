@@ -83,9 +83,6 @@ Every step script logs to `$OUT/logs/` and skips participants whose output alrea
 ## Script
 
 <!-- script:00_config.sh -->
-<details>
-<summary><code>00_config.sh</code> (44 lines)</summary>
-
 ```bash title="00_config.sh"
 #!/bin/bash
 # ============================================================
@@ -132,7 +129,5 @@ export MAXJOBS=8             # parallel subjects for lightweight steps
 # --- logging: every step script calls this once after sourcing the config ---
 start_log(){ mkdir -p "$OUT/logs"; exec > >(tee -a "$OUT/logs/$(basename "$1").log") 2>&1; echo "== $(date '+%F %T') $(basename "$1") TRACT=$TRACT =="; }
 ```
-
-</details>
 <!-- /script:00_config.sh -->
 

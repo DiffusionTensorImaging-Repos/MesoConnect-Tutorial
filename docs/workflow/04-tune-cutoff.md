@@ -17,7 +17,7 @@ The sweep uses five participants, four cutoffs and reduced budgets (`-select 100
 bash 04_tune_cutoff.sh "s169 s4222 s4418 s606 s1000" "0.1 0.08 0.06 0.01"
 ```
 
-The script ([`04_tune_cutoff.sh`](pathname:///MesoConnect-Tutorial/scripts/04_tune_cutoff.sh)) reports streamlines reached, seeds consumed and mean length for each participant and cutoff. Table 1 gives the streamline counts obtained in the example dataset.
+The script (`04_tune_cutoff.sh`) reports streamlines reached, seeds consumed and mean length for each participant and cutoff. Table 1 gives the streamline counts obtained in the example dataset.
 
 **Table 1.** *Streamlines reached by cutoff in the pilot sweep (target 1,000; seed limit 5 million), posterior VTA → hippocampus.*
 
@@ -42,14 +42,11 @@ For each participant, the tract-density image at each cutoff is rendered on the 
 python 04b_compare_cutoffs.py "s169 s4222 s4418 s606 s1000" "0.1 0.08 0.06 0.01"
 ```
 
-The script ([`04b_compare_cutoffs.py`](pathname:///MesoConnect-Tutorial/scripts/04b_compare_cutoffs.py)) writes one panel per participant, `cutoff_summary.csv`, and a summary chart.
+The script (`04b_compare_cutoffs.py`) writes one panel per participant, `cutoff_summary.csv`, and a summary chart.
 
 ## Scripts
 
 <!-- script:04_tune_cutoff.sh -->
-<details>
-<summary><code>04_tune_cutoff.sh</code> (18 lines)</summary>
-
 ```bash title="04_tune_cutoff.sh"
 #!/bin/bash
 # Step 4 — Pilot the FOD cutoff on a handful of subjects before the full run.
@@ -70,14 +67,9 @@ for s in $PILOT; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"
 done
 echo "Select the most permissive cutoff that reaches the streamline target in every pilot subject."
 ```
-
-</details>
 <!-- /script:04_tune_cutoff.sh -->
 
 <!-- script:04b_compare_cutoffs.py -->
-<details>
-<summary><code>04b_compare_cutoffs.py</code> (76 lines)</summary>
-
 ```python title="04b_compare_cutoffs.py"
 #!/usr/bin/env python3
 """Step 4b — Cutoff pilot comparison: side-by-side tract-density images, Dice, lengths.
@@ -156,8 +148,6 @@ for ax, (k, title) in zip(axes, [("streamlines", "streamlines reached"), ("seeds
 plt.tight_layout(); plt.savefig(qc / "cutoff_summary.png", dpi=110); plt.close()
 print("summary ->", qc / "cutoff_summary.csv", "and cutoff_summary.png")
 ```
-
-</details>
 <!-- /script:04b_compare_cutoffs.py -->
 
 
