@@ -35,7 +35,7 @@ The sweep uses five participants, four cutoffs and reduced budgets (`-select 100
 bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 ```
 
-The script reports streamlines reached, seeds consumed and mean length for each participant and cutoff. Table 2 gives the streamline counts obtained in the example dataset. At 0.1 most runs exhausted the seed budget before reaching the target. At 0.08 some participants reached the target and one stopped at 309. At 0.06 and at 0.01 all runs reached the target; the 0.01 runs consumed approximately one fifth of the seeds (about 415,000 versus 2.1 million or more at 0.06). Reaching the target in every pilot participant is a necessary condition for a cutoff; the reconstructions must also correspond to the tract, which is assessed next.
+The script reports streamlines selected, streamlines generated and mean length for each participant and cutoff. `tckgen` generates one streamline per seed, so the number generated is also the number of seeds consumed. Table 2 gives the streamline counts obtained in the example dataset. At 0.1 most runs exhausted the seed budget before reaching the target. At 0.08 some participants reached the target and one stopped at 309. At 0.06 and at 0.01 all runs reached the target; the 0.01 runs consumed approximately one fifth of the seeds (about 415,000 versus 2.1 million or more at 0.06). Reaching the target in every pilot participant is a necessary condition for a cutoff; the reconstructions must also correspond to the tract, which is assessed next.
 
 **Table 2**
 
@@ -92,7 +92,7 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 
 <!-- script:04_tune_cutoff.sh -->
 <details>
-<summary>Script <code>04_tune_cutoff.sh</code> (52 lines)</summary>
+<summary>Script <code>04_tune_cutoff.sh</code> (53 lines)</summary>
 
 ```bash title="04_tune_cutoff.sh"
 #!/bin/bash
@@ -101,7 +101,8 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 # =============================================================================
 # Runs reduced-budget tractography at several cutoffs in a few participants.
 # "Selected" is the number of streamlines that met every criterion; "Generated" is
-# the number tckgen had to generate (selected plus rejected) to obtain them.
+# the number tckgen had to generate (selected plus rejected) to obtain them.  tckgen
+# generates one streamline per seed, so it is also the number of seeds consumed.
 # Usage:
 #   bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 # Defaults: the first five participants in $SUBJECTS_FILE and the four cutoffs above.
@@ -138,7 +139,7 @@ for s in $PILOT; do
     count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
     generated=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
     if [ "${count:-0}" -gt 0 ]; then
-      meanlen=$(tckstats "$tck" -output mean -quiet)
+      meanlen=$(tckstats "$tck" -output mean -quiet | awk '{print $1}')
     else
       meanlen=NA
     fi

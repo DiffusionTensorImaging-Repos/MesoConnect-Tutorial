@@ -20,7 +20,7 @@ tckgen "$PROJECT/dwi/$s/wm_fod_norm.mif" "$tck" \
   -nthreads 8 -force
 ```
 
-Table 1 gives the rationale for each option, and Table 2 the values used per tract family. The script records the number of streamlines reached and the number of seeds consumed per participant in `$OUT/qc/<tract>_tckgen_summary.csv`. The streamline count and mean length that enter the group-level models as covariates are taken from the cleaned bundle in Step 6, because every uncleaned tractogram that reaches the target contains the same number of streamlines. The full script follows. At 3 T with eight threads each participant and hemisphere requires approximately 2 min; 57 participants with both hemispheres required about 4 hr run serially.
+Table 1 gives the rationale for each option, and Table 2 the values used per tract family. The script records the number of streamlines selected and the number generated (equal to the number of seeds consumed) per participant in `$OUT/qc/<tract>_tckgen_summary.csv`. The streamline count and mean length that enter the group-level models as covariates are taken from the cleaned bundle in Step 6, because every uncleaned tractogram that reaches the target contains the same number of streamlines. The full script follows. At 3 T with eight threads each participant and hemisphere requires approximately 2 min; 57 participants with both hemispheres required about 4 hr run serially.
 
 **Table 1**
 
@@ -125,7 +125,7 @@ for s in "${SUBJECTS[@]}"; do
   count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
   generated=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
   if [ "${count:-0}" -gt 0 ]; then
-    meanlen=$(tckstats "$tck" -output mean -quiet)
+    meanlen=$(tckstats "$tck" -output mean -quiet | awk '{print $1}')
   else
     meanlen=NA
   fi

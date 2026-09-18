@@ -66,7 +66,7 @@ for s in "${SUBJECTS[@]}"; do
   count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
   generated=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
   if [ "${count:-0}" -gt 0 ]; then
-    meanlen=$(tckstats "$tck" -output mean -quiet)
+    meanlen=$(tckstats "$tck" -output mean -quiet | awk '{print $1}')
   else
     meanlen=NA
   fi

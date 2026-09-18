@@ -4,7 +4,8 @@
 # =============================================================================
 # Runs reduced-budget tractography at several cutoffs in a few participants.
 # "Selected" is the number of streamlines that met every criterion; "Generated" is
-# the number tckgen had to generate (selected plus rejected) to obtain them.
+# the number tckgen had to generate (selected plus rejected) to obtain them.  tckgen
+# generates one streamline per seed, so it is also the number of seeds consumed.
 # Usage:
 #   bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 # Defaults: the first five participants in $SUBJECTS_FILE and the four cutoffs above.
@@ -41,7 +42,7 @@ for s in $PILOT; do
     count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
     generated=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
     if [ "${count:-0}" -gt 0 ]; then
-      meanlen=$(tckstats "$tck" -output mean -quiet)
+      meanlen=$(tckstats "$tck" -output mean -quiet | awk '{print $1}')
     else
       meanlen=NA
     fi
