@@ -53,6 +53,9 @@ Table 1 gives the rationale for each option, and Table 2 the values used per tra
 *Note.* Where a pilot is indicated, the length bounds are taken from the mean lengths reported in the Step 4 summary.
 
 <!-- script:05_tractography.sh -->
+<details>
+<summary>Script <code>05_tractography.sh</code> (71 lines)</summary>
+
 ```bash title="05_tractography.sh"
 #!/bin/bash
 # =============================================================================
@@ -126,6 +129,8 @@ done < "$SUBJECTS_FILE"
 echo "reached $SELECT streamlines: $reached / $total"
 echo "summary -> $stats"
 ```
+
+</details>
 <!-- /script:05_tractography.sh -->
 
 ## Verification

@@ -19,6 +19,9 @@ fslmaths "$d/${TRACT}_inclusion_zone.nii.gz" -binv "$d/${TRACT}_exclusion_mask.n
 The seed and target must be added before inversion; otherwise the corridor terminates short of them and tracking stops at the boundary. The full script follows; the `DILATE_VOX` setting in the configuration controls the number of `-dilM` passes.
 
 <!-- script:03_build_corridor_mask.sh -->
+<details>
+<summary>Script <code>03_build_corridor_mask.sh</code> (62 lines)</summary>
+
 ```bash title="03_build_corridor_mask.sh"
 #!/bin/bash
 # =============================================================================
@@ -83,6 +86,8 @@ while read -r s; do
 done < "$SUBJECTS_FILE"
 rm -rf "$tmp"
 ```
+
+</details>
 <!-- /script:03_build_corridor_mask.sh -->
 
 ## Dilation

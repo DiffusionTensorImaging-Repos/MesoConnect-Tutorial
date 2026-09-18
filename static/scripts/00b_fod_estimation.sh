@@ -69,10 +69,10 @@ for tissue in wm gm csf; do
 done
 echo "== group response functions written"
 
-# Phase 3 (memory-intensive: two participants at a time)
+# Phase 3 (memory-intensive: $FOD_JOBS participants at a time)
 while read -r s; do
   estimate_fod "$s" &
-  throttle 2
+  throttle "$FOD_JOBS"
 done < "$SUBJECTS_FILE"
 wait
 

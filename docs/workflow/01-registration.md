@@ -27,6 +27,9 @@ If the T1 image has not been skull-stripped, this should be done first; atlas co
 The full script follows. Each participant requires approximately 10 to 15 min with four threads, and the script runs four participants concurrently.
 
 <!-- script:01_register_mni_to_t1.sh -->
+<details>
+<summary>Script <code>01_register_mni_to_t1.sh</code> (48 lines)</summary>
+
 ```bash title="01_register_mni_to_t1.sh"
 #!/bin/bash
 # =============================================================================
@@ -39,9 +42,6 @@ The full script follows. Each participant requires approximately 10 to 15 min wi
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
-
-ANTS_THREADS=4      # threads per registration
-ANTS_JOBS=4         # registrations run concurrently
 
 register_one() {
   local s=$1
@@ -80,6 +80,8 @@ while read -r s; do
     "$(present "$d/mni2t1_1InverseWarp.nii.gz")"
 done < "$SUBJECTS_FILE"
 ```
+
+</details>
 <!-- /script:01_register_mni_to_t1.sh -->
 
 ## Verification

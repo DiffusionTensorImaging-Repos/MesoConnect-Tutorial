@@ -50,6 +50,9 @@ mtnormalise wm_fod.mif wm_fod_norm.mif gm_fod.mif gm_fod_norm.mif csf_fod.mif cs
 Single-shell data may use `dwi2response tournier` and `dwi2fod csd`. The corridor workflow is independent of how the FOD image was estimated.
 
 <!-- script:00b_fod_estimation.sh -->
+<details>
+<summary>Script <code>00b_fod_estimation.sh</code> (83 lines)</summary>
+
 ```bash title="00b_fod_estimation.sh"
 #!/bin/bash
 # =============================================================================
@@ -122,10 +125,10 @@ for tissue in wm gm csf; do
 done
 echo "== group response functions written"
 
-# Phase 3 (memory-intensive: two participants at a time)
+# Phase 3 (memory-intensive: $FOD_JOBS participants at a time)
 while read -r s; do
   estimate_fod "$s" &
-  throttle 2
+  throttle "$FOD_JOBS"
 done < "$SUBJECTS_FILE"
 wait
 
@@ -135,6 +138,8 @@ while read -r s; do
   printf "%s\t%s\n" "$s" "$(present "$PROJECT/dwi/$s/wm_fod_norm.mif")"
 done < "$SUBJECTS_FILE"
 ```
+
+</details>
 <!-- /script:00b_fod_estimation.sh -->
 
 ## FSL route

@@ -24,6 +24,9 @@ profile = afq_profile(data, oriented, affine, n_points=100, weights=weights)
 The `METRICS` dictionary in the script specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 min.
 
 <!-- script:08_node_profiles.py -->
+<details>
+<summary>Script <code>08_node_profiles.py</code> (107 lines)</summary>
+
 ```python title="08_node_profiles.py"
 #!/usr/bin/env python3
 """Step 8. Along-tract profiles at 100 nodes (AFQ, Gaussian-weighted).
@@ -133,6 +136,8 @@ out.parent.mkdir(parents=True, exist_ok=True)
 pd.DataFrame(rows).to_csv(out, index=False)
 print(f"DONE -> {out}  ({len(rows) // N_NODES} participants)")
 ```
+
+</details>
 <!-- /script:08_node_profiles.py -->
 
 ## Node range
@@ -146,6 +151,9 @@ NODDI is fitted with AMICO (Daducci et al., 2015) on the eddy-corrected data; th
 When NODDI is sampled within a gray-matter region (for example the hippocampus), the model should be refitted with the gray-matter intrinsic parallel diffusivity (approximately 1.1 × 10⁻³ mm²/s rather than the white-matter default of 1.7 × 10⁻³ mm²/s) by setting `NODDI_DPAR=1.1e-3`; the script then writes to `$PROJECT/noddi_gm` so that the white-matter maps are retained. The white-matter fit is not appropriate in gray matter and the two fits can yield different results.
 
 <!-- script:08a_noddi_fit.py -->
+<details>
+<summary>Script <code>08a_noddi_fit.py</code> (93 lines)</summary>
+
 ```python title="08a_noddi_fit.py"
 #!/usr/bin/env python3
 """Step 8a. NODDI fit with AMICO (run before Step 8 when NODDI metrics are profiled).
@@ -241,6 +249,8 @@ for s in SUBJECTS:
 
 print(f"DONE -> {STUDY}")
 ```
+
+</details>
 <!-- /script:08a_noddi_fit.py -->
 
 ## Analysis file
@@ -248,6 +258,9 @@ print(f"DONE -> {STUDY}")
 Inference in Step 9 reads a wide file with one row per participant: the covariates and outcomes, the streamline count and mean length of the cleaned bundle from Step 6, and the 100 node values as columns `<METRIC>_0` to `<METRIC>_99`. The script `08b_build_analysis_csv.py`, shown below, builds one such file per tract and metric from the long profile CSV, the tract statistics file and a participant-level covariates file (`COVARIATES_CSV` in the configuration; columns `Subject` plus covariates and outcomes).
 
 <!-- script:08b_build_analysis_csv.py -->
+<details>
+<summary>Script <code>08b_build_analysis_csv.py</code> (55 lines)</summary>
+
 ```python title="08b_build_analysis_csv.py"
 #!/usr/bin/env python3
 """Step 8b. Assemble the analysis files read by the Step 9 scripts.
@@ -305,6 +318,8 @@ absent = sorted(profiled - set(covariates["Subject"]))
 if absent:
     print(f"profiled but absent from the covariate file: {', '.join(absent)}")
 ```
+
+</details>
 <!-- /script:08b_build_analysis_csv.py -->
 
 ## Example profiles

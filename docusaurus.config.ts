@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'MesoConnect Atlas Tutorial',
-  tagline: 'Subject-level tractography and along-tract microstructure with the MesoConnect mesolimbic atlas',
+  tagline: 'Participant-level tractography and along-tract microstructure with the MesoConnect mesolimbic atlas',
   favicon: 'img/favicon.ico',
   future: {v4: true},
   url: 'https://diffusiontensorimaging-repos.github.io',
@@ -58,7 +58,7 @@ const config: Config = {
           {label: 'Temple University', href: 'https://www.temple.edu'},
         ]},
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Temple University. Built with Docusaurus.`,
+      copyright: `Built with Docusaurus.`,
     },
     prism: {theme: prismThemes.github, darkTheme: prismThemes.dracula, additionalLanguages: ['bash', 'python', 'r']},
   } satisfies Preset.ThemeConfig,

@@ -50,8 +50,12 @@ export N_PERMUTATIONS=5000
 export MNI_TEMPLATE="$FSLDIR/data/standard/MNI152_T1_1mm_brain.nii.gz"
 export ANTSPATH="${ANTSPATH:-/usr/local/ants/bin}"
 export PATH="$ANTSPATH:$PATH"
-export NTHREADS=8            # threads per MRtrix or ANTs command
-export MAXJOBS=8             # participants processed concurrently in light steps
+# Peak load is roughly threads x concurrent participants; lower these on a shared machine.
+export NTHREADS=8            # threads per MRtrix command
+export MAXJOBS=8             # participants processed concurrently in light steps (2, 3)
+export ANTS_THREADS=4        # threads per registration (Step 1)
+export ANTS_JOBS=4           # registrations run concurrently (Step 1)
+export FOD_JOBS=2            # FOD estimations run concurrently (Step 0b; memory-intensive)
 
 # --- helper functions used by the step scripts -------------------------------
 

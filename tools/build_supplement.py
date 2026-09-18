@@ -26,8 +26,9 @@ def embed(m):
 tn=fn=0; scripts=[]; parts=[]; nimg=0
 for rel in ORDER:
     s=(DOCS/rel).read_text(); s=re.sub(r"^---.*?---\s*","",s,flags=re.S)
-    for m in re.finditer(r"<!-- script:([^\s]+) -->\s*```(\w+)[^\n]*\n(.*?)```\s*<!-- /script:\1 -->",s,flags=re.S):
-        if m.group(1) not in [x[0] for x in scripts]: scripts.append((m.group(1),m.group(2),m.group(3)))
+    for m in re.finditer(r"<!-- script:([^\s]+) -->",s):                       # scripts are read from the files, not the page
+        name=m.group(1); src=ROOT/"static"/"scripts"/name
+        if name not in [x[0] for x in scripts]: scripts.append((name,{".sh":"bash",".py":"python",".R":"r"}[src.suffix],src.read_text()))
     s=re.sub(r"<!-- script:([^\s]+) -->.*?<!-- /script:\1 -->",lambda m:f"*The script `{m.group(1)}` is reproduced in the Supplementary Scripts appendix.*",s,flags=re.S)
     s=re.sub(r"```mermaid.*?```",FLOW,s,flags=re.S)
     tmap={}; fmap={}
@@ -66,7 +67,7 @@ today=datetime.date.today().strftime("%B %Y")
 title=("<p align='center' style='margin-top:150pt;font-size:14pt'><b>MesoConnect Atlas Tutorial</b></p>"
        "<p align='center'><b>Supplementary Methods</b></p>"
        "<p align='center'>Corridor-constrained tractography and along-tract microstructure for mesolimbic pathways</p>"
-       f"<p align='center'>Version 0.1, {today}</p><p align='center'>{SITE}/</p>")
+       f"<p align='center'>{today}</p><p align='center'>{SITE}/</p>")
 full=f"<!DOCTYPE html><html><head><meta charset='utf-8'><title>MesoConnect Atlas Tutorial: Supplementary Methods</title><style>{css}</style></head><body>{title}{htm}</body></html>"
 hp=OUT/"MesoConnect_Supplementary_Methods.html"; hp.write_text(full)
 soffice=shutil.which("soffice") or "/Applications/LibreOffice.app/Contents/MacOS/soffice"

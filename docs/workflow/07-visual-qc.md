@@ -18,6 +18,9 @@ Every participant and hemisphere is inspected after cleaning. The script convert
 | `LOW_DENSITY` | maximum density below 5 streamlines per voxel |
 
 <!-- script:07_visual_qc.py -->
+<details>
+<summary>Script <code>07_visual_qc.py</code> (110 lines)</summary>
+
 ```python title="07_visual_qc.py"
 #!/usr/bin/env python3
 """Step 7. Tract-density overlays of every cleaned bundle, with automatic flags.
@@ -130,6 +133,8 @@ if len(flagged):
     print(flagged.to_string(index=False))
 print(f"flags -> {QC / 'qc_flags.csv'}")
 ```
+
+</details>
 <!-- /script:07_visual_qc.py -->
 
 ## Criteria

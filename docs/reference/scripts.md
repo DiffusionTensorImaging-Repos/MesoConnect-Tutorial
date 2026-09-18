@@ -52,7 +52,7 @@ The scripts generalize those used to process the example dataset, in which every
 
 **Table 2**
 
-*Checks Performed on the Generalized Scripts (Version 0.1)*
+*Checks Performed on the Generalized Scripts*
 
 | Scripts | Check | Result |
 |---|---|---|

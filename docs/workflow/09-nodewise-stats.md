@@ -83,6 +83,9 @@ The file contains one row per node with the columns `outcome, tract, metric, nod
 ## Scripts
 
 <!-- script:09a_tract_models.py -->
+<details>
+<summary>Script <code>09a_tract_models.py</code> (155 lines)</summary>
+
 ```python title="09a_tract_models.py"
 #!/usr/bin/env python3
 """Step 9a. Whole-tract and quartile models.
@@ -240,9 +243,14 @@ with pd.option_context("display.width", 200, "display.float_format", "{:.3f}".fo
     print(results.to_string(index=False))
 print(f"\n-> {path}")
 ```
+
+</details>
 <!-- /script:09a_tract_models.py -->
 
 <!-- script:09b_nodewise_permutation.R -->
+<details>
+<summary>Script <code>09b_nodewise_permutation.R</code> (225 lines)</summary>
+
 ```r title="09b_nodewise_permutation.R"
 # =============================================================================
 # Step 9b. Node-wise cluster-extent permutation test (Freedman-Lane)
@@ -470,9 +478,14 @@ write_csv(summary_df, file.path(out_dir, paste0(base, "_summary.csv")))
 message("Done: ", base, " — clusters=", num_clusters,
         " sig nodes=", num_sig_nodes, " ext_thr=", extent_threshold)
 ```
+
+</details>
 <!-- /script:09b_nodewise_permutation.R -->
 
 <!-- script:09c_stack_for_explorer.py -->
+<details>
+<summary>Script <code>09c_stack_for_explorer.py</code> (55 lines)</summary>
+
 ```python title="09c_stack_for_explorer.py"
 #!/usr/bin/env python3
 """Step 9c. Stack the node-wise results into the file read by the Explorer.
@@ -530,5 +543,7 @@ out = results_dir / "results_long.csv"
 pd.DataFrame(rows).to_csv(out, index=False)
 print(f"wrote {out} ({len(rows)} rows, {len(rows) // 100} analyses)")
 ```
+
+</details>
 <!-- /script:09c_stack_for_explorer.py -->
 

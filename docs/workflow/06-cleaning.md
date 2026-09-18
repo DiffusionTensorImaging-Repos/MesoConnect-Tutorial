@@ -34,6 +34,9 @@ The `core_only` argument exists in pyAFQ 3 and later; the script omits it under 
 The full script follows. It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
 
 <!-- script:06_clean_bundles.py -->
+<details>
+<summary>Script <code>06_clean_bundles.py</code> (138 lines)</summary>
+
 ```python title="06_clean_bundles.py"
 #!/usr/bin/env python3
 """Step 6. Bundle cleaning (pyAFQ) and the cleaned-bundle covariate table.
@@ -174,6 +177,8 @@ pd.DataFrame(rows).to_csv(table, index=False)
 print(f"\n{len(rows)} of {len(SUBJECTS)} participants have a cleaned bundle")
 print(f"covariate table -> {table}")
 ```
+
+</details>
 <!-- /script:06_clean_bundles.py -->
 
 ## Retention

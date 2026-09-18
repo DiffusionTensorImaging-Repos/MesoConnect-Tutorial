@@ -68,7 +68,7 @@ function Header() {
 }
 
 export default function Home(): ReactNode {
-  return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: subject-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
+  return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: participant-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
     <Header/><main>
       <section className={styles.features}><div className="container"><div className="row" style={{gap: '1.5rem 0'}}>{FEATURES.map((p, i) => <Feature key={i} {...p}/>)}</div></div></section>
       <Pipeline/></main></Layout>);

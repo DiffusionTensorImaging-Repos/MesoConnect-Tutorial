@@ -91,6 +91,9 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 ## Scripts
 
 <!-- script:04_tune_cutoff.sh -->
+<details>
+<summary>Script <code>04_tune_cutoff.sh</code> (49 lines)</summary>
+
 ```bash title="04_tune_cutoff.sh"
 #!/bin/bash
 # =============================================================================
@@ -142,9 +145,14 @@ done
 echo "Reaching the streamline target in every pilot participant is necessary but not"
 echo "sufficient: compare the reconstructions with 04b_compare_cutoffs.py before choosing."
 ```
+
+</details>
 <!-- /script:04_tune_cutoff.sh -->
 
 <!-- script:04b_compare_cutoffs.py -->
+<details>
+<summary>Script <code>04b_compare_cutoffs.py</code> (153 lines)</summary>
+
 ```python title="04b_compare_cutoffs.py"
 #!/usr/bin/env python3
 """Step 4b. Comparison of the pilot cutoffs.
@@ -300,4 +308,6 @@ plt.close(fig)
 print(summary.to_string(index=False))
 print(f"\nsummary -> {QC / 'cutoff_summary.csv'} and cutoff_summary.png")
 ```
+
+</details>
 <!-- /script:04b_compare_cutoffs.py -->

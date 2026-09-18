@@ -37,8 +37,6 @@ Pauli, W. M., Nili, A. N., & Tyszka, J. M. (2018). A high-resolution probabilist
 
 Raffelt, D., Dhollander, T., Tournier, J.-D., Tabbara, R., Smith, R. E., Pierre, E., & Connelly, A. (2017). Bias field correction and intensity normalisation for quantitative analysis of apparent fibre density. *Proceedings of the International Society for Magnetic Resonance in Medicine, 25*, 3541.
 
-Toppa, P. H., Rushmore, R. J., Haggerty, K., Papadimitriou, G., Dougherty, D., Kubicki, M., González-Mora, J. L., Pallanti, S., Castañeyra-Perdomo, A., Yeterian, E., & Makris, N. (2026). Neuroanatomy of substantia nigra and ventral tegmental area dopaminergic, and dorsal raphe serotonergic circuits in the human brain using T1-weighted and diffusion magnetic resonance imaging: A morphometric pilot study with estimate of reliability. *bioRxiv*. https://doi.org/10.64898/2026.02.12.705574
-
 Tournier, J.-D., Calamante, F., & Connelly, A. (2010). Improved probabilistic streamlines tractography by 2nd order integration over fibre orientation distributions. *Proceedings of the International Society for Magnetic Resonance in Medicine, 18*, 1670.
 
 Tournier, J.-D., Smith, R., Raffelt, D., Tabbara, R., Dhollander, T., Pietsch, M., Christiaens, D., Jeurissen, B., Yeh, C.-H., & Connelly, A. (2019). MRtrix3: A fast, flexible and open software framework for medical image processing and visualisation. *NeuroImage, 202*, 116137. https://doi.org/10.1016/j.neuroimage.2019.116137

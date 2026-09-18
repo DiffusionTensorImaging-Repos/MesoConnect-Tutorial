@@ -23,6 +23,9 @@ fslmaths "$d/${TRACT}_atlas_diff.nii.gz" -thr 0.5 -bin "$d/${TRACT}_atlas_diff.n
 Two successive nearest-neighbour resamplings of a binary mask have negligible effect on its extent. If the probabilistic map is required in native space, it should be warped with linear interpolation and thresholded afterwards. The full script follows; it completes in seconds per participant.
 
 <!-- script:02_warp_rois.sh -->
+<details>
+<summary>Script <code>02_warp_rois.sh</code> (78 lines)</summary>
+
 ```bash title="02_warp_rois.sh"
 #!/bin/bash
 # =============================================================================
@@ -103,6 +106,8 @@ while read -r s; do
 done < "$SUBJECTS_FILE"
 rm -rf "$tmp"
 ```
+
+</details>
 <!-- /script:02_warp_rois.sh -->
 
 ## Verification

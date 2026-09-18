@@ -26,21 +26,30 @@ The ventral tegmental area (VTA) → hippocampus files used for the example data
 | [anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Left | Anterior VTA → hippocampus atlas, 50% threshold |
 | [anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Right | Anterior VTA → hippocampus atlas, 50% threshold |
 
-The following command retrieves all files listed above.
+The following commands retrieve all files listed above into the folder layout of the full release, which is the layout that `00_config.sh` expects (`ATLAS_DIR` is the `MesoConnectAtlas` folder).
 
 ```bash
-mkdir -p MesoConnectAtlas && cd MesoConnectAtlas
-for f in left_VTA_0.25_bin right_VTA_0.25_bin HPC_L_0.5_bin HPC_R_0.5_bin \
-         l_vta_l_hipp_1mm_MNI_GroupMean_thr50 r_vta_r_hipp_1mm_MNI_GroupMean_thr50 \
-         l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp \
-         anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50 anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50; do
-  curl -sSLO "https://diffusiontensorimaging-repos.github.io/MesoConnect-Tutorial/atlas/$f.nii.gz"
+mkdir -p MesoConnectAtlas/roi_maps MesoConnectAtlas/tracts_thresholded_binary_50 \
+         MesoConnectAtlas/tracts_probabilistic
+cd MesoConnectAtlas
+base="https://diffusiontensorimaging-repos.github.io/MesoConnect-Tutorial/atlas"
+
+for f in left_VTA_0.25_bin right_VTA_0.25_bin HPC_L_0.5_bin HPC_R_0.5_bin; do
+  curl -sSL "$base/$f.nii.gz" -o "roi_maps/$f.nii.gz"
+done
+for t in l_vta_l_hipp r_vta_r_hipp anterior_l_vta_l_hipp anterior_r_vta_r_hipp; do
+  f="${t}_1mm_MNI_GroupMean_thr50.nii.gz"
+  curl -sSL "$base/$f" -o "tracts_thresholded_binary_50/$f"
+done
+for t in l_vta_l_hipp r_vta_r_hipp; do
+  f="${t}_1mm_MNI_GroupMean_OverlapProp.nii.gz"
+  curl -sSL "$base/$f" -o "tracts_probabilistic/$f"
 done
 ```
 
 ## Full release
 
-The complete atlas package will follow the layout below and will be archived with a versioned digital object identifier. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors in the interim.
+The complete atlas package will follow the layout below. The remaining families (amygdala, accumbens divisions, ventral pallidum, hippocampus → accumbens, hippocampus → ventral pallidum, fornix divisions), the count maps, the 25% and 75% thresholds, the endpoint maps and the exclusion masks are available from the atlas authors in the interim.
 
 ```
 MesoConnectAtlas_v1.0/

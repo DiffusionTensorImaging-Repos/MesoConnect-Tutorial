@@ -10,9 +10,6 @@
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
 
-ANTS_THREADS=4      # threads per registration
-ANTS_JOBS=4         # registrations run concurrently
-
 register_one() {
   local s=$1
   local t1="$PROJECT/anat/$s/${s}_T1w_brain.nii.gz"
