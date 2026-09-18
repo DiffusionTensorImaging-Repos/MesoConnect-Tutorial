@@ -13,13 +13,18 @@ The ventral tegmental area (VTA) → hippocampus files used for the example data
 
 *Atlas and Region Files Distributed With This Site*
 
-| File | Contents |
-|---|---|
-| [left_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/left_VTA_0.25_bin.nii.gz) · [right_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/right_VTA_0.25_bin.nii.gz) | VTA seeds (Trutti et al., 2021; 25% threshold) |
-| [HPC_L_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_L_0.5_bin.nii.gz) · [HPC_R_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_R_0.5_bin.nii.gz) | Hippocampus targets (Harvard–Oxford; 50% threshold) |
-| [l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) · [r_…](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Posterior VTA → hippocampus atlas, 50% threshold |
-| [l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) · [r_…](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) | Posterior VTA → hippocampus atlas, probabilistic |
-| [anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) · [anterior_r_…](pathname:///MesoConnect-Tutorial/atlas/anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Anterior VTA → hippocampus atlas, 50% threshold |
+| File | Hemisphere | Contents |
+|---|---|---|
+| [left_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/left_VTA_0.25_bin.nii.gz) | Left | VTA seed (Trutti et al., 2021; 25% threshold) |
+| [right_VTA_0.25_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/right_VTA_0.25_bin.nii.gz) | Right | VTA seed (Trutti et al., 2021; 25% threshold) |
+| [HPC_L_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_L_0.5_bin.nii.gz) | Left | Hippocampus target (Harvard–Oxford; 50% threshold) |
+| [HPC_R_0.5_bin.nii.gz](pathname:///MesoConnect-Tutorial/atlas/HPC_R_0.5_bin.nii.gz) | Right | Hippocampus target (Harvard–Oxford; 50% threshold) |
+| [l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Left | Posterior VTA → hippocampus atlas, 50% threshold |
+| [r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Right | Posterior VTA → hippocampus atlas, 50% threshold |
+| [l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz](pathname:///MesoConnect-Tutorial/atlas/l_vta_l_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) | Left | Posterior VTA → hippocampus atlas, probabilistic (not binary) |
+| [r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz](pathname:///MesoConnect-Tutorial/atlas/r_vta_r_hipp_1mm_MNI_GroupMean_OverlapProp.nii.gz) | Right | Posterior VTA → hippocampus atlas, probabilistic (not binary) |
+| [anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Left | Anterior VTA → hippocampus atlas, 50% threshold |
+| [anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz](pathname:///MesoConnect-Tutorial/atlas/anterior_r_vta_r_hipp_1mm_MNI_GroupMean_thr50.nii.gz) | Right | Anterior VTA → hippocampus atlas, 50% threshold |
 
 The following command retrieves all files listed above.
 

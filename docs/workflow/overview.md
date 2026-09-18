@@ -40,6 +40,8 @@ Table 1 lists the per-participant inputs. When the T1 image is already aligned t
 | Skull-stripped T1-weighted image | preprocessing | `$PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz` |
 | Normalized white-matter fibre orientation distribution (FOD; `.mif`) | MRtrix3 multi-shell multi-tissue CSD and `mtnormalise` | `$PROJECT/dwi/<subj>/wm_fod_norm.mif` |
 | Diffusion-space brain mask | preprocessing | `$PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz` |
+| Preprocessed diffusion data with *b*-values and gradient directions (needed only to estimate FODs or fit NODDI) | preprocessing | `$PROJECT/dwi/<subj>/data.nii.gz`, `bvals`, `bvecs` |
+| Mean *b* = 0 image (optional; background of the quality-control images) | preprocessing | `$PROJECT/dwi/<subj>/mean_b0.nii.gz` |
 | T1 → diffusion affine matrix (if the grids differ) | FLIRT | `$PROJECT/xfm/<subj>/str2diff.mat` |
 | Scalar maps for profiling | DTIFIT; AMICO NODDI | `$PROJECT/dwi/<subj>/fa.nii.gz`; `$PROJECT/noddi/<subj>/fit_*.nii.gz` |
 
@@ -55,12 +57,18 @@ $OUT/<subj>/
   tckgen/<tract>/
                 <tract>_pilot_<cutoff>.tck          (Step 4)
                 <tract>_<cutoff>.tck  <tract>_<cutoff>_cleaned.tck
-$OUT/qc/<tract>/               per-participant overlay images and flags
-$OUT/qc/<tract>_cutoff_pilot/  cutoff comparison panels, cutoff_summary.csv
-$OUT/nodewise/                 <tract>_nodewise_all_subjects.csv  (Subject, Tract, Node, FA, NDI, ODI, FWF)
-                               <tract>_tract_stats.csv            (Subject, Count_tckstats, Mean_tckstats; Step 5)
-$OUT/analysis/                 <tract>__<metric>__analysis.csv    (wide; one row per participant; Step 8b)
-$OUT/logs/                     one log per step script
+$OUT/qc/<tract>_cutoff_pilot/  cutoff comparison panels, cutoff_summary.csv         (Step 4b)
+$OUT/qc/<tract>_tckgen_summary.csv   streamlines reached and seeds used            (Step 5)
+$OUT/qc/<tract>/               per-participant overlay images, qc_flags.csv        (Step 7)
+$OUT/nodewise/                 <tract>_tract_stats.csv     cleaned-bundle Streamline_count,
+                                                           Mean_length_mm          (Step 6)
+                               <tract>_nodewise_all_subjects.csv
+                                   Subject, Tract, Node, FA, NDI, ODI, FWF         (Step 8)
+$OUT/analysis/                 <tract>__<metric>__analysis.csv   one row per participant (Step 8b)
+                               <tract>__<metric>__tract_models.csv                 (Step 9a)
+$OUT/permutation/              <tract>__<metric>__<outcome>_{nodewise,clusters,summary}.csv
+                               results_long.csv            Explorer input     (Steps 9b, 9c)
+$OUT/logs/                     one log per shell step script
 ```
 
 A manifest should be kept for each analysis recording the atlas version and threshold, dilation, interpolation, transform files, cutoff, scalar maps, covariates and software versions.
@@ -71,19 +79,27 @@ All scripts read a single configuration file, `00_config.sh`, which specifies pr
 
 ```bash
 cd scripts
-nano 00_config.sh
+nano 00_config.sh                 # project paths, tract definition, parameters
+source 00_config.sh               # the Python and R scripts read these settings
+
 bash 00b_fod_estimation.sh        # only if wm_fod_norm.mif does not yet exist
 bash 01_register_mni_to_t1.sh
 bash 02_warp_rois.sh
 bash 03_build_corridor_mask.sh
-bash 04_tune_cutoff.sh "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
-python 04b_compare_cutoffs.py "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
+bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
+python 04b_compare_cutoffs.py "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 bash 05_tractography.sh
 python 06_clean_bundles.py
 python 07_visual_qc.py
 python 08a_noddi_fit.py           # only if NODDI maps are wanted
 python 08_node_profiles.py
-python 08b_build_analysis_csv.py  # wide file for Step 9
+python 08b_build_analysis_csv.py  # analysis files for Step 9
+
+python 09a_tract_models.py --metric NDI --outcomes memory_accuracy
+mkdir -p "$OUT/permutation"
+Rscript 09b_nodewise_permutation.R "$OUT/analysis/${TRACT}__NDI__analysis.csv" \
+    memory_accuracy NDI_ "$OUT/permutation" "${TRACT}__NDI__memory_accuracy"
+python 09c_stack_for_explorer.py "$OUT/permutation"
 ```
 
 The configuration file follows.
@@ -91,48 +107,84 @@ The configuration file follows.
 <!-- script:00_config.sh -->
 ```bash title="00_config.sh"
 #!/bin/bash
-# ============================================================
-# MesoConnect corridor workflow — shared configuration
-# ============================================================
-# Source this file at the top of every step script:  source 00_config.sh
-# Edit ONLY this file to point the workflow at the project.
-# ------------------------------------------------------------
-# Project root. Expected layout (per participant):
-#   $PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz        skull-stripped T1
-#   $PROJECT/dwi/<subj>/wm_fod_norm.mif                  normalized WM FOD (MRtrix)
-#   $PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz          diffusion-space brain mask
-#   $PROJECT/dwi/<subj>/fa.nii.gz  (and NODDI maps)      scalar maps to profile
-#   $PROJECT/xfm/<subj>/str2diff.mat                     FLIRT T1->diffusion (omit if T1 and DWI share a grid)
+# =============================================================================
+# MesoConnect corridor workflow: shared configuration
+# =============================================================================
+# Every step script sources this file. Edit this file only; the step scripts
+# contain no project-specific values.
+#
+# Expected project layout (one directory per participant):
+#   $PROJECT/anat/<subj>/<subj>_T1w_brain.nii.gz   skull-stripped T1
+#   $PROJECT/dwi/<subj>/data.nii.gz, bvals, bvecs  preprocessed diffusion data
+#   $PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz    diffusion-space brain mask
+#   $PROJECT/dwi/<subj>/mean_b0.nii.gz             background for QC images (optional)
+#   $PROJECT/dwi/<subj>/fa.nii.gz                  tensor FA map
+#   $PROJECT/dwi/<subj>/wm_fod_norm.mif            normalized WM FOD (written by 00b)
+#   $PROJECT/noddi/<subj>/fit_*.nii.gz             NODDI maps (written by 08a)
+#   $PROJECT/xfm/<subj>/str2diff.mat               FLIRT T1 -> diffusion affine
+#                                                  (omit if T1 and DWI share a grid)
+# =============================================================================
+
+# --- project -----------------------------------------------------------------
 export PROJECT="/path/to/project"
-export SUBJECTS_FILE="$PROJECT/subjects.txt"          # one subject ID per line
-export ATLAS_DIR="/path/to/MesoConnectAtlas"           # downloaded atlas + ROI files (MNI 1mm)
-export OUT="$PROJECT/derivatives/mesoconnect"          # everything this workflow writes
-export COVARIATES_CSV="$PROJECT/covariates.csv"        # Subject + covariates + outcomes, one row per participant
-# raw diffusion inputs, used only by 00b (FOD estimation) and 08a (NODDI fit)
-export DWI_NII='$PROJECT/dwi/$s/data.nii.gz'; export BVALS='$PROJECT/dwi/$s/bvals'; export BVECS='$PROJECT/dwi/$s/bvecs'
-export FORCE=0               # 1 = recompute outputs that already exist
+export SUBJECTS_FILE="$PROJECT/subjects.txt"     # one participant ID per line
+export ATLAS_DIR="/path/to/MesoConnectAtlas"     # atlas and region files, MNI 1 mm
+export OUT="$PROJECT/derivatives/mesoconnect"    # everything this workflow writes
+export FORCE=0                                   # 1 = recompute existing outputs
 
-# --- tract definition (one tract per run; re-source with different values for another tract) ---
-export TRACT="l_vta_l_hipp"                                   # output name
-export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"      # seed ROI, MNI 1mm, binary
-export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"        # target ROI, MNI 1mm, binary
-export ATLAS_MNI="$ATLAS_DIR/tracts_thresholded_binary_50/l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz"
+# --- tract definition (one tract per run; edit and rerun for another tract) ---
+export TRACT="l_vta_l_hipp"                      # name used for all outputs
+export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"
+export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"
+export ATLAS_MNI="$ATLAS_DIR/tracts_thresholded_binary_50/\
+l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz"
 
-# --- tractography parameters (see reference/parameters) ---
-export DILATE_VOX=2          # corridor dilation in voxels (1-2 typical; 4 if registration is uncertain)
-export CUTOFF=0.01           # FOD amplitude cutoff; 0.01 works with the corridor mask (MRtrix default 0.05)
-export SELECT=2500           # streamlines to keep
-export SEEDS=25000000        # max seeding attempts
-export MINLEN=35             # mm
-export MAXLEN=65             # mm
-export NTHREADS=8
+# --- corridor and tractography parameters (see Reference: Parameters) --------
+export DILATE_VOX=2          # corridor dilation, voxels (1-2; 4 if registration is uncertain)
+export CUTOFF=0.01           # FOD amplitude cutoff selected in Step 4 (MRtrix default 0.05)
+export SELECT=2500           # streamlines to retain
+export SEEDS=25000000        # maximum seeding attempts
+export MINLEN=35             # minimum streamline length, mm
+export MAXLEN=65             # maximum streamline length, mm
 
-# --- software ---
+# --- group-level models (Steps 8b and 9) -------------------------------------
+export COVARIATES_CSV="$PROJECT/covariates.csv"  # Subject, covariates, outcomes
+# Model covariates: columns of $COVARIATES_CSV, plus Mean_length_mm and
+# Streamline_count, which Step 6 computes from the cleaned bundle of this tract.
+export COVARIATES="ICV,Mean_length_mm,Streamline_count,absolute_motion,age"
+export N_PERMUTATIONS=5000
+
+# --- software and concurrency ------------------------------------------------
 export MNI_TEMPLATE="$FSLDIR/data/standard/MNI152_T1_1mm_brain.nii.gz"
-export ANTSPATH="${ANTSPATH:-/usr/local/ants/bin}"; export PATH="$ANTSPATH:$PATH"
-export MAXJOBS=8             # parallel subjects for lightweight steps
+export ANTSPATH="${ANTSPATH:-/usr/local/ants/bin}"
+export PATH="$ANTSPATH:$PATH"
+export NTHREADS=8            # threads per MRtrix or ANTs command
+export MAXJOBS=8             # participants processed concurrently in light steps
 
-# --- logging: every step script calls this once after sourcing the config ---
-start_log(){ mkdir -p "$OUT/logs"; exec > >(tee -a "$OUT/logs/$(basename "$1").log") 2>&1; echo "== $(date '+%F %T') $(basename "$1") TRACT=$TRACT =="; }
+# --- helper functions used by the step scripts -------------------------------
+
+# Append everything the calling script prints to $OUT/logs/<script>.log.
+start_log() {
+  mkdir -p "$OUT/logs"
+  exec > >(tee -a "$OUT/logs/$(basename "$1").log") 2>&1
+  echo "== $(date '+%F %T')  $(basename "$1")  TRACT=$TRACT"
+}
+
+# Block until fewer than N background jobs are running.  Usage: throttle N
+throttle() {
+  while [ "$(jobs -r | wc -l)" -ge "$1" ]; do
+    sleep 1
+  done
+}
+
+# Number of non-zero voxels in an image.
+nvox() {
+  fslstats "$1" -V | awk '{print $1}'
+}
+
+# "ok" if the file exists, otherwise "MISSING"; used in the audit tables.
+present() {
+  if [ -f "$1" ]; then echo ok; else echo MISSING; fi
+}
 ```
 <!-- /script:00_config.sh -->

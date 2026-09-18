@@ -12,9 +12,8 @@ const config: Config = {
   organizationName: 'DiffusionTensorImaging-Repos',
   projectName: 'MesoConnect-Tutorial',
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
   i18n: {defaultLocale: 'en', locales: ['en']},
-  markdown: {mermaid: true},
+  markdown: {mermaid: true, hooks: {onBrokenMarkdownLinks: 'warn'}},
   themes: ['@docusaurus/theme-mermaid'],
   presets: [
     ['classic', {

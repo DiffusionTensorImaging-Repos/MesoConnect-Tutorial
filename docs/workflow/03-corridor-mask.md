@@ -21,28 +21,67 @@ The seed and target must be added before inversion; otherwise the corridor termi
 <!-- script:03_build_corridor_mask.sh -->
 ```bash title="03_build_corridor_mask.sh"
 #!/bin/bash
-# Step 3 — Build the corridor: dilate the warped atlas, add seed + target, binarize, invert.
-# The inverted image is a single exclusion mask for tckgen (everything outside the corridor).
-source "$(dirname "$0")/00_config.sh"; start_log "$0"
-DIL=""; for ((i=0;i<DILATE_VOX;i++)); do DIL="$DIL -dilM"; done
-run_one() {
-  s=$1; d="$OUT/$s/rois"
-  [[ "$FORCE" = 1 || ! -f "$d/${TRACT}_exclusion_mask.nii.gz" ]] || { echo "== $s corridor exists"; return; }
-  [[ -f "$d/${TRACT}_atlas_diff.nii.gz" ]] || { echo "!! $s missing warped atlas"; return; }
-  fslmaths "$d/${TRACT}_atlas_diff.nii.gz" $DIL "$d/${TRACT}_atlas_dilated.nii.gz"
-  fslmaths "$d/${TRACT}_atlas_dilated.nii.gz" -add "$d/${TRACT}_seed_diff.nii.gz" -add "$d/${TRACT}_target_diff.nii.gz" -bin "$d/${TRACT}_inclusion_zone.nii.gz"
+# =============================================================================
+# Step 3. Build the corridor and its exclusion mask
+# =============================================================================
+# Dilate the warped atlas, add the seed and target, binarize (inclusion zone),
+# then invert.  The inverted image is the single exclusion mask given to tckgen:
+# every voxel outside the corridor terminates and discards a streamline.
+# =============================================================================
+source "$(dirname "$0")/00_config.sh"
+start_log "$0"
+
+# One -dilM pass (3 x 3 x 3 kernel) per voxel of requested dilation
+DILATE_ARGS=""
+for ((i = 0; i < DILATE_VOX; i++)); do
+  DILATE_ARGS="$DILATE_ARGS -dilM"
+done
+
+build_one() {
+  local s=$1
+  local d="$OUT/$s/rois"
+  if [ "$FORCE" != 1 ] && [ -f "$d/${TRACT}_exclusion_mask.nii.gz" ]; then
+    echo "== $s corridor exists"
+    return
+  fi
+  if [ ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]; then
+    echo "!! $s missing warped atlas (run Step 2)"
+    return
+  fi
+  # $DILATE_ARGS is intentionally unquoted so that it expands to separate options
+  fslmaths "$d/${TRACT}_atlas_diff.nii.gz" $DILATE_ARGS "$d/${TRACT}_atlas_dilated.nii.gz"
+  fslmaths "$d/${TRACT}_atlas_dilated.nii.gz" \
+    -add "$d/${TRACT}_seed_diff.nii.gz" \
+    -add "$d/${TRACT}_target_diff.nii.gz" \
+    -bin "$d/${TRACT}_inclusion_zone.nii.gz"
   fslmaths "$d/${TRACT}_inclusion_zone.nii.gz" -binv "$d/${TRACT}_exclusion_mask.nii.gz"
-  echo ">> $s corridor voxels: $(fslstats "$d/${TRACT}_inclusion_zone.nii.gz" -V | awk '{print $1}')"
+  echo ">> $s corridor: $(nvox "$d/${TRACT}_inclusion_zone.nii.gz") voxels"
 }
-export -f run_one; export DIL
-while read -r s; do run_one "$s" & while [ "$(jobs -r | wc -l)" -ge "$MAXJOBS" ]; do sleep 0.5; done; done < "$SUBJECTS_FILE"; wait
-# Audit: seed and target must NOT be excluded (value 0 inside the exclusion mask)
+
+while read -r s; do
+  build_one "$s" &
+  throttle "$MAXJOBS"
+done < "$SUBJECTS_FILE"
+wait
+
+# Audit: no seed or target voxel may fall inside the exclusion mask (both counts 0)
+tmp=$(mktemp -d)
 printf "\nSubject\tseed_excluded\ttarget_excluded\tcorridor_vox\n"
-while read -r s; do d="$OUT/$s/rois"
-  se=$(fslmaths "$d/${TRACT}_exclusion_mask.nii.gz" -mul "$d/${TRACT}_seed_diff.nii.gz" /tmp/_se_$s -odt char && fslstats /tmp/_se_$s -V | awk '{print $1}')
-  te=$(fslmaths "$d/${TRACT}_exclusion_mask.nii.gz" -mul "$d/${TRACT}_target_diff.nii.gz" /tmp/_te_$s -odt char && fslstats /tmp/_te_$s -V | awk '{print $1}')
-  rm -f /tmp/_se_$s.nii.gz /tmp/_te_$s.nii.gz
-  printf "%s\t%s\t%s\t%s\n" "$s" "$se" "$te" "$(fslstats "$d/${TRACT}_inclusion_zone.nii.gz" -V | awk '{print $1}')"; done < "$SUBJECTS_FILE"
+while read -r s; do
+  d="$OUT/$s/rois"
+  excl="$d/${TRACT}_exclusion_mask.nii.gz"
+  if [ ! -f "$excl" ]; then
+    printf "%s\tMISSING\n" "$s"
+    continue
+  fi
+  fslmaths "$excl" -mul "$d/${TRACT}_seed_diff.nii.gz" "$tmp/seed"
+  fslmaths "$excl" -mul "$d/${TRACT}_target_diff.nii.gz" "$tmp/target"
+  printf "%s\t%s\t%s\t%s\n" "$s" \
+    "$(nvox "$tmp/seed")" \
+    "$(nvox "$tmp/target")" \
+    "$(nvox "$d/${TRACT}_inclusion_zone.nii.gz")"
+done < "$SUBJECTS_FILE"
+rm -rf "$tmp"
 ```
 <!-- /script:03_build_corridor_mask.sh -->
 
@@ -60,6 +99,6 @@ Visual inspection confirms that the corridor follows a plausible path from seed 
 
 *Inclusion Zone for the Anterior VTA → Hippocampus Tract*
 
-![Inclusion zone over the mean b = 0 image](/img/anterior_step22a_incl.png)
+![Inclusion zone over the mean b = 0 image](/img/fig_inclusion_zone.png)
 
-*Note.* Inclusion zone in cyan over the mean *b* = 0 image, with the seed and target contained within it. VTA = ventral tegmental area.
+*Note.* Inclusion zone in cyan over the mean *b* = 0 image, with the seed and target contained within it. Left: axial view. Right: coronal view. VTA = ventral tegmental area.

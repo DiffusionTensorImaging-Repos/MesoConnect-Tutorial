@@ -1,18 +1,49 @@
 #!/bin/bash
-# Step 4 — Pilot the FOD cutoff on a handful of participants before the full run.
-# Usage: 04_tune_cutoff.sh "s001 s002 s003 s004 s005" "0.1 0.08 0.06 0.01"
-source "$(dirname "$0")/00_config.sh"; start_log "$0"
-PILOT=${1:-"$(head -5 "$SUBJECTS_FILE" | tr '\n' ' ')"}; CUTOFFS=${2:-"0.1 0.08 0.06 0.01"}
-printf "%-10s %-8s %-12s %-12s %-10s\n" Subject Cutoff Streamlines Seeds MeanLen_mm
-for s in $PILOT; do d="$OUT/$s/rois"; o="$OUT/$s/tckgen/$TRACT"; mkdir -p "$o"
+# =============================================================================
+# Step 4. Pilot sweep of the FOD amplitude cutoff
+# =============================================================================
+# Runs reduced-budget tractography at several cutoffs in a few participants.
+# Usage:
+#   bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
+# Defaults: the first five participants in $SUBJECTS_FILE and the four cutoffs above.
+# Follow with 04b_compare_cutoffs.py for the side-by-side images and summary table.
+# =============================================================================
+source "$(dirname "$0")/00_config.sh"
+start_log "$0"
+
+PILOT=${1:-$(head -n 5 "$SUBJECTS_FILE" | tr '\n' ' ')}
+CUTOFFS=${2:-"0.1 0.08 0.06 0.01"}
+PILOT_SELECT=1000
+PILOT_SEEDS=5000000
+
+printf "%-12s %-8s %-12s %-12s %-12s\n" Subject Cutoff Streamlines Seeds MeanLen_mm
+for s in $PILOT; do
+  rois="$OUT/$s/rois"
+  tdir="$OUT/$s/tckgen/$TRACT"
+  if [ ! -f "$rois/${TRACT}_exclusion_mask.nii.gz" ]; then
+    echo "!! $s missing corridor (run Steps 2 and 3)"
+    continue
+  fi
+  mkdir -p "$tdir"
   for c in $CUTOFFS; do
-    tckgen "$PROJECT/dwi/$s/wm_fod_norm.mif" "$o/${TRACT}_pilot_${c}.tck" \
-      -seed_image "$d/${TRACT}_seed_diff.nii.gz" -seed_unidirectional \
-      -include "$d/${TRACT}_target_diff.nii.gz" -exclude "$d/${TRACT}_exclusion_mask.nii.gz" \
-      -select 1000 -seeds 5000000 -cutoff "$c" -minlength "$MINLEN" -maxlength "$MAXLEN" -stop -nthreads "$NTHREADS" -force -quiet
-    n=$(tckinfo "$o/${TRACT}_pilot_${c}.tck" | awk '/^ *count:/{print $2}'); sd=$(tckinfo "$o/${TRACT}_pilot_${c}.tck" | awk '/total_count:/{print $2}')
-    ml=$(tckstats "$o/${TRACT}_pilot_${c}.tck" -quiet | awk '/mean/{print $2; exit}')
-    printf "%-10s %-8s %-12s %-12s %-10s\n" "$s" "$c" "$n" "$sd" "$ml"
+    tck="$tdir/${TRACT}_pilot_${c}.tck"
+    tckgen "$PROJECT/dwi/$s/wm_fod_norm.mif" "$tck" \
+      -algorithm iFOD2 \
+      -seed_image "$rois/${TRACT}_seed_diff.nii.gz" -seed_unidirectional \
+      -include "$rois/${TRACT}_target_diff.nii.gz" \
+      -exclude "$rois/${TRACT}_exclusion_mask.nii.gz" \
+      -select "$PILOT_SELECT" -seeds "$PILOT_SEEDS" -cutoff "$c" \
+      -minlength "$MINLEN" -maxlength "$MAXLEN" -stop \
+      -nthreads "$NTHREADS" -force -quiet
+    count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
+    seeds=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
+    if [ "${count:-0}" -gt 0 ]; then
+      meanlen=$(tckstats "$tck" -output mean -quiet)
+    else
+      meanlen=NA
+    fi
+    printf "%-12s %-8s %-12s %-12s %-12s\n" "$s" "$c" "$count" "$seeds" "$meanlen"
   done
 done
-echo "Select the most permissive cutoff that reaches the streamline target in every pilot participant."
+echo "Reaching the streamline target in every pilot participant is necessary but not"
+echo "sufficient: compare the reconstructions with 04b_compare_cutoffs.py before choosing."

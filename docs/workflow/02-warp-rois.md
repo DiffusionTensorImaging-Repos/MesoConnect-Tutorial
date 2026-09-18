@@ -25,35 +25,83 @@ Two successive nearest-neighbour resamplings of a binary mask have negligible ef
 <!-- script:02_warp_rois.sh -->
 ```bash title="02_warp_rois.sh"
 #!/bin/bash
-# Step 2 — Warp seed, target and tract atlas from MNI -> T1 (ANTs) -> diffusion (FLIRT).
-# Nearest-neighbour throughout; outputs re-binarized as a safety step.
-source "$(dirname "$0")/00_config.sh"; start_log "$0"
-run_one() {
-  s=$1; d="$OUT/$s/rois"; mkdir -p "$d"
-  [[ "$FORCE" = 1 || ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]] || { echo "== $s already warped"; return; }
-  t1="$PROJECT/anat/$s/${s}_T1w_brain.nii.gz"; ref="$PROJECT/dwi/$s/nodif_brain_mask.nii.gz"
-  warp="$OUT/$s/reg/mni2t1_1Warp.nii.gz"; aff="$OUT/$s/reg/mni2t1_0GenericAffine.mat"; mat="$PROJECT/xfm/$s/str2diff.mat"
-  [[ -f "$warp" && -f "$aff" && -f "$ref" ]] || { echo "!! $s missing registration or reference"; return; }
-  for pair in "seed:$SEED_MNI" "target:$TARGET_MNI" "atlas:$ATLAS_MNI"; do
-    name=${pair%%:*}; src=${pair#*:}
-    antsApplyTransforms -d 3 -i "$src" -r "$t1" -o "$d/${TRACT}_${name}_t1.nii.gz" -t "$warp" -t "$aff" -n NearestNeighbor
-    if [[ -f "$mat" ]]; then
-      flirt -in "$d/${TRACT}_${name}_t1.nii.gz" -ref "$ref" -applyxfm -init "$mat" -out "$d/${TRACT}_${name}_diff.nii.gz" -interp nearestneighbour
-    else   # T1 and diffusion already share a grid: just resample onto the diffusion reference
-      flirt -in "$d/${TRACT}_${name}_t1.nii.gz" -ref "$ref" -applyxfm -usesqform -out "$d/${TRACT}_${name}_diff.nii.gz" -interp nearestneighbour
+# =============================================================================
+# Step 2. Warp the seed, target and tract atlas into diffusion space
+# =============================================================================
+# MNI -> T1 with the ANTs transforms from Step 1, then T1 -> diffusion with FLIRT.
+# Nearest-neighbour interpolation throughout; outputs are re-binarized.
+# =============================================================================
+source "$(dirname "$0")/00_config.sh"
+start_log "$0"
+
+warp_one() {
+  local s=$1
+  local d="$OUT/$s/rois"
+  local t1="$PROJECT/anat/$s/${s}_T1w_brain.nii.gz"
+  local ref="$PROJECT/dwi/$s/nodif_brain_mask.nii.gz"
+  local warp="$OUT/$s/reg/mni2t1_1Warp.nii.gz"
+  local aff="$OUT/$s/reg/mni2t1_0GenericAffine.mat"
+  local mat="$PROJECT/xfm/$s/str2diff.mat"
+  local name src in_t1 in_diff
+
+  if [ "$FORCE" != 1 ] && [ -f "$d/${TRACT}_atlas_diff.nii.gz" ]; then
+    echo "== $s already warped"
+    return
+  fi
+  if [ ! -f "$warp" ] || [ ! -f "$aff" ] || [ ! -f "$ref" ]; then
+    echo "!! $s missing registration outputs or diffusion reference"
+    return
+  fi
+  mkdir -p "$d"
+
+  for name in seed target atlas; do
+    case $name in
+      seed)   src=$SEED_MNI ;;
+      target) src=$TARGET_MNI ;;
+      atlas)  src=$ATLAS_MNI ;;
+    esac
+    in_t1="$d/${TRACT}_${name}_t1.nii.gz"
+    in_diff="$d/${TRACT}_${name}_diff.nii.gz"
+
+    antsApplyTransforms -d 3 -i "$src" -r "$t1" -o "$in_t1" \
+      -t "$warp" -t "$aff" -n NearestNeighbor
+
+    if [ -f "$mat" ]; then
+      flirt -in "$in_t1" -ref "$ref" -applyxfm -init "$mat" \
+        -interp nearestneighbour -out "$in_diff"
+    else
+      # T1 and diffusion share a grid: resample onto the diffusion reference only
+      flirt -in "$in_t1" -ref "$ref" -applyxfm -usesqform \
+        -interp nearestneighbour -out "$in_diff"
     fi
-    fslmaths "$d/${TRACT}_${name}_diff.nii.gz" -thr 0.5 -bin "$d/${TRACT}_${name}_diff.nii.gz"
+    fslmaths "$in_diff" -thr 0.5 -bin "$in_diff"
   done
-  echo ">> $s done"
+  echo ">> $s warped"
 }
-export -f run_one
-while read -r s; do run_one "$s" & while [ "$(jobs -r | wc -l)" -ge "$MAXJOBS" ]; do sleep 1; done; done < "$SUBJECTS_FILE"; wait
-# Audit: voxel counts, binariness, seed/target overlap (must be 0)
-printf "\nSubject\tseed_vox\ttarget_vox\tatlas_vox\tseed∩target\n"
-while read -r s; do d="$OUT/$s/rois"
-  sv=$(fslstats "$d/${TRACT}_seed_diff.nii.gz" -V | awk '{print $1}'); tv=$(fslstats "$d/${TRACT}_target_diff.nii.gz" -V | awk '{print $1}'); av=$(fslstats "$d/${TRACT}_atlas_diff.nii.gz" -V | awk '{print $1}')
-  ov=$(fslmaths "$d/${TRACT}_seed_diff.nii.gz" -mul "$d/${TRACT}_target_diff.nii.gz" /tmp/_ov_$s -odt char && fslstats /tmp/_ov_$s -V | awk '{print $1}'); rm -f /tmp/_ov_$s.nii.gz
-  printf "%s\t%s\t%s\t%s\t%s\n" "$s" "$sv" "$tv" "$av" "$ov"; done < "$SUBJECTS_FILE"
+
+while read -r s; do
+  warp_one "$s" &
+  throttle "$MAXJOBS"
+done < "$SUBJECTS_FILE"
+wait
+
+# Audit: voxel counts and seed-target overlap (the overlap must be 0)
+tmp=$(mktemp -d)
+printf "\nSubject\tseed_vox\ttarget_vox\tatlas_vox\tseed_target_overlap\n"
+while read -r s; do
+  d="$OUT/$s/rois"
+  if [ ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]; then
+    printf "%s\tMISSING\n" "$s"
+    continue
+  fi
+  fslmaths "$d/${TRACT}_seed_diff.nii.gz" -mul "$d/${TRACT}_target_diff.nii.gz" "$tmp/overlap"
+  printf "%s\t%s\t%s\t%s\t%s\n" "$s" \
+    "$(nvox "$d/${TRACT}_seed_diff.nii.gz")" \
+    "$(nvox "$d/${TRACT}_target_diff.nii.gz")" \
+    "$(nvox "$d/${TRACT}_atlas_diff.nii.gz")" \
+    "$(nvox "$tmp/overlap")"
+done < "$SUBJECTS_FILE"
+rm -rf "$tmp"
 ```
 <!-- /script:02_warp_rois.sh -->
 
@@ -79,8 +127,8 @@ Visual inspection is performed for every participant by overlaying each warped r
 
 *Warped Left VTA Seed Region Over the Mean b = 0 Image*
 
-![Whole-brain view of the warped left VTA](/img/roi_qc_wholebrain_left_VTA.png)
-![Magnified view of the warped left VTA](/img/roi_qc_zoomed_left_VTA.png)
+![Whole-brain view of the warped left VTA](/img/fig_vta_wholebrain.png)
+![Magnified view of the warped left VTA](/img/fig_vta_magnified.png)
 
 *Note.* Whole-brain view (top) and magnified view (bottom), example dataset.
 
@@ -88,8 +136,8 @@ Visual inspection is performed for every participant by overlaying each warped r
 
 *Warped Left Hippocampus Target and Left VTA → Hippocampus Atlas*
 
-![Magnified view of the warped left hippocampus](/img/roi_qc_zoomed_left_HPC.png)
-![Magnified view of the warped left atlas](/img/roi_qc_zoomed_left_tract_atlas.png)
+![Magnified view of the warped left hippocampus](/img/fig_hippocampus_magnified.png)
+![Magnified view of the warped left atlas](/img/fig_atlas_magnified.png)
 
 *Note.* Hippocampus (top) and atlas at the 50% threshold (bottom), magnified views.
 
@@ -97,7 +145,7 @@ Visual inspection is performed for every participant by overlaying each warped r
 
 *Orthogonal Render of the Warped Regions*
 
-![Orthogonal render with VTA, hippocampus and atlas](/img/roi_qc_fsleyes_ortho_left.png)
+![Orthogonal render with VTA, hippocampus and atlas](/img/fig_regions_ortho.png)
 
 *Note.* VTA in yellow, hippocampus in red, atlas in green.
 
@@ -107,4 +155,6 @@ For the anterior hippocampus tract the same procedure is repeated with the anter
 
 *Warped Anterior VTA → Hippocampus Atlas in Diffusion Space*
 
-![Warped anterior atlas](/img/anterior_step21a_atlas.png)
+![Warped anterior atlas](/img/fig_anterior_atlas_warped.png)
+
+*Note.* Atlas in red over the mean *b* = 0 image. Left: axial view. Right: coronal view.

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 title: "Citation"
 ---
 
@@ -10,6 +10,10 @@ The atlas manuscript is in preparation. Until the manuscript and archived releas
 ## Suggested citation for this tutorial
 
 Temple University. (2026). *MesoConnect Atlas tutorial* (Version 0.1) [Website]. https://diffusiontensorimaging-repos.github.io/MesoConnect-Tutorial/
+
+## Supplementary Methods document
+
+The tutorial is also compiled as a single document for attachment to a manuscript as supplementary material: [PDF](pathname:///MesoConnect-Tutorial/supplement/MesoConnect_Supplementary_Methods.pdf) and [Word](pathname:///MesoConnect-Tutorial/supplement/MesoConnect_Supplementary_Methods.docx). Tables and figures are numbered S1, S2 and so on across the document, and the scripts are reproduced in an appendix. Copy-ready Method paragraphs are on the [methods text page](methods-text).
 
 ## Related work
 
@@ -23,4 +27,4 @@ A morphometric study of the substantia nigra, ventral tegmental area and dorsal 
 
 | Version | Date | Changes |
 |---|---|---|
-| Tutorial v0.1 | September 2026 | First public version: corridor workflow with the 3 T example dataset, scripts and Explorer |
+| Tutorial v0.1 | September 2026 | First public version: corridor workflow with the 3 T example dataset, scripts, Explorer and compiled Supplementary Methods |

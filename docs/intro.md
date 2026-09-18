@@ -32,7 +32,7 @@ Table 1 summarizes the sections of the site.
 | Workflow | The nine steps, each with parameters, verification criteria, the full script, and results from an example dataset |
 | Explorer | The results viewer and its input format |
 | Alternative approaches | Whole-tract extraction; atlas-guided synthetic streamlines |
-| Reference | Consolidated parameters, troubleshooting, software, scripts, abbreviations, citation, references |
+| Reference | Consolidated parameters, troubleshooting, software, scripts, suggested methods text, abbreviations, citation, references |
 
 ## Example dataset
 

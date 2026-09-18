@@ -32,7 +32,7 @@ th:hover{color:var(--ink)}td{padding:8px 10px;border-bottom:1px solid var(--line
 <div style="margin-top:10px;font-size:13px;color:var(--mut)"><a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> for the expected structure, or <a href="#" id="loadex" class="flink">load the example dataset</a>.</div>
 <div id="loaderr" class="loaderr" style="display:none"></div>
 <details style="margin-top:14px" open><summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:13px">Data format</summary>
-<div class="doc"><b>One row per node.</b> Six required columns, <code>outcome, tract, metric, node, t, p</code>; everything else optional. Column names from <code>permutation_one.R</code> (<code>Node</code>, <code>t_value</code>, <code>p_value</code>) are accepted as they are.
+<div class="doc"><b>One row per node.</b> Six required columns, <code>outcome, tract, metric, node, t, p</code>; everything else optional. Column names from <code>09b_nodewise_permutation.R</code> (<code>Node</code>, <code>t_value</code>, <code>p_value</code>) are accepted as they are.
 <table><thead><tr><th>Column</th><th>Required</th><th>Meaning</th></tr></thead><tbody>
 <tr><td><code>outcome</code></td><td>yes</td><td>what was predicted</td></tr><tr><td><code>tract</code></td><td>yes</td><td>tract label, any number of tracts</td></tr><tr><td><code>metric</code></td><td>yes</td><td>the along-tract measure (FA, NDI, ODI, FWF, MD …)</td></tr>
 <tr><td><code>node</code></td><td>yes</td><td>0-based node index, any node count</td></tr><tr><td><code>t</code>, <code>p</code></td><td>yes</td><td>that node's statistic and uncorrected p</td></tr>

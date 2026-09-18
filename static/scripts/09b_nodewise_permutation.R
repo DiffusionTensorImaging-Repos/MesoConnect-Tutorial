@@ -1,14 +1,22 @@
-# =========================================================================
-# Node-wise cluster-extent permutation test (Freedman–Lane)
-# Adapted from a reference implementation used in atlas construction
-# =========================================================================
-# Args (positional):
-#   1. data_csv       — path to analysis-ready CSV
-#   2. response_col   — outcome name (e.g. SOCIAL_dprime)
-#   3. metric_prefix  — metric prefix incl underscore (e.g. FA_, NDI_, ODI_, FWF_)
-#   4. out_dir        — output directory for results
-#   5. base_label     — short label for filenames (e.g. lhpost_FA_SOCIAL_dprime)
-# =========================================================================
+# =============================================================================
+# Step 9b. Node-wise cluster-extent permutation test (Freedman-Lane)
+# =============================================================================
+# At each node:  outcome ~ metric_node + covariates.  The residuals of the
+# reduced model (covariates only) are permuted, all nodes are refitted, and the
+# maximum cluster extent of each permutation forms the null distribution.
+# Adapted from a reference implementation used in atlas construction.
+#
+# Usage (in a shell where 00_config.sh has been sourced):
+#   Rscript 09b_nodewise_permutation.R <analysis.csv> <outcome> <METRIC>_ <out_dir> <label>
+#     1. analysis.csv   wide analysis file from Step 8b
+#     2. outcome        outcome column, e.g. memory_accuracy
+#     3. METRIC_        node-column prefix including the underscore, e.g. NDI_
+#     4. out_dir        directory for the results
+#     5. label          <tract>__<metric>__<outcome>, used in the output file names
+# Environment: COVARIATES (comma-separated columns), N_PERMUTATIONS (default 5000),
+#              R_PERM_CORES (default: all cores but one)
+# Outputs: <label>_nodewise.csv, <label>_clusters.csv, <label>_summary.csv
+# =============================================================================
 suppressPackageStartupMessages({
   library(readr); library(dplyr); library(stringr)
   library(foreach); library(doParallel); library(parallel); library(tibble)
@@ -22,12 +30,14 @@ metric_prefix <- args[3]
 out_dir       <- args[4]
 base          <- args[5]
 
-# Covariates: set R_COVARIATES (comma-separated) to match the columns in the analysis CSV
-covariate_cols <- strsplit(Sys.getenv("R_COVARIATES", unset = "ICV,Mean_tckstats,Count_tckstats,absolute_motion,maternal_age"), ",")[[1]]
+# Covariates: comma-separated column names, exported by 00_config.sh
+covariate_env <- Sys.getenv("COVARIATES", unset = "")
+if (covariate_env == "") stop("COVARIATES is not set: run `source 00_config.sh` first")
+covariate_cols <- strsplit(covariate_env, ",")[[1]]
 
 alpha_node       <- 0.05
 alpha_familywise <- 0.05
-num_permutations <- as.integer(Sys.getenv("R_PERM_N", unset = "5000"))
+num_permutations <- as.integer(Sys.getenv("N_PERMUTATIONS", unset = "5000"))
 rng_seed         <- 123
 use_parallel     <- TRUE
 
@@ -157,7 +167,8 @@ if (!is.na(env_cores) && env_cores > 0L) {
 if (cores > 1L) {
   cl <- parallel::makeCluster(cores); registerDoParallel(cl)
   parallel::clusterSetRNGStream(cl, rng_seed)
-  perm_max_sizes <- foreach(perm=1:num_permutations, .combine=c, .packages="stats") %dopar% perm_fun(perm)
+  perm_max_sizes <- foreach(perm = 1:num_permutations, .combine = c,
+                            .packages = "stats") %dopar% perm_fun(perm)
   parallel::stopCluster(cl)
 } else {
   perm_max_sizes <- vapply(1:num_permutations, perm_fun, integer(1))
