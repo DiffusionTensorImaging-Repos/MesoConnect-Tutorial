@@ -179,8 +179,13 @@ if (cores > 1L) {
   perm_max_sizes <- vapply(1:num_permutations, perm_fun, integer(1))
 }
 
-extent_threshold <- as.integer(quantile(perm_max_sizes, probs=1-alpha_familywise, type=1))
+# Cluster p value: proportion of permutations whose largest cluster is at least as long.
+# The extent threshold is the smallest extent with p <= alpha.  Extents are whole
+# numbers, so this is one node above the (1 - alpha) quantile; a cluster exactly at the
+# quantile has p > alpha and does not pass.
 cluster_p_from_size <- function(size) mean(perm_max_sizes >= size)
+extent_threshold <- as.integer(quantile(perm_max_sizes, probs = 1 - alpha_familywise,
+                                        type = 1)) + 1L
 
 if (num_clusters > 0) {
   all_clusters_df <- do.call(rbind, lapply(seq_along(obs_clusters), function(k) {
@@ -197,7 +202,7 @@ if (num_clusters > 0) {
       MeanEstimate=mean(ests, na.rm=TRUE),
       ClusterPValue=cluster_p_from_size(length(nodes)),
       ExtentThresholdNodes=extent_threshold,
-      PassExtentThreshold=length(nodes) >= extent_threshold
+      PassExtentThreshold=cluster_p_from_size(length(nodes)) <= alpha_familywise
     )
   }))
 } else {

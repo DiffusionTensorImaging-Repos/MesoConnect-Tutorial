@@ -45,7 +45,7 @@ full    ~ metric_node + ICV + tract_length + streamline_count + motion + age
 reduced ~               ICV + tract_length + streamline_count + motion + age
 ```
 
-Each node yields a *t* statistic and a parametric *p* value, and adjacent nodes with *p* < .05 form clusters. Family-wise error is controlled at the cluster level with a Freedman–Lane permutation procedure (Freedman & Lane, 1983; Winkler et al., 2014): the residuals of the reduced model are permuted, all 100 nodes are refitted, the largest cluster of each permutation is recorded, and the procedure is repeated 5,000 times. A cluster is retained when its extent equals or exceeds the 95th percentile of this null distribution of maximum cluster extent. The permutations are drawn once from a fixed seed, so results do not depend on the number of cores. Variables are not standardized in this script; the node-wise estimates are in the units of the outcome per unit of the metric.
+Each node yields a *t* statistic and a parametric *p* value, and adjacent nodes with *p* < .05 form clusters. Family-wise error is controlled at the cluster level with a Freedman–Lane permutation procedure (Freedman & Lane, 1983; Winkler et al., 2014): the residuals of the reduced model are permuted, all 100 nodes are refitted, the largest cluster of each permutation is recorded, and the procedure is repeated 5,000 times. A cluster's *p* value is the proportion of permutations whose largest cluster is at least as long, and a cluster is retained when that value does not exceed .05; the smallest extent that meets this criterion is reported as the extent threshold. The permutations are drawn once from a fixed seed, so results do not depend on the number of cores. Variables are not standardized in this script; the node-wise estimates are in the units of the outcome per unit of the metric.
 
 The script reads the wide analysis file produced in Step 8b and is called once per outcome, tract and metric: `Rscript 09b_nodewise_permutation.R <analysis.csv> <outcome> <METRIC>_ <out_dir> <label>`, with the label written as `<tract>__<metric>__<outcome>`. Covariate column names and the number of permutations are taken from the `COVARIATES` and `N_PERMUTATIONS` settings in the configuration. Outputs per analysis are `_nodewise.csv` (node, estimate, *t*, *p*), `_clusters.csv` and `_summary.csv`; each call requires a few minutes on one core.
 
@@ -258,7 +258,7 @@ print(f"\n-> {path}")
 
 <!-- script:09b_nodewise_permutation.R -->
 <details>
-<summary>Script <code>09b_nodewise_permutation.R</code> (230 lines)</summary>
+<summary>Script <code>09b_nodewise_permutation.R</code> (235 lines)</summary>
 
 ```r title="09b_nodewise_permutation.R"
 # =============================================================================
@@ -442,8 +442,13 @@ if (cores > 1L) {
   perm_max_sizes <- vapply(1:num_permutations, perm_fun, integer(1))
 }
 
-extent_threshold <- as.integer(quantile(perm_max_sizes, probs=1-alpha_familywise, type=1))
+# Cluster p value: proportion of permutations whose largest cluster is at least as long.
+# The extent threshold is the smallest extent with p <= alpha.  Extents are whole
+# numbers, so this is one node above the (1 - alpha) quantile; a cluster exactly at the
+# quantile has p > alpha and does not pass.
 cluster_p_from_size <- function(size) mean(perm_max_sizes >= size)
+extent_threshold <- as.integer(quantile(perm_max_sizes, probs = 1 - alpha_familywise,
+                                        type = 1)) + 1L
 
 if (num_clusters > 0) {
   all_clusters_df <- do.call(rbind, lapply(seq_along(obs_clusters), function(k) {
@@ -460,7 +465,7 @@ if (num_clusters > 0) {
       MeanEstimate=mean(ests, na.rm=TRUE),
       ClusterPValue=cluster_p_from_size(length(nodes)),
       ExtentThresholdNodes=extent_threshold,
-      PassExtentThreshold=length(nodes) >= extent_threshold
+      PassExtentThreshold=cluster_p_from_size(length(nodes)) <= alpha_familywise
     )
   }))
 } else {
