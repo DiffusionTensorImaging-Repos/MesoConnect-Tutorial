@@ -7,7 +7,25 @@ title: "Step 4. Cutoff selection"
 
 The fibre orientation distribution (FOD) amplitude cutoff determines the minimum FOD amplitude at which tracking continues. A high cutoff terminates streamlines before they reach the target; a low cutoff, in unconstrained tracking, produces spurious streamlines. The corridor alters this trade-off. With tracking confined to the corridor, a permissive cutoff produces well-formed bundles while consuming far fewer seeds than a conservative cutoff. This behaviour should be verified for each dataset and tract family by a pilot sweep on a small number of participants, followed by tabulation and side-by-side inspection of the reconstructions.
 
-During atlas construction at 7 T the cutoff was 0.06 for ventral tegmental area (VTA) → hippocampus and 0.08 for hippocampus → accumbens. The MRtrix3 default for FOD-based tracking is 0.05. Because lower field strength yields noisier FOD estimates, a higher cutoff (approximately 0.08) was anticipated for 3 T data. The pilot sweep did not support that expectation.
+## Cutoff in routine use
+
+The value in routine use with the corridor mask is 0.01, and it is the default in `00_config.sh`. It is the recommended starting value for any tract reconstructed with this workflow; the pilot sweep described below confirms it for a new dataset or tract family and takes under an hour. Table 1 lists the cutoffs that have been used with the atlas.
+
+**Table 1**
+
+*FOD Amplitude Cutoffs in Use*
+
+| Setting | Cutoff | Outcome |
+|---|---|---|
+| Corridor workflow, 3 T multi-shell data (example dataset): posterior and anterior ventral tegmental area (VTA) → hippocampus | 0.01 | All 228 runs (57 participants, two tracts, two hemispheres) reached 2,500 streamlines; no participant excluded |
+| Corridor workflow, VTA → accumbens (other users of the atlas) | 0.01 | Reported to reconstruct the tract |
+| Atlas construction, 7 T: VTA → hippocampus and VTA → accumbens | 0.06 | Value used to build the atlas |
+| Atlas construction, 7 T: hippocampus → accumbens and hippocampus → ventral pallidum | 0.08 | Value used to build the atlas |
+| MRtrix3 default for FOD-based tracking | 0.05 | For reference; not used here |
+
+*Note.* A cutoff of 0.01 is usable only with the corridor's exclusion mask. Without the mask it produces streamlines throughout the brain.
+
+Because lower field strength yields noisier FOD estimates, a cutoff higher than the 7 T values (approximately 0.08) was anticipated for 3 T data. The pilot sweep did not support that expectation: the conservative cutoffs failed to reach the target in several participants, and 0.01 reached it in all of them with about one fifth of the seeds.
 
 ## Pilot sweep
 
@@ -17,9 +35,9 @@ The sweep uses five participants, four cutoffs and reduced budgets (`-select 100
 bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 ```
 
-The script reports streamlines reached, seeds consumed and mean length for each participant and cutoff. Table 1 gives the streamline counts obtained in the example dataset. At 0.1 most runs exhausted the seed budget before reaching the target. At 0.08 some participants reached the target and one stopped at 309. At 0.06 and at 0.01 all runs reached the target; the 0.01 runs consumed approximately one fifth of the seeds (about 415,000 versus 2.1 million or more at 0.06). Reaching the target in every pilot participant is a necessary condition for a cutoff; the reconstructions must also correspond to the tract, which is assessed next.
+The script reports streamlines reached, seeds consumed and mean length for each participant and cutoff. Table 2 gives the streamline counts obtained in the example dataset. At 0.1 most runs exhausted the seed budget before reaching the target. At 0.08 some participants reached the target and one stopped at 309. At 0.06 and at 0.01 all runs reached the target; the 0.01 runs consumed approximately one fifth of the seeds (about 415,000 versus 2.1 million or more at 0.06). Reaching the target in every pilot participant is a necessary condition for a cutoff; the reconstructions must also correspond to the tract, which is assessed next.
 
-**Table 1**
+**Table 2**
 
 *Streamlines Reached by Cutoff in the Pilot Sweep, Posterior VTA → Hippocampus*
 
@@ -64,7 +82,7 @@ The script writes one panel per participant, `cutoff_summary.csv`, and a summary
 
 ## Selection criterion
 
-The cutoff selected is the most permissive value that reaches the streamline target in every pilot participant and whose reconstruction matches the conservative reconstruction. In the example dataset this was 0.01. Other users of the atlas have used 0.01 for VTA → accumbens. The corridor mask is the condition that makes this value usable; the same cutoff without an exclusion mask produces streamlines throughout the brain. The sweep should be repeated for each tract family, since a cutoff selected for VTA → hippocampus is only a starting value for other pathways.
+The cutoff selected is the most permissive value that reaches the streamline target in every pilot participant and whose reconstruction matches the conservative reconstruction. In the example dataset this was 0.01, the value in routine use (Table 1). A higher value is warranted only when the 0.01 reconstruction departs from the conservative reconstruction in the side-by-side images, for example by filling the corridor rather than following the tract; the next value in Table 1 (0.06) is then tried. The sweep should be repeated for each tract family, since a cutoff confirmed for VTA → hippocampus is a starting value for other pathways.
 
 ## Options not used
 

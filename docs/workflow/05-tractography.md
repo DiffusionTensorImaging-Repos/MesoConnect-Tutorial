@@ -42,13 +42,13 @@ Table 1 gives the rationale for each option, and Table 2 the values used per tra
 
 *Parameters by Tract Family*
 
-| Family | Cutoff at 7 T (atlas construction) | Length bounds | Notes |
-|---|---|---|---|
-| VTA → hippocampus, posterior and anterior | 0.06 | 35–65 mm | Example dataset used 0.01 at 3 T with the corridor. |
-| VTA → amygdala | 0.06 | determine by pilot | Shorter tract; lower bounds expected. |
-| VTA → accumbens, superior and inferior | 0.06 | determine by pilot | 0.01 has been used with the corridor. |
-| Ventral pallidum → VTA | 0.06 | determine by pilot | |
-| Hippocampus → accumbens; hippocampus → ventral pallidum | 0.08 | determine by pilot | Frequently reconstructs as two clusters; see Step 6. |
+| Family | Cutoff with the corridor | Cutoff at 7 T (atlas construction) | Length bounds | Notes |
+|---|---|---|---|---|
+| VTA → hippocampus, posterior and anterior | 0.01 | 0.06 | 35–65 mm | Used for all 57 participants of the example dataset at 3 T. |
+| VTA → amygdala | 0.01, confirm by pilot | 0.06 | determine by pilot | Shorter tract; lower bounds expected. |
+| VTA → accumbens, superior and inferior | 0.01 | 0.06 | determine by pilot | 0.01 has been used with the corridor by other users of the atlas. |
+| Ventral pallidum → VTA | 0.01, confirm by pilot | 0.06 | determine by pilot | |
+| Hippocampus → accumbens; hippocampus → ventral pallidum | 0.01, confirm by pilot | 0.08 | determine by pilot | Frequently reconstructs as two clusters; see Step 6. |
 
 *Note.* Where a pilot is indicated, the length bounds are taken from the mean lengths reported in the Step 4 summary.
 

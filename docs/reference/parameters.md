@@ -18,7 +18,7 @@ Table 1 consolidates the parameters used in atlas construction at 7 T and in the
 | Warping | interpolation | nearest-neighbour | same | Linear for probabilistic maps, then threshold |
 | Corridor | dilation | 1–2 voxels | 2 | 4 when registration is uncertain |
 | Tractography | algorithm | iFOD2 (default) | same | |
-| Tractography | `-cutoff` | 0.06 (VTA → hippocampus); 0.08 (hippocampus → accumbens) | 0.01 | MRtrix3 default 0.05; determined by pilot |
+| Tractography | `-cutoff` | 0.06 (VTA → hippocampus); 0.08 (hippocampus → accumbens) | 0.01 | 0.01 is the value in routine use with the corridor mask and the default in `00_config.sh`; confirm by pilot (Step 4). MRtrix3 default 0.05 |
 | Tractography | `-select` | 2500 | 2500 | |
 | Tractography | `-seeds` | 25,000,000 | 25,000,000 | |
 | Tractography | `-minlength`, `-maxlength` | 35, 65 mm | 35, 65 mm | Per tract family |
