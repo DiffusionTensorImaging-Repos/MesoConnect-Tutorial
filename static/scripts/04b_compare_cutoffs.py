@@ -8,7 +8,7 @@ Run after 04_tune_cutoff.sh, in a shell where 00_config.sh has been sourced:
 
 For every pilot participant the script renders the tract-density image of each
 cutoff side by side (axial row, coronal row).  It then writes cutoff_summary.csv
-(streamlines reached, seeds used, occupied voxels, Dice overlap with the most
+(streamlines selected, streamlines generated, occupied voxels, Dice overlap with the most
 conservative cutoff, mean and SD of streamline length) and cutoff_summary.png.
 
 Outputs: $OUT/qc/<TRACT>_cutoff_pilot/
@@ -52,18 +52,19 @@ def run(cmd):
 
 
 def tck_summary(tck):
-    """Streamline count, seeds used, and mean and SD of length (mm)."""
+    """Streamlines selected, streamlines generated (selected plus rejected), and the
+    mean and SD of length (mm)."""
     info = {}
     for line in run(["tckinfo", str(tck)]).splitlines():
         key, _, value = line.strip().partition(":")
         info[key] = value.strip()
     count = int(info.get("count", 0))
-    seeds = int(info.get("total_count", 0))
+    generated = int(info.get("total_count", 0))
     if count == 0:
-        return count, seeds, np.nan, np.nan
+        return count, generated, np.nan, np.nan
     mean = float(run(["tckstats", str(tck), "-output", "mean", "-quiet"]))
     sd = float(run(["tckstats", str(tck), "-output", "std", "-quiet"]))
-    return count, seeds, mean, sd
+    return count, generated, mean, sd
 
 
 def density_mask(tck, template, scratch):
@@ -99,10 +100,10 @@ for s in PILOT:
         if not tck.exists():
             print(f"[{s}] cutoff {c}: no tractogram (run 04_tune_cutoff.sh)")
             continue
-        count, seeds, mean, sd = tck_summary(tck)
+        count, generated, mean, sd = tck_summary(tck)
         masks[c] = density_mask(tck, template, QC / f"_{s}_{c}_tdi.nii.gz")
         rows.append({
-            "subject": s, "cutoff": c, "streamlines": count, "seeds_used": seeds,
+            "subject": s, "cutoff": c, "selected": count, "generated": generated,
             "voxels": int(masks[c].sum()), "mean_len_mm": mean, "sd_len_mm": sd,
         })
     if not masks:
@@ -137,7 +138,7 @@ summary = pd.DataFrame(rows)
 summary.to_csv(QC / "cutoff_summary.csv", index=False)
 
 # Mean across pilot participants, one bar per cutoff
-panels = [("streamlines", "Streamlines reached"), ("seeds_used", "Seeds used"),
+panels = [("selected", "Streamlines selected"), ("generated", "Streamlines generated"),
           ("voxels", "Occupied voxels"), ("sd_len_mm", "SD of length (mm)")]
 means = summary.groupby("cutoff", sort=False)[[k for k, _ in panels]].mean()
 fig, axes = plt.subplots(1, len(panels), figsize=(15, 3.6))

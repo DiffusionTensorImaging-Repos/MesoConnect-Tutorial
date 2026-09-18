@@ -45,7 +45,7 @@ full    ~ metric_node + ICV + tract_length + streamline_count + motion + age
 reduced ~               ICV + tract_length + streamline_count + motion + age
 ```
 
-The observed *t* statistic at each node is evaluated against a Freedman–Lane permutation distribution (Freedman & Lane, 1983; Winkler et al., 2014): the residuals of the reduced model are permuted, all 100 nodes are refitted, and the procedure is repeated 5,000 times. Adjacent nodes with *p* < .05 form clusters, and a cluster is retained when its extent equals or exceeds the 95th percentile of the null distribution of maximum cluster extent.
+Each node yields a *t* statistic and a parametric *p* value, and adjacent nodes with *p* < .05 form clusters. Family-wise error is controlled at the cluster level with a Freedman–Lane permutation procedure (Freedman & Lane, 1983; Winkler et al., 2014): the residuals of the reduced model are permuted, all 100 nodes are refitted, the largest cluster of each permutation is recorded, and the procedure is repeated 5,000 times. A cluster is retained when its extent equals or exceeds the 95th percentile of this null distribution of maximum cluster extent. The permutations are drawn once from a fixed seed, so results do not depend on the number of cores. Variables are not standardized in this script; the node-wise estimates are in the units of the outcome per unit of the metric.
 
 The script reads the wide analysis file produced in Step 8b and is called once per outcome, tract and metric: `Rscript 09b_nodewise_permutation.R <analysis.csv> <outcome> <METRIC>_ <out_dir> <label>`, with the label written as `<tract>__<metric>__<outcome>`. Covariate column names and the number of permutations are taken from the `COVARIATES` and `N_PERMUTATIONS` settings in the configuration. Outputs per analysis are `_nodewise.csv` (node, estimate, *t*, *p*), `_clusters.csv` and `_summary.csv`; each call requires a few minutes on one core.
 
@@ -84,7 +84,7 @@ The file contains one row per node with the columns `outcome, tract, metric, nod
 
 <!-- script:09a_tract_models.py -->
 <details>
-<summary>Script <code>09a_tract_models.py</code> (155 lines)</summary>
+<summary>Script <code>09a_tract_models.py</code> (164 lines)</summary>
 
 ```python title="09a_tract_models.py"
 #!/usr/bin/env python3
@@ -147,10 +147,19 @@ COVARIATES = env("COVARIATES").split(",")
 ANALYSIS = Path(args.analysis_dir) if args.analysis_dir else Path(env("OUT")) / "analysis"
 if len(TRACTS) > 2:
     sys.exit("--tracts takes one tract or two")
+if not 0 <= args.trim < 25:
+    sys.exit("--trim must be between 0 and 24 (nodes excluded at each end)")
 
 SEGMENTS = {"Whole": (args.trim, 100 - args.trim), "Q1": (args.trim, 25), "Q2": (25, 50),
             "Q3": (50, 75), "Q4": (75, 100 - args.trim)}
-RHS = " + ".join(COVARIATES)
+
+
+def q(column):
+    """Quote a column name so that any name is valid in a model formula."""
+    return f'Q("{column}")'
+
+
+RHS = " + ".join(q(c) for c in COVARIATES)
 
 
 def zscore(frame):
@@ -179,7 +188,7 @@ def single_tract(tract):
         for segment in SEGMENTS:
             d = table[COVARIATES + [outcome]].assign(metric=segment_mean(table, segment))
             d = d.dropna()
-            fit = smf.ols(f"{outcome} ~ metric + {RHS}", zscore(d)).fit()
+            fit = smf.ols(f"{q(outcome)} ~ metric + {RHS}", zscore(d)).fit()
             row = {"model": "ols", "tract": tract, "segment": segment, "outcome": outcome,
                    "term": "metric", "n": int(fit.nobs), "beta": fit.params["metric"],
                    "statistic": fit.tvalues["metric"], "p": fit.pvalues["metric"]}
@@ -193,7 +202,7 @@ def single_tract(tract):
         q1, q4 = segment_mean(table, "Q1"), segment_mean(table, "Q4")
         d = table[COVARIATES + [outcome]].assign(mean_q1q4=(q1 + q4) / 2, diff_q4q1=q4 - q1)
         d = d.dropna()
-        fit = smf.ols(f"{outcome} ~ mean_q1q4 + diff_q4q1 + {RHS}", zscore(d)).fit()
+        fit = smf.ols(f"{q(outcome)} ~ mean_q1q4 + diff_q4q1 + {RHS}", zscore(d)).fit()
         for term in ("mean_q1q4", "diff_q4q1"):
             rows.append({"model": "uniformity", "tract": tract, "segment": "Q1,Q4",
                          "outcome": outcome, "term": term, "n": int(fit.nobs),
@@ -216,15 +225,15 @@ def two_tracts(tract_a, tract_b):
             stacked[numeric] = zscore(stacked[numeric])
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                main = smf.mixedlm(f"metric ~ {outcome} + tract + {RHS}", stacked,
+                main = smf.mixedlm(f"metric ~ {q(outcome)} + tract + {RHS}", stacked,
                                    groups=stacked["Subject"]).fit(reml=False)
-                full = smf.mixedlm(f"metric ~ {outcome} * tract + {RHS}", stacked,
+                full = smf.mixedlm(f"metric ~ {q(outcome)} * tract + {RHS}", stacked,
                                    groups=stacked["Subject"]).fit(reml=False)
             lr = max(2 * (full.llf - main.llf), 0)
             rows.append({"model": "mixed", "tract": f"{tract_a}+{tract_b}", "segment": segment,
                          "outcome": outcome, "term": outcome,
-                         "n": stacked["Subject"].nunique(), "beta": main.params[outcome],
-                         "statistic": main.tvalues[outcome], "p": main.pvalues[outcome],
+                         "n": stacked["Subject"].nunique(), "beta": main.params[q(outcome)],
+                         "statistic": main.tvalues[q(outcome)], "p": main.pvalues[q(outcome)],
                          "interaction_p": chi2.sf(lr, 1)})
     return rows
 
@@ -249,7 +258,7 @@ print(f"\n-> {path}")
 
 <!-- script:09b_nodewise_permutation.R -->
 <details>
-<summary>Script <code>09b_nodewise_permutation.R</code> (225 lines)</summary>
+<summary>Script <code>09b_nodewise_permutation.R</code> (230 lines)</summary>
 
 ```r title="09b_nodewise_permutation.R"
 # =============================================================================
@@ -394,8 +403,14 @@ yhat_red <- fitted(fit_red); resid_red <- resid(fit_red)
 analysable <- vapply(seq_along(node_cols), function(i)
   sd(dat[[node_cols[i]]]) > 0, logical(1))
 
+# All permutations are drawn once, here, so that the null distribution is identical
+# for any number of cores and any scheduling of the parallel workers.
+set.seed(rng_seed)
+perm_mat <- vapply(seq_len(num_permutations), function(k) sample.int(n_subj),
+                   integer(n_subj))
+
 perm_fun <- function(.perm) {
-  perm_idx <- sample.int(n_subj)
+  perm_idx <- perm_mat[, .perm]
   y_perm <- yhat_red + resid_red[perm_idx]
   p_perm <- rep(1, num_nodes)
   for (i in which(analysable)) {
@@ -420,7 +435,6 @@ if (!is.na(env_cores) && env_cores > 0L) {
 
 if (cores > 1L) {
   cl <- parallel::makeCluster(cores); registerDoParallel(cl)
-  parallel::clusterSetRNGStream(cl, rng_seed)
   perm_max_sizes <- foreach(perm = 1:num_permutations, .combine = c,
                             .packages = "stats") %dopar% perm_fun(perm)
   parallel::stopCluster(cl)

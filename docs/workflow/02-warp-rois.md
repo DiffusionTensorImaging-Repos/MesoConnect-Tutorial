@@ -14,7 +14,7 @@ Three Montreal Neurological Institute (MNI) space images are transformed for eac
 antsApplyTransforms -d 3 -i "$ATLAS_MNI" -r "$T1" -o "$d/${TRACT}_atlas_t1.nii.gz" \
   -t "$OUT/$s/reg/mni2t1_1Warp.nii.gz" -t "$OUT/$s/reg/mni2t1_0GenericAffine.mat" -n NearestNeighbor
 
-# T1 -> diffusion (FLIRT, linear); -usesqform replaces -init when T1 and diffusion share a grid
+# T1 -> diffusion (FLIRT, linear); with T1_TO_DWI=header, -usesqform replaces -init <matrix>
 flirt -in "$d/${TRACT}_atlas_t1.nii.gz" -ref "$PROJECT/dwi/$s/nodif_brain_mask.nii.gz" \
   -applyxfm -init "$PROJECT/xfm/$s/str2diff.mat" -out "$d/${TRACT}_atlas_diff.nii.gz" -interp nearestneighbour
 fslmaths "$d/${TRACT}_atlas_diff.nii.gz" -thr 0.5 -bin "$d/${TRACT}_atlas_diff.nii.gz"
@@ -24,18 +24,20 @@ Two successive nearest-neighbour resamplings of a binary mask have negligible ef
 
 <!-- script:02_warp_rois.sh -->
 <details>
-<summary>Script <code>02_warp_rois.sh</code> (78 lines)</summary>
+<summary>Script <code>02_warp_rois.sh</code> (90 lines)</summary>
 
 ```bash title="02_warp_rois.sh"
 #!/bin/bash
 # =============================================================================
 # Step 2. Warp the seed, target and tract atlas into diffusion space
 # =============================================================================
-# MNI -> T1 with the ANTs transforms from Step 1, then T1 -> diffusion with FLIRT.
+# MNI -> T1 with the ANTs transforms from Step 1, then T1 -> diffusion with FLIRT,
+# using the matrix or the image header according to T1_TO_DWI in 00_config.sh.
 # Nearest-neighbour interpolation throughout; outputs are re-binarized.
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 warp_one() {
   local s=$1
@@ -55,6 +57,10 @@ warp_one() {
     echo "!! $s missing registration outputs or diffusion reference"
     return
   fi
+  if [ "$T1_TO_DWI" = matrix ] && [ ! -f "$mat" ]; then
+    echo "!! $s missing $mat"
+    return
+  fi
   mkdir -p "$d"
 
   for name in seed target atlas; do
@@ -69,11 +75,11 @@ warp_one() {
     antsApplyTransforms -d 3 -i "$src" -r "$t1" -o "$in_t1" \
       -t "$warp" -t "$aff" -n NearestNeighbor
 
-    if [ -f "$mat" ]; then
+    if [ "$T1_TO_DWI" = matrix ]; then
       flirt -in "$in_t1" -ref "$ref" -applyxfm -init "$mat" \
         -interp nearestneighbour -out "$in_diff"
     else
-      # T1 and diffusion share a grid: resample onto the diffusion reference only
+      # T1 and diffusion share a space: resample onto the diffusion grid by header
       flirt -in "$in_t1" -ref "$ref" -applyxfm -usesqform \
         -interp nearestneighbour -out "$in_diff"
     fi
@@ -82,16 +88,22 @@ warp_one() {
   echo ">> $s warped"
 }
 
-while read -r s; do
+case "$T1_TO_DWI" in
+  matrix) echo "== T1 -> diffusion: applying xfm/<subj>/str2diff.mat" ;;
+  header) echo "== T1 -> diffusion: resampling by image header (no matrix)" ;;
+  *)      echo "!! T1_TO_DWI must be matrix or header"; exit 1 ;;
+esac
+
+for s in "${SUBJECTS[@]}"; do
   warp_one "$s" &
   throttle "$MAXJOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit: voxel counts and seed-target overlap (the overlap must be 0)
 tmp=$(mktemp -d)
 printf "\nSubject\tseed_vox\ttarget_vox\tatlas_vox\tseed_target_overlap\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   d="$OUT/$s/rois"
   if [ ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]; then
     printf "%s\tMISSING\n" "$s"
@@ -103,7 +115,7 @@ while read -r s; do
     "$(nvox "$d/${TRACT}_target_diff.nii.gz")" \
     "$(nvox "$d/${TRACT}_atlas_diff.nii.gz")" \
     "$(nvox "$tmp/overlap")"
-done < "$SUBJECTS_FILE"
+done
 rm -rf "$tmp"
 ```
 
@@ -112,7 +124,7 @@ rm -rf "$tmp"
 
 ## Verification
 
-Automated checks cover file completeness, image dimensions against the diffusion reference, binariness, laterality (left-hemisphere regions located in the left hemisphere), voxel counts, and the seed–target overlap, which must be zero. Participants whose voxel counts fall more than two standard deviations from the sample mean are flagged for inspection. Table 1 gives the counts obtained in the example dataset. A registration cross-correlation below .60 was also flagged; two participants scored .59 and were retained after visual inspection.
+The script ends with a per-participant table of the voxel counts of the warped seed, target and atlas and of the seed–target overlap, which must be zero; participants with missing outputs are listed as such. Voxel counts far from the sample mean (more than two standard deviations is a useful criterion) indicate a failed registration and call for inspection of that participant. Table 1 gives the counts obtained in the example dataset. In that dataset image dimensions, binariness and laterality (left-hemisphere regions located in the left hemisphere) were also checked for every participant, and a cross-correlation below .60 between the warped template and the T1 image was flagged; two participants scored .59 and were retained after visual inspection. These additional checks are not part of the distributed script.
 
 **Table 1**
 

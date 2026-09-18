@@ -11,6 +11,7 @@
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 estimate_response() {
   local s=$1
@@ -47,20 +48,27 @@ estimate_fod() {
     "$g/group_gm_response.txt"  "$d/gm_fod.mif" \
     "$g/group_csf_response.txt" "$d/csf_fod.mif" \
     -mask "$d/mask.mif" -nthreads "$NTHREADS" -force -quiet
-  mtnormalise \
-    "$d/wm_fod.mif"  "$d/wm_fod_norm.mif" \
+  # The normalized WM FOD marks a finished participant, so it is written under a
+  # temporary name and renamed only when mtnormalise succeeds.
+  if mtnormalise \
+    "$d/wm_fod.mif"  "$d/wm_fod_norm.partial.mif" \
     "$d/gm_fod.mif"  "$d/gm_fod_norm.mif" \
     "$d/csf_fod.mif" "$d/csf_fod_norm.mif" \
-    -mask "$d/mask.mif" -force -quiet
-  echo ">> $s FOD"
+    -mask "$d/mask.mif" -force -quiet; then
+    mv -f "$d/wm_fod_norm.partial.mif" "$d/wm_fod_norm.mif"
+    echo ">> $s FOD"
+  else
+    rm -f "$d/wm_fod_norm.partial.mif"
+    echo "!! $s FOD estimation failed or was interrupted"
+  fi
 }
 
 # Phase 1
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   estimate_response "$s" &
   throttle "$MAXJOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Phase 2
 for tissue in wm gm csf; do
@@ -70,14 +78,14 @@ done
 echo "== group response functions written"
 
 # Phase 3 (memory-intensive: $FOD_JOBS participants at a time)
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   estimate_fod "$s" &
   throttle "$FOD_JOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit
 printf "\nSubject\twm_fod_norm\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   printf "%s\t%s\n" "$s" "$(present "$PROJECT/dwi/$s/wm_fod_norm.mif")"
-done < "$SUBJECTS_FILE"
+done

@@ -29,7 +29,10 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from AFQ.recognition.cleaning import clean_bundle
+try:
+    from AFQ.recognition.cleaning import clean_bundle
+except ImportError:                       # pyAFQ 1.3.2 and earlier
+    from AFQ.segmentation import clean_bundle
 from dipy.io.stateful_tractogram import StatefulTractogram
 from dipy.io.streamline import load_tractogram, save_tractogram
 from dipy.segment.clustering import QuickBundles
@@ -68,8 +71,10 @@ if "core_only" in inspect.signature(clean_bundle).parameters:
 
 
 def clean(sft):
-    cleaned, _ = clean_bundle(sft, return_idx=True, **CLEAN_ARGS)
-    return cleaned
+    # The cleaned bundle is rebuilt from the retained indices, so that its coordinate
+    # space is that of the input under every pyAFQ version.
+    _, keep = clean_bundle(sft, return_idx=True, **CLEAN_ARGS)
+    return StatefulTractogram.from_sft(sft.streamlines[keep], sft)
 
 
 def load(tck, reference):

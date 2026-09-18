@@ -2,11 +2,13 @@
 # =============================================================================
 # Step 2. Warp the seed, target and tract atlas into diffusion space
 # =============================================================================
-# MNI -> T1 with the ANTs transforms from Step 1, then T1 -> diffusion with FLIRT.
+# MNI -> T1 with the ANTs transforms from Step 1, then T1 -> diffusion with FLIRT,
+# using the matrix or the image header according to T1_TO_DWI in 00_config.sh.
 # Nearest-neighbour interpolation throughout; outputs are re-binarized.
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 warp_one() {
   local s=$1
@@ -26,6 +28,10 @@ warp_one() {
     echo "!! $s missing registration outputs or diffusion reference"
     return
   fi
+  if [ "$T1_TO_DWI" = matrix ] && [ ! -f "$mat" ]; then
+    echo "!! $s missing $mat"
+    return
+  fi
   mkdir -p "$d"
 
   for name in seed target atlas; do
@@ -40,11 +46,11 @@ warp_one() {
     antsApplyTransforms -d 3 -i "$src" -r "$t1" -o "$in_t1" \
       -t "$warp" -t "$aff" -n NearestNeighbor
 
-    if [ -f "$mat" ]; then
+    if [ "$T1_TO_DWI" = matrix ]; then
       flirt -in "$in_t1" -ref "$ref" -applyxfm -init "$mat" \
         -interp nearestneighbour -out "$in_diff"
     else
-      # T1 and diffusion share a grid: resample onto the diffusion reference only
+      # T1 and diffusion share a space: resample onto the diffusion grid by header
       flirt -in "$in_t1" -ref "$ref" -applyxfm -usesqform \
         -interp nearestneighbour -out "$in_diff"
     fi
@@ -53,16 +59,22 @@ warp_one() {
   echo ">> $s warped"
 }
 
-while read -r s; do
+case "$T1_TO_DWI" in
+  matrix) echo "== T1 -> diffusion: applying xfm/<subj>/str2diff.mat" ;;
+  header) echo "== T1 -> diffusion: resampling by image header (no matrix)" ;;
+  *)      echo "!! T1_TO_DWI must be matrix or header"; exit 1 ;;
+esac
+
+for s in "${SUBJECTS[@]}"; do
   warp_one "$s" &
   throttle "$MAXJOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit: voxel counts and seed-target overlap (the overlap must be 0)
 tmp=$(mktemp -d)
 printf "\nSubject\tseed_vox\ttarget_vox\tatlas_vox\tseed_target_overlap\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   d="$OUT/$s/rois"
   if [ ! -f "$d/${TRACT}_atlas_diff.nii.gz" ]; then
     printf "%s\tMISSING\n" "$s"
@@ -74,5 +86,5 @@ while read -r s; do
     "$(nvox "$d/${TRACT}_target_diff.nii.gz")" \
     "$(nvox "$d/${TRACT}_atlas_diff.nii.gz")" \
     "$(nvox "$tmp/overlap")"
-done < "$SUBJECTS_FILE"
+done
 rm -rf "$tmp"

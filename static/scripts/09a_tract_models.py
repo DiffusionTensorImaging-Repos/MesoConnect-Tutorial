@@ -58,10 +58,19 @@ COVARIATES = env("COVARIATES").split(",")
 ANALYSIS = Path(args.analysis_dir) if args.analysis_dir else Path(env("OUT")) / "analysis"
 if len(TRACTS) > 2:
     sys.exit("--tracts takes one tract or two")
+if not 0 <= args.trim < 25:
+    sys.exit("--trim must be between 0 and 24 (nodes excluded at each end)")
 
 SEGMENTS = {"Whole": (args.trim, 100 - args.trim), "Q1": (args.trim, 25), "Q2": (25, 50),
             "Q3": (50, 75), "Q4": (75, 100 - args.trim)}
-RHS = " + ".join(COVARIATES)
+
+
+def q(column):
+    """Quote a column name so that any name is valid in a model formula."""
+    return f'Q("{column}")'
+
+
+RHS = " + ".join(q(c) for c in COVARIATES)
 
 
 def zscore(frame):
@@ -90,7 +99,7 @@ def single_tract(tract):
         for segment in SEGMENTS:
             d = table[COVARIATES + [outcome]].assign(metric=segment_mean(table, segment))
             d = d.dropna()
-            fit = smf.ols(f"{outcome} ~ metric + {RHS}", zscore(d)).fit()
+            fit = smf.ols(f"{q(outcome)} ~ metric + {RHS}", zscore(d)).fit()
             row = {"model": "ols", "tract": tract, "segment": segment, "outcome": outcome,
                    "term": "metric", "n": int(fit.nobs), "beta": fit.params["metric"],
                    "statistic": fit.tvalues["metric"], "p": fit.pvalues["metric"]}
@@ -104,7 +113,7 @@ def single_tract(tract):
         q1, q4 = segment_mean(table, "Q1"), segment_mean(table, "Q4")
         d = table[COVARIATES + [outcome]].assign(mean_q1q4=(q1 + q4) / 2, diff_q4q1=q4 - q1)
         d = d.dropna()
-        fit = smf.ols(f"{outcome} ~ mean_q1q4 + diff_q4q1 + {RHS}", zscore(d)).fit()
+        fit = smf.ols(f"{q(outcome)} ~ mean_q1q4 + diff_q4q1 + {RHS}", zscore(d)).fit()
         for term in ("mean_q1q4", "diff_q4q1"):
             rows.append({"model": "uniformity", "tract": tract, "segment": "Q1,Q4",
                          "outcome": outcome, "term": term, "n": int(fit.nobs),
@@ -127,15 +136,15 @@ def two_tracts(tract_a, tract_b):
             stacked[numeric] = zscore(stacked[numeric])
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                main = smf.mixedlm(f"metric ~ {outcome} + tract + {RHS}", stacked,
+                main = smf.mixedlm(f"metric ~ {q(outcome)} + tract + {RHS}", stacked,
                                    groups=stacked["Subject"]).fit(reml=False)
-                full = smf.mixedlm(f"metric ~ {outcome} * tract + {RHS}", stacked,
+                full = smf.mixedlm(f"metric ~ {q(outcome)} * tract + {RHS}", stacked,
                                    groups=stacked["Subject"]).fit(reml=False)
             lr = max(2 * (full.llf - main.llf), 0)
             rows.append({"model": "mixed", "tract": f"{tract_a}+{tract_b}", "segment": segment,
                          "outcome": outcome, "term": outcome,
-                         "n": stacked["Subject"].nunique(), "beta": main.params[outcome],
-                         "statistic": main.tvalues[outcome], "p": main.pvalues[outcome],
+                         "n": stacked["Subject"].nunique(), "beta": main.params[q(outcome)],
+                         "statistic": main.tvalues[q(outcome)], "p": main.pvalues[q(outcome)],
                          "interaction_p": chi2.sf(lr, 1)})
     return rows
 

@@ -5,7 +5,7 @@ title: "Workflow overview"
 
 # Workflow overview
 
-The workflow comprises nine steps applied to one tract at a time (Figure 1). Steps 1 and 2 are performed once per participant and reused across tracts. Steps 3 through 9 are repeated for each tract by changing the seed, target and atlas file in the configuration.
+The workflow comprises nine steps applied to one tract at a time (Figure 1). Step 1 is performed once per participant and reused across tracts. Steps 2 through 9 are repeated for each tract by changing the tract name and the seed, target and atlas files in the configuration.
 
 **Figure 1**
 
@@ -29,7 +29,7 @@ flowchart TD
 
 ## Inputs
 
-Table 1 lists the per-participant inputs. When the T1 image is already aligned to the diffusion grid, as in Human Connectome Project data, the affine matrix is omitted and the warp script resamples directly.
+Table 1 lists the per-participant inputs. When the T1 image is already aligned to the diffusion image, as in Human Connectome Project data, no affine matrix is needed: `T1_TO_DWI` is set to `header` in the configuration and the warp script resamples by image header. With the default, `matrix`, a participant without a matrix is reported as missing an input.
 
 **Table 1**
 
@@ -42,7 +42,7 @@ Table 1 lists the per-participant inputs. When the T1 image is already aligned t
 | Diffusion-space brain mask | preprocessing | `$PROJECT/dwi/<subj>/nodif_brain_mask.nii.gz` |
 | Preprocessed diffusion data with *b*-values and gradient directions (needed only to estimate FODs or fit NODDI) | preprocessing | `$PROJECT/dwi/<subj>/data.nii.gz`, `bvals`, `bvecs` |
 | Mean *b* = 0 image (optional; background of the quality-control images) | preprocessing | `$PROJECT/dwi/<subj>/mean_b0.nii.gz` |
-| T1 → diffusion affine matrix (if the grids differ) | FLIRT | `$PROJECT/xfm/<subj>/str2diff.mat` |
+| T1 → diffusion affine matrix (when `T1_TO_DWI=matrix`) | FLIRT | `$PROJECT/xfm/<subj>/str2diff.mat` |
 | Scalar maps for profiling | DTIFIT; AMICO NODDI | `$PROJECT/dwi/<subj>/fa.nii.gz`; `$PROJECT/noddi/<subj>/fit_*.nii.gz` |
 
 *Note.* CSD = constrained spherical deconvolution.
@@ -58,7 +58,7 @@ $OUT/<subj>/
                 <tract>_pilot_<cutoff>.tck          (Step 4)
                 <tract>_<cutoff>.tck  <tract>_<cutoff>_cleaned.tck
 $OUT/qc/<tract>_cutoff_pilot/  cutoff comparison panels, cutoff_summary.csv         (Step 4b)
-$OUT/qc/<tract>_tckgen_summary.csv   streamlines reached and seeds used            (Step 5)
+$OUT/qc/<tract>_tckgen_summary.csv   streamlines selected and generated            (Step 5)
 $OUT/qc/<tract>/               per-participant overlay images, qc_flags.csv        (Step 7)
 $OUT/nodewise/                 <tract>_tract_stats.csv     cleaned-bundle Streamline_count,
                                                            Mean_length_mm          (Step 6)
@@ -75,7 +75,7 @@ A manifest should be kept for each analysis recording the atlas version and thre
 
 ## Scripts
 
-All scripts read a single configuration file, `00_config.sh`, which specifies project paths, the participant list, the tract definition and the tractography parameters. The configuration is edited once per project; the tract fields (`TRACT`, `SEED_MNI`, `TARGET_MNI`, `ATLAS_MNI`) are changed for each tract. Every step script writes a log to `$OUT/logs/` and skips participants whose output already exists, so an interrupted run can be restarted with the same command; setting `FORCE=1` recomputes existing outputs. Steps 0b, 1 and 5 require hours on a full sample and should be run under `tmux` or a job scheduler. The concurrency limits in the scripts were set for a shared 48-core node and should be reduced on a workstation.
+All scripts read a single configuration file, `00_config.sh`, which specifies project paths, the participant list, the tract definition and the tractography parameters. The configuration is edited once per project; the tract fields (`TRACT`, `SEED_MNI`, `TARGET_MNI`, `ATLAS_MNI`) are changed for each tract. The shell scripts write a log to `$OUT/logs/`. Steps 0b, 1, 2, 3, 5, 6, 7 and 8a skip participants whose output already exists, so an interrupted run can be restarted with the same command; tractograms and FOD images are written under a temporary name and renamed on completion, so a file left by an interrupted run is never taken for a finished one. Setting `FORCE=1` recomputes existing outputs. Steps 4, 8, 8b and 9 recompute on every run. The Python and R scripts read the settings exported by `source 00_config.sh`; the file must be sourced again after every edit, otherwise those scripts continue to use the previous values. Steps 0b, 1 and 5 require hours on a full sample and should be run under `tmux` or a job scheduler. The concurrency settings in the configuration (`NTHREADS`, `MAXJOBS`, `ANTS_THREADS`, `ANTS_JOBS`, `FOD_JOBS`) were chosen for a 48-core node and should be reduced on a workstation or a shared machine.
 
 ```bash
 cd scripts
@@ -91,7 +91,7 @@ python 04b_compare_cutoffs.py "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.0
 bash 05_tractography.sh
 python 06_clean_bundles.py
 python 07_visual_qc.py
-python 08a_noddi_fit.py           # only if NODDI maps are wanted
+python 08a_noddi_fit.py           # omit to profile FA only; Step 8 drops metrics with no maps
 python 08_node_profiles.py
 python 08b_build_analysis_csv.py  # analysis files for Step 9
 
@@ -106,7 +106,7 @@ The configuration file follows.
 
 <!-- script:00_config.sh -->
 <details>
-<summary>Script <code>00_config.sh</code> (84 lines)</summary>
+<summary>Script <code>00_config.sh</code> (103 lines)</summary>
 
 ```bash title="00_config.sh"
 #!/bin/bash
@@ -133,7 +133,7 @@ export PROJECT="/path/to/project"
 export SUBJECTS_FILE="$PROJECT/subjects.txt"     # one participant ID per line
 export ATLAS_DIR="/path/to/MesoConnectAtlas"     # atlas and region files, MNI 1 mm
 export OUT="$PROJECT/derivatives/mesoconnect"    # everything this workflow writes
-export FORCE=0                                   # 1 = recompute existing outputs
+export FORCE="${FORCE:-0}"                        # 1 = recompute existing outputs
 
 # --- tract definition (one tract per run; edit and rerun for another tract) ---
 export TRACT="l_vta_l_hipp"                      # name used for all outputs
@@ -141,6 +141,11 @@ export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"
 export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"
 export ATLAS_MNI="$ATLAS_DIR/tracts_thresholded_binary_50/\
 l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz"
+
+# --- T1 -> diffusion transform applied in Step 2 --------------------------------
+#   matrix  apply $PROJECT/xfm/<subj>/str2diff.mat (a missing matrix is a missing input)
+#   header  T1 and diffusion images already share a space: resample by image header only
+export T1_TO_DWI="matrix"
 
 # --- corridor and tractography parameters (see Reference: Parameters) --------
 export DILATE_VOX=2          # corridor dilation, voxels (1-2; 4 if registration is uncertain)
@@ -177,11 +182,25 @@ start_log() {
   echo "== $(date '+%F %T')  $(basename "$1")  TRACT=$TRACT"
 }
 
+# Participant IDs as the array SUBJECTS.  Tolerates CRLF line endings, blank lines
+# and a missing final newline, none of which a "while read" loop handles.
+read_subjects() {
+  SUBJECTS=($(tr -d '\r' < "$SUBJECTS_FILE"))
+  echo "== ${#SUBJECTS[@]} participants in $SUBJECTS_FILE"
+}
+
 # Block until fewer than N background jobs are running.  Usage: throttle N
 throttle() {
   while [ "$(jobs -r | wc -l)" -ge "$1" ]; do
     sleep 1
   done
+}
+
+# Block until every background job has finished.  A bare "wait" must not be used:
+# bash 5.0 to 5.2 would also wait for the logging process started by start_log,
+# which never exits while the script is running.
+wait_for_jobs() {
+  throttle 1
 }
 
 # Number of non-zero voxels in an image.

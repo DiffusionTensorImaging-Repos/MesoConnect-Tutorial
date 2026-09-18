@@ -22,13 +22,13 @@ antsRegistrationSyNQuick.sh -d 3 \
 
 The outputs are the affine component (`mni2t1_0GenericAffine.mat`), the forward warp from MNI to T1 (`mni2t1_1Warp.nii.gz`, used in Step 2), the inverse warp from T1 to MNI (`mni2t1_1InverseWarp.nii.gz`, used to return participant-level results to atlas space) and the template resampled into participant space (`mni2t1_Warped.nii.gz`).
 
-If the T1 image has not been skull-stripped, this should be done first; atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion grid, this warp is the only transform required.
+If the T1 image has not been skull-stripped, this should be done first; atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion image, this warp is the only transform required (`T1_TO_DWI=header` in the configuration).
 
 The full script follows. Each participant requires approximately 10 to 15 min with four threads, and the script runs four participants concurrently.
 
 <!-- script:01_register_mni_to_t1.sh -->
 <details>
-<summary>Script <code>01_register_mni_to_t1.sh</code> (48 lines)</summary>
+<summary>Script <code>01_register_mni_to_t1.sh</code> (49 lines)</summary>
 
 ```bash title="01_register_mni_to_t1.sh"
 #!/bin/bash
@@ -42,6 +42,7 @@ The full script follows. Each participant requires approximately 10 to 15 min wi
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 register_one() {
   local s=$1
@@ -64,21 +65,21 @@ register_one() {
   echo ">> $s registered"
 }
 
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   register_one "$s" &
   throttle "$ANTS_JOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit
 printf "\nSubject\tAffine\tWarp\tInverseWarp\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   d="$OUT/$s/reg"
   printf "%s\t%s\t%s\t%s\n" "$s" \
     "$(present "$d/mni2t1_0GenericAffine.mat")" \
     "$(present "$d/mni2t1_1Warp.nii.gz")" \
     "$(present "$d/mni2t1_1InverseWarp.nii.gz")"
-done < "$SUBJECTS_FILE"
+done
 ```
 
 </details>

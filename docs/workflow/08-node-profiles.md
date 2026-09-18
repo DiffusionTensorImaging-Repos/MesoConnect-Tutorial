@@ -25,7 +25,7 @@ The `METRICS` dictionary in the script specifies the scalar maps; the script wri
 
 <!-- script:08_node_profiles.py -->
 <details>
-<summary>Script <code>08_node_profiles.py</code> (107 lines)</summary>
+<summary>Script <code>08_node_profiles.py</code> (118 lines)</summary>
 
 ```python title="08_node_profiles.py"
 #!/usr/bin/env python3
@@ -42,7 +42,9 @@ the target end in every participant.  At each node, every streamline's value is
 weighted by the inverse of its Mahalanobis distance from the bundle core
 (Yeatman et al., 2012).
 
-METRICS maps a column name to a scalar image; add or remove entries freely.
+METRICS maps a column name to a scalar image; add or remove entries freely.  A metric
+whose image exists for no participant (for example NODDI when Step 8a was not run) is
+dropped with a notice; a participant missing any remaining image is skipped.
 
 Output: $OUT/nodewise/<TRACT>_nodewise_all_subjects.csv
         (long format: Subject, Tract, Node, one column per metric)
@@ -83,6 +85,15 @@ METRICS = {
     "ODI": "noddi/{s}/fit_ODI_modulated.nii.gz",
     "FWF": "noddi/{s}/fit_FWF.nii.gz",
 }
+
+
+unavailable = [m for m, template in METRICS.items()
+               if not any((PROJECT / template.format(s=s)).exists() for s in SUBJECTS)]
+for m in unavailable:
+    print(f"metric {m}: no image found for any participant; not profiled")
+    del METRICS[m]
+if not METRICS:
+    sys.exit("no scalar images found")
 
 
 def seed_centre_mm(s):

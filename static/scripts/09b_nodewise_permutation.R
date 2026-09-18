@@ -140,8 +140,14 @@ yhat_red <- fitted(fit_red); resid_red <- resid(fit_red)
 analysable <- vapply(seq_along(node_cols), function(i)
   sd(dat[[node_cols[i]]]) > 0, logical(1))
 
+# All permutations are drawn once, here, so that the null distribution is identical
+# for any number of cores and any scheduling of the parallel workers.
+set.seed(rng_seed)
+perm_mat <- vapply(seq_len(num_permutations), function(k) sample.int(n_subj),
+                   integer(n_subj))
+
 perm_fun <- function(.perm) {
-  perm_idx <- sample.int(n_subj)
+  perm_idx <- perm_mat[, .perm]
   y_perm <- yhat_red + resid_red[perm_idx]
   p_perm <- rep(1, num_nodes)
   for (i in which(analysable)) {
@@ -166,7 +172,6 @@ if (!is.na(env_cores) && env_cores > 0L) {
 
 if (cores > 1L) {
   cl <- parallel::makeCluster(cores); registerDoParallel(cl)
-  parallel::clusterSetRNGStream(cl, rng_seed)
   perm_max_sizes <- foreach(perm = 1:num_permutations, .combine = c,
                             .packages = "stats") %dopar% perm_fun(perm)
   parallel::stopCluster(cl)

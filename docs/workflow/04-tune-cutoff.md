@@ -92,7 +92,7 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 
 <!-- script:04_tune_cutoff.sh -->
 <details>
-<summary>Script <code>04_tune_cutoff.sh</code> (49 lines)</summary>
+<summary>Script <code>04_tune_cutoff.sh</code> (52 lines)</summary>
 
 ```bash title="04_tune_cutoff.sh"
 #!/bin/bash
@@ -100,6 +100,8 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 # Step 4. Pilot sweep of the FOD amplitude cutoff
 # =============================================================================
 # Runs reduced-budget tractography at several cutoffs in a few participants.
+# "Selected" is the number of streamlines that met every criterion; "Generated" is
+# the number tckgen had to generate (selected plus rejected) to obtain them.
 # Usage:
 #   bash 04_tune_cutoff.sh "sub-01 sub-02 sub-03 sub-04 sub-05" "0.1 0.08 0.06 0.01"
 # Defaults: the first five participants in $SUBJECTS_FILE and the four cutoffs above.
@@ -107,13 +109,14 @@ Anatomically constrained tractography (ACT) was evaluated during atlas construct
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
-PILOT=${1:-$(head -n 5 "$SUBJECTS_FILE" | tr '\n' ' ')}
+PILOT=${1:-${SUBJECTS[*]:0:5}}
 CUTOFFS=${2:-"0.1 0.08 0.06 0.01"}
 PILOT_SELECT=1000
 PILOT_SEEDS=5000000
 
-printf "%-12s %-8s %-12s %-12s %-12s\n" Subject Cutoff Streamlines Seeds MeanLen_mm
+printf "%-12s %-8s %-12s %-12s %-12s\n" Subject Cutoff Selected Generated MeanLen_mm
 for s in $PILOT; do
   rois="$OUT/$s/rois"
   tdir="$OUT/$s/tckgen/$TRACT"
@@ -133,13 +136,13 @@ for s in $PILOT; do
       -minlength "$MINLEN" -maxlength "$MAXLEN" -stop \
       -nthreads "$NTHREADS" -force -quiet
     count=$(tckinfo "$tck" | awk '$1 == "count:" {print $2}')
-    seeds=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
+    generated=$(tckinfo "$tck" | awk '$1 == "total_count:" {print $2}')
     if [ "${count:-0}" -gt 0 ]; then
       meanlen=$(tckstats "$tck" -output mean -quiet)
     else
       meanlen=NA
     fi
-    printf "%-12s %-8s %-12s %-12s %-12s\n" "$s" "$c" "$count" "$seeds" "$meanlen"
+    printf "%-12s %-8s %-12s %-12s %-12s\n" "$s" "$c" "$count" "$generated" "$meanlen"
   done
 done
 echo "Reaching the streamline target in every pilot participant is necessary but not"
@@ -151,7 +154,7 @@ echo "sufficient: compare the reconstructions with 04b_compare_cutoffs.py before
 
 <!-- script:04b_compare_cutoffs.py -->
 <details>
-<summary>Script <code>04b_compare_cutoffs.py</code> (153 lines)</summary>
+<summary>Script <code>04b_compare_cutoffs.py</code> (154 lines)</summary>
 
 ```python title="04b_compare_cutoffs.py"
 #!/usr/bin/env python3
@@ -164,7 +167,7 @@ Run after 04_tune_cutoff.sh, in a shell where 00_config.sh has been sourced:
 
 For every pilot participant the script renders the tract-density image of each
 cutoff side by side (axial row, coronal row).  It then writes cutoff_summary.csv
-(streamlines reached, seeds used, occupied voxels, Dice overlap with the most
+(streamlines selected, streamlines generated, occupied voxels, Dice overlap with the most
 conservative cutoff, mean and SD of streamline length) and cutoff_summary.png.
 
 Outputs: $OUT/qc/<TRACT>_cutoff_pilot/
@@ -208,18 +211,19 @@ def run(cmd):
 
 
 def tck_summary(tck):
-    """Streamline count, seeds used, and mean and SD of length (mm)."""
+    """Streamlines selected, streamlines generated (selected plus rejected), and the
+    mean and SD of length (mm)."""
     info = {}
     for line in run(["tckinfo", str(tck)]).splitlines():
         key, _, value = line.strip().partition(":")
         info[key] = value.strip()
     count = int(info.get("count", 0))
-    seeds = int(info.get("total_count", 0))
+    generated = int(info.get("total_count", 0))
     if count == 0:
-        return count, seeds, np.nan, np.nan
+        return count, generated, np.nan, np.nan
     mean = float(run(["tckstats", str(tck), "-output", "mean", "-quiet"]))
     sd = float(run(["tckstats", str(tck), "-output", "std", "-quiet"]))
-    return count, seeds, mean, sd
+    return count, generated, mean, sd
 
 
 def density_mask(tck, template, scratch):
@@ -255,10 +259,10 @@ for s in PILOT:
         if not tck.exists():
             print(f"[{s}] cutoff {c}: no tractogram (run 04_tune_cutoff.sh)")
             continue
-        count, seeds, mean, sd = tck_summary(tck)
+        count, generated, mean, sd = tck_summary(tck)
         masks[c] = density_mask(tck, template, QC / f"_{s}_{c}_tdi.nii.gz")
         rows.append({
-            "subject": s, "cutoff": c, "streamlines": count, "seeds_used": seeds,
+            "subject": s, "cutoff": c, "selected": count, "generated": generated,
             "voxels": int(masks[c].sum()), "mean_len_mm": mean, "sd_len_mm": sd,
         })
     if not masks:
@@ -293,7 +297,7 @@ summary = pd.DataFrame(rows)
 summary.to_csv(QC / "cutoff_summary.csv", index=False)
 
 # Mean across pilot participants, one bar per cutoff
-panels = [("streamlines", "Streamlines reached"), ("seeds_used", "Seeds used"),
+panels = [("selected", "Streamlines selected"), ("generated", "Streamlines generated"),
           ("voxels", "Occupied voxels"), ("sd_len_mm", "SD of length (mm)")]
 means = summary.groupby("cutoff", sort=False)[[k for k, _ in panels]].mean()
 fig, axes = plt.subplots(1, len(panels), figsize=(15, 3.6))

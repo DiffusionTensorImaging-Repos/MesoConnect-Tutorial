@@ -9,6 +9,7 @@
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 register_one() {
   local s=$1
@@ -31,18 +32,18 @@ register_one() {
   echo ">> $s registered"
 }
 
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   register_one "$s" &
   throttle "$ANTS_JOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit
 printf "\nSubject\tAffine\tWarp\tInverseWarp\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   d="$OUT/$s/reg"
   printf "%s\t%s\t%s\t%s\n" "$s" \
     "$(present "$d/mni2t1_0GenericAffine.mat")" \
     "$(present "$d/mni2t1_1Warp.nii.gz")" \
     "$(present "$d/mni2t1_1InverseWarp.nii.gz")"
-done < "$SUBJECTS_FILE"
+done

@@ -20,7 +20,7 @@ The seed and target must be added before inversion; otherwise the corridor termi
 
 <!-- script:03_build_corridor_mask.sh -->
 <details>
-<summary>Script <code>03_build_corridor_mask.sh</code> (62 lines)</summary>
+<summary>Script <code>03_build_corridor_mask.sh</code> (63 lines)</summary>
 
 ```bash title="03_build_corridor_mask.sh"
 #!/bin/bash
@@ -33,6 +33,7 @@ The seed and target must be added before inversion; otherwise the corridor termi
 # =============================================================================
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
+read_subjects
 
 # One -dilM pass (3 x 3 x 3 kernel) per voxel of requested dilation
 DILATE_ARGS=""
@@ -61,16 +62,16 @@ build_one() {
   echo ">> $s corridor: $(nvox "$d/${TRACT}_inclusion_zone.nii.gz") voxels"
 }
 
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   build_one "$s" &
   throttle "$MAXJOBS"
-done < "$SUBJECTS_FILE"
-wait
+done
+wait_for_jobs
 
 # Audit: no seed or target voxel may fall inside the exclusion mask (both counts 0)
 tmp=$(mktemp -d)
 printf "\nSubject\tseed_excluded\ttarget_excluded\tcorridor_vox\n"
-while read -r s; do
+for s in "${SUBJECTS[@]}"; do
   d="$OUT/$s/rois"
   excl="$d/${TRACT}_exclusion_mask.nii.gz"
   if [ ! -f "$excl" ]; then
@@ -83,7 +84,7 @@ while read -r s; do
     "$(nvox "$tmp/seed")" \
     "$(nvox "$tmp/target")" \
     "$(nvox "$d/${TRACT}_inclusion_zone.nii.gz")"
-done < "$SUBJECTS_FILE"
+done
 rm -rf "$tmp"
 ```
 

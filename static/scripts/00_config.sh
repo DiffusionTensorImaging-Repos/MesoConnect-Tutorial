@@ -22,7 +22,7 @@ export PROJECT="/path/to/project"
 export SUBJECTS_FILE="$PROJECT/subjects.txt"     # one participant ID per line
 export ATLAS_DIR="/path/to/MesoConnectAtlas"     # atlas and region files, MNI 1 mm
 export OUT="$PROJECT/derivatives/mesoconnect"    # everything this workflow writes
-export FORCE=0                                   # 1 = recompute existing outputs
+export FORCE="${FORCE:-0}"                        # 1 = recompute existing outputs
 
 # --- tract definition (one tract per run; edit and rerun for another tract) ---
 export TRACT="l_vta_l_hipp"                      # name used for all outputs
@@ -30,6 +30,11 @@ export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"
 export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"
 export ATLAS_MNI="$ATLAS_DIR/tracts_thresholded_binary_50/\
 l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz"
+
+# --- T1 -> diffusion transform applied in Step 2 --------------------------------
+#   matrix  apply $PROJECT/xfm/<subj>/str2diff.mat (a missing matrix is a missing input)
+#   header  T1 and diffusion images already share a space: resample by image header only
+export T1_TO_DWI="matrix"
 
 # --- corridor and tractography parameters (see Reference: Parameters) --------
 export DILATE_VOX=2          # corridor dilation, voxels (1-2; 4 if registration is uncertain)
@@ -66,11 +71,25 @@ start_log() {
   echo "== $(date '+%F %T')  $(basename "$1")  TRACT=$TRACT"
 }
 
+# Participant IDs as the array SUBJECTS.  Tolerates CRLF line endings, blank lines
+# and a missing final newline, none of which a "while read" loop handles.
+read_subjects() {
+  SUBJECTS=($(tr -d '\r' < "$SUBJECTS_FILE"))
+  echo "== ${#SUBJECTS[@]} participants in $SUBJECTS_FILE"
+}
+
 # Block until fewer than N background jobs are running.  Usage: throttle N
 throttle() {
   while [ "$(jobs -r | wc -l)" -ge "$1" ]; do
     sleep 1
   done
+}
+
+# Block until every background job has finished.  A bare "wait" must not be used:
+# bash 5.0 to 5.2 would also wait for the logging process started by start_log,
+# which never exits while the script is running.
+wait_for_jobs() {
+  throttle 1
 }
 
 # Number of non-zero voxels in an image.

@@ -29,13 +29,13 @@ cleaned, keep = clean_bundle(sft, n_points=100, clean_rounds=5,
                              stat="mean", core_only=0, return_idx=True)
 ```
 
-The `core_only` argument exists in pyAFQ 3 and later; the script omits it under earlier versions, whose behaviour it reproduces.
+The `core_only` argument exists in pyAFQ 3 and later; the script omits it under earlier versions, whose behaviour it reproduces. In pyAFQ 1.3.2 and earlier the function is imported from `AFQ.segmentation`; the script tries both locations.
 
 The full script follows. It requires pyAFQ and DIPY; on older systems `pip` may require the `zipp` package to be upgraded first.
 
 <!-- script:06_clean_bundles.py -->
 <details>
-<summary>Script <code>06_clean_bundles.py</code> (138 lines)</summary>
+<summary>Script <code>06_clean_bundles.py</code> (143 lines)</summary>
 
 ```python title="06_clean_bundles.py"
 #!/usr/bin/env python3
@@ -69,7 +69,10 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from AFQ.recognition.cleaning import clean_bundle
+try:
+    from AFQ.recognition.cleaning import clean_bundle
+except ImportError:                       # pyAFQ 1.3.2 and earlier
+    from AFQ.segmentation import clean_bundle
 from dipy.io.stateful_tractogram import StatefulTractogram
 from dipy.io.streamline import load_tractogram, save_tractogram
 from dipy.segment.clustering import QuickBundles
@@ -108,8 +111,10 @@ if "core_only" in inspect.signature(clean_bundle).parameters:
 
 
 def clean(sft):
-    cleaned, _ = clean_bundle(sft, return_idx=True, **CLEAN_ARGS)
-    return cleaned
+    # The cleaned bundle is rebuilt from the retained indices, so that its coordinate
+    # space is that of the input under every pyAFQ version.
+    _, keep = clean_bundle(sft, return_idx=True, **CLEAN_ARGS)
+    return StatefulTractogram.from_sft(sft.streamlines[keep], sft)
 
 
 def load(tck, reference):

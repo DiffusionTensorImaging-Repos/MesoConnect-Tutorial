@@ -5,7 +5,7 @@ title: "Scripts"
 
 # Scripts
 
-Each script appears in full on the workflow page for its step. Table 1 lists the set in run order. All scripts read a single configuration file, `00_config.sh`, which is edited once per project. The shell scripts source it themselves; the Python and R scripts read the exported settings, so `source 00_config.sh` is run once in the shell before they are called. Each shell script writes a log to `$OUT/logs/`. Every script skips participants whose output already exists (`FORCE=1` recomputes) and reports missing inputs by participant.
+Each script appears in full on the workflow page for its step. Table 1 lists the set in run order. All scripts read a single configuration file, `00_config.sh`, which is edited once per project. The shell scripts source it themselves; the Python and R scripts read the exported settings, so `source 00_config.sh` is run in the shell before they are called, and again after every edit to the file. Each shell script writes a log to `$OUT/logs/`. Steps 0b, 1, 2, 3, 5, 6, 7 and 8a skip participants whose output already exists (`FORCE=1` recomputes); Steps 4, 8, 8b and 9 recompute on every run. Missing inputs are reported by participant.
 
 **Table 1**
 
