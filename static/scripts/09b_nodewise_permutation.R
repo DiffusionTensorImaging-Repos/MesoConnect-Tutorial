@@ -62,8 +62,10 @@ if (n_dropped) message("Dropping ", n_dropped, " incomplete participants")
 dat <- dat[mask, , drop = FALSE]
 n_subj <- nrow(dat)
 # Exit 0 so a shell loop under set -e carries on; the missing outputs mark the skip.
-if (n_subj < 5) {
-  message("Fewer than 5 complete participants (", n_subj, ") — skipping ", base)
+min_subj <- length(covariate_cols) + 3   # outcome, node, covariates, plus 2 residual df
+if (n_subj < max(5, min_subj)) {
+  message("Only ", n_subj, " complete participants for ", length(covariate_cols),
+          " covariates; at least ", max(5, min_subj), " are needed - skipping ", base)
   quit(status = 0)
 }
 
@@ -112,6 +114,7 @@ write_csv(node_stats_df, file.path(out_dir, paste0(base, "_nodewise.csv")))
 # Cluster helpers.  Runs of consecutive node numbers among the significant nodes; one
 # rule for the observed pass and every permutation, so they cannot drift apart.
 clusters_from_sig <- function(sig, nodes_numeric) {
+  sig[is.na(sig)] <- FALSE          # a node whose model could not be fitted is not significant
   if (!any(sig)) return(list())
   idx <- which(sig); cls <- list(); run <- c(nodes_numeric[idx[1]])
   if (length(idx) > 1) for (k in 2:length(idx)) {
