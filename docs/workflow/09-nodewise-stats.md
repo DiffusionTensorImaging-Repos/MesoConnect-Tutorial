@@ -62,13 +62,11 @@ This resolution localizes an effect along the tract. Its limitation is that clus
 
 ## Covariates
 
-Covariates comprise intracranial volume (ICV), the mean streamline length and streamline count of the cleaned bundle (written by Step 6), absolute head motion and age. Length and count are tract-specific and index reconstruction quality. Streamline count can be strongly correlated with the metric under test (*r* = .63 to .87 with tract-mean NDI across the tracts of the example dataset), which reduces the residual variance available to the test. Its inclusion should be decided in advance and both specifications reported.
+Covariates comprise intracranial volume (ICV), the mean streamline length and streamline count of the cleaned bundle (written by Step 6), absolute head motion and age. Length and count are tract-specific and index reconstruction quality. Streamline count can be strongly correlated with the metric under test, which reduces the residual variance available to the test. Its inclusion should be decided in advance and both specifications reported.
 
 ## Choosing a resolution
 
 A hypothesis about a particular segment of a pathway calls for the quartile or node-wise model. A hypothesis about the pathway as a whole calls for the whole-tract model. Exploratory work is often best served by the whole-tract model for inference with the node-wise profile reported as description. Tests across several metrics, tracts and outcomes accumulate rapidly at any resolution; fixing the analytic hierarchy in advance (primary metric, primary outcome family) is more readily justified than correcting across all tests afterwards.
-
-In the example dataset, three social-memory measures were associated with NDI in the whole-tract model with no subregion interaction. In the quartile model one of them (positivity bias in false memories) was significant in all four quartiles and the seed-end versus target-end contrast was null for all three, indicating uniform effects. Node-wise clusters were located at nodes 27 to 55 and changed with covariate specification. The results were therefore reported with the whole-tract model as primary, the quartile model as confirmation of uniformity, and node-wise profiles as description. Applied to the analysis files of that dataset, `09a_tract_models.py` reproduces the reported whole-tract and quartile estimates.
 
 ## Preparing node-wise results for the Explorer
 

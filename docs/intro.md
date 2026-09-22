@@ -29,11 +29,11 @@ Table 1 summarizes the sections of the site.
 | Section | Contents |
 |---|---|
 | Atlas | File types, tract families, sources of the seed and target regions, downloads |
-| Workflow | The nine steps, each with parameters, verification criteria, the full script, and results from an example dataset |
+| Workflow | The nine steps, each with parameters, verification criteria, the full script, and illustrative output from an example dataset |
 | Explorer | The results viewer and its input format |
 | Alternative approaches | Whole-tract extraction; atlas-guided synthetic streamlines |
 | Reference | Consolidated parameters, troubleshooting, software, scripts, suggested methods text, abbreviations, citation, references |
 
 ## Example dataset
 
-Numerical results and figures on the workflow pages are drawn from a single dataset of 57 adults scanned at 3 T with a multi-shell protocol (*b* = 1000, 2000, 3250 and 5000 s/mm²) and processed for the posterior and anterior VTA → hippocampus pathways. The atlas itself was constructed at 7 T. The example dataset is included to illustrate expected output at a field strength typical of most studies.
+Figures and illustrative values on the workflow pages are drawn from a single dataset of 57 adults scanned at 3 T with a multi-shell protocol (*b* = 1000, 2000, 3250 and 5000 s/mm²) and processed for the posterior and anterior VTA → hippocampus pathways. The atlas itself was constructed at 7 T. The example dataset is included to illustrate expected output at a field strength typical of most studies.

@@ -29,7 +29,7 @@ th:hover{color:var(--ink)}td{padding:8px 10px;border-bottom:1px solid var(--line
 <div class="wrap">
 <div class="section" id="loader"><h2>Load results</h2>
 <div id="drop" class="drop">Drop a results <b>.csv</b> here, or <label class="flink">choose a file<input type="file" id="file" accept=".csv,text/csv,.json" hidden></label></div>
-<div style="margin-top:10px;font-size:13px;color:var(--mut)"><a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> for the expected structure, or <a href="#" id="loadex" class="flink">load the example dataset</a>.</div>
+<div style="margin-top:10px;font-size:13px;color:var(--mut)"><a href="sample_results.csv" download class="flink" style="font-weight:600">Download the sample CSV</a> (synthetic data, for the expected structure) or <a href="#" id="loadex" class="flink">load it here</a>.</div>
 <div id="loaderr" class="loaderr" style="display:none"></div>
 <details style="margin-top:14px" open><summary style="cursor:pointer;color:var(--accent);font-weight:600;font-size:13px">Data format</summary>
 <div class="doc"><b>One row per node.</b> Six required columns, <code>outcome, tract, metric, node, t, p</code>; everything else optional. Column names from <code>09b_nodewise_permutation.R</code> (<code>Node</code>, <code>t_value</code>, <code>p_value</code>) are accepted as they are.
@@ -159,6 +159,6 @@ function readFile(f){const rd=new FileReader();rd.onload=()=>loadText(rd.result,
 document.getElementById('file').onchange=e=>{if(e.target.files[0])readFile(e.target.files[0]);};const dz=document.getElementById('drop');
 ['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over');}));['dragleave','dragend'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over');}));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0]);});
-document.getElementById('loadex').onclick=e=>{e.preventDefault();fetch('example_results_long.csv').then(r=>r.text()).then(t=>loadText(t,'example dataset')).catch(()=>showMsg('Could not load the example.',false));};
+document.getElementById('loadex').onclick=e=>{e.preventDefault();fetch('sample_results.csv').then(r=>r.text()).then(t=>loadText(t,'synthetic sample')).catch(()=>showMsg('Could not load the sample.',false));};
 const _durl=new URLSearchParams(location.search).get('data');if(_durl)fetch(_durl).then(r=>r.text()).then(t=>loadText(t,_durl)).catch(()=>showMsg('Could not load '+_durl,false));
 </script></body></html>

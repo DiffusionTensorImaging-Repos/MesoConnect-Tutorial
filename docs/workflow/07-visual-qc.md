@@ -159,11 +159,11 @@ A correct reconstruction shows the expected shape for the tract (for ventral teg
 
 **Figure 2**
 
-*Participant With the Lowest Cleaning Retention*
+*Cleaned Tract at the Low End of Retention*
 
-![Cleaned tract from the lowest-retention participant](/img/fig_cleaned_lowest_retention.png)
+![Cleaned tract with low retention](/img/fig_cleaned_lowest_retention.png)
 
-*Note.* Retention 26%; 659 streamlines.
+*Note.* About a quarter of the streamlines survived cleaning; the bundle is still well formed.
 
 **Figure 3**
 
@@ -193,7 +193,3 @@ For a quantitative check, each participant's cleaned TDI can be warped to Montre
 tckmap "$tck" "$tdi" -template "$PROJECT/dwi/$s/nodif_brain_mask.nii.gz" -force
 fslmaths "$tdi" -thr 1 -bin "${tdi%.nii.gz}_bin.nii.gz"
 ```
-
-## Example dataset
-
-All 114 posterior and 114 anterior tracts passed without flags. The two participants with borderline registration scores in Step 2 passed.

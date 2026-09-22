@@ -21,7 +21,7 @@ weights = gaussian_weights(oriented, n_points=100)
 profile = afq_profile(data, oriented, affine, n_points=100, weights=weights)
 ```
 
-The `METRICS` dictionary in the script specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing 57 participants and four tracts required 20 to 40 min.
+The `METRICS` dictionary in the script specifies the scalar maps; the script writes one long-format CSV per tract with one column per metric. Processing takes roughly 10 s per participant and tract.
 
 <!-- script:08_node_profiles.py -->
 <details>
@@ -355,6 +355,6 @@ Figures 1 to 3 show profiles from one participant in the example dataset.
 
 ## Verification
 
-The row count of each CSV should equal the number of participants × 100. In the example dataset every tract and metric produced 5,700 rows with no skipped participants.
+The row count of each CSV should equal the number of participants × 100.
 
-When both hemispheres are processed, alignment should be confirmed before averaging. The across-participant correlation between node *i* on the left and node *i* on the right is strongly positive when the profiles are aligned (approximately *r* = .98 in the example dataset) and strongly negative when one side is reversed. Mid-tract averages (nodes 25 to 74) correlated across hemispheres at approximately *r* = .80 to .90 for NDI and ODI and *r* = .50 for FA.
+When both hemispheres are processed, alignment should be confirmed before averaging. The across-participant correlation between node *i* on the left and node *i* on the right is strongly positive when the profiles are aligned and strongly negative when one side is reversed.

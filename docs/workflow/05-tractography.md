@@ -44,7 +44,7 @@ Table 1 gives the rationale for each option, and Table 2 the values used per tra
 
 | Family | Cutoff with the corridor | Cutoff at 7 T (atlas construction) | Length bounds | Notes |
 |---|---|---|---|---|
-| VTA → hippocampus, posterior and anterior | 0.01 | 0.06 | 35–65 mm | Used for all 57 participants of the example dataset at 3 T. |
+| VTA → hippocampus, posterior and anterior | 0.01 | 0.06 | 35–65 mm | Used for the example dataset at 3 T. |
 | VTA → amygdala | 0.01, confirm by pilot | 0.06 | determine by pilot | Shorter tract; lower bounds expected. |
 | VTA → accumbens, superior and inferior | 0.01 | 0.06 | determine by pilot | 0.01 has been used with the corridor by other users of the atlas. |
 | Ventral pallidum → VTA | 0.01, confirm by pilot | 0.06 | determine by pilot | |
@@ -149,4 +149,4 @@ echo "summary -> $stats"
 
 ## Verification
 
-The script reports the number of participants reaching the streamline target. In the example dataset all 114 hemisphere runs reached 2,500 streamlines, consuming 0.5 to 2.0 million seeds (about 4% of the ceiling). The anterior tract also reached 2,500 in all 114 runs, with higher seed consumption (1.5 to 11 million) consistent with its smaller corridor. A participant reaching a lower count, for example 1,800, is retained; a participant reaching a very low count, for example 50, is reviewed in Step 7.
+The script reports the number of participants reaching the streamline target and, for each participant, the number of streamlines generated. Reaching the target in every participant with a small fraction of the seed ceiling is the expected outcome. A participant reaching a lower count, for example 1,800, is retained; a participant reaching a very low count, for example 50, is reviewed in Step 7.

@@ -7,7 +7,7 @@ title: "Explorer"
 
 The Node-wise Tract Explorer is a browser-based viewer for node-wise statistical results distributed with this site. It reads a results file in the browser, without uploading it, and presents each analysis as a table row that expands to show the node-wise *t*-value profile, the clusters identified, and, where both hemispheres are present, a left–right comparison. Whole-tract and quartile results are tabular and do not require it.
 
-**[Open the Explorer](pathname:///MesoConnect-Tutorial/explorer/)** · [sample file](pathname:///MesoConnect-Tutorial/explorer/sample_results.csv) · [example dataset](pathname:///MesoConnect-Tutorial/explorer/example_results_long.csv)
+**[Open the Explorer](pathname:///MesoConnect-Tutorial/explorer/)** · [sample file](pathname:///MesoConnect-Tutorial/explorer/sample_results.csv) (synthetic data in the expected format)
 
 ## Input format
 

@@ -135,7 +135,7 @@ rm -rf "$tmp"
 
 ## Verification
 
-The script ends with a per-participant table of the voxel counts of the warped seed, target and atlas and of the seed–target overlap, which must be zero; participants with missing outputs are listed as such. Voxel counts far from the sample mean (more than two standard deviations is a useful criterion) indicate a failed registration and call for inspection of that participant. Table 1 gives the counts obtained in the example dataset. In that dataset image dimensions, binariness and laterality (left-hemisphere regions located in the left hemisphere) were also checked for every participant, and a cross-correlation below .60 between the warped template and the T1 image was flagged; two participants scored .59 and were retained after visual inspection. These additional checks are not part of the distributed script.
+The script ends with a per-participant table of the voxel counts of the warped seed, target and atlas and of the seed–target overlap, which must be zero; participants with missing outputs are listed as such. Voxel counts far from the sample mean (more than two standard deviations is a useful criterion) indicate a failed registration and call for inspection of that participant. Table 1 gives the counts obtained in the example dataset, as a reference for the sizes to expect at 2 mm resolution.
 
 **Table 1**
 

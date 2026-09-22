@@ -90,4 +90,4 @@ done
 
 ## Verification
 
-The script concludes with a per-participant table of the three transform files. Registration quality is assessed by overlaying `mni2t1_Warped.nii.gz` on the participant's T1 image; the ventricles, corpus callosum and brainstem outline should coincide. A registration that is globally acceptable but locally displaced in the midbrain will manifest in Step 2 as a misplaced VTA region, so this inspection supplements rather than replaces the region-level inspection described there. In the example dataset all 57 participants produced complete transforms.
+The script concludes with a per-participant table of the three transform files. Registration quality is assessed by overlaying `mni2t1_Warped.nii.gz` on the participant's T1 image; the ventricles, corpus callosum and brainstem outline should coincide. A registration that is globally acceptable but locally displaced in the midbrain will manifest in Step 2 as a misplaced VTA region, so this inspection supplements rather than replaces the region-level inspection described there.

@@ -101,7 +101,7 @@ A dilation of two voxels was used in the example dataset at 2 mm isotropic resol
 
 ## Verification
 
-The script confirms that the seed and target voxels have value 0 in the exclusion mask (that is, are not excluded) and reports the corridor size. Additional checks confirm binariness, agreement of dimensions with the diffusion image, and an inclusion zone below 20% of brain volume. In the example dataset corridor sizes ranged from 1,526 to 1,934 voxels (*M* = 1,720) for the posterior tract and approximately 1,400 voxels for the anterior tract. An automated coverage check that flags inclusion zones below 1% of brain volume flags every participant; the corridor is that small by design.
+The script confirms that the seed and target voxels have value 0 in the exclusion mask (that is, are not excluded) and reports the corridor size, which should be similar across participants (roughly 1,500 to 1,900 voxels at 2 mm for VTA → hippocampus in the example dataset). A corridor much larger or smaller than the others indicates a registration problem.
 
 Visual inspection confirms that the corridor follows a plausible path from seed to target and contains both regions (Figure 1). Contact with the ventricle or extension into cortex indicates excessive dilation or a registration error.
 

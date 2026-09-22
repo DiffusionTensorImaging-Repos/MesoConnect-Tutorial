@@ -17,7 +17,7 @@ The value in routine use with the corridor mask is 0.01, and it is the default i
 
 | Setting | Cutoff | Outcome |
 |---|---|---|
-| Corridor workflow, 3 T multi-shell data (example dataset): posterior and anterior ventral tegmental area (VTA) → hippocampus | 0.01 | All 228 runs (57 participants, two tracts, two hemispheres) reached 2,500 streamlines; no participant excluded |
+| Corridor workflow, 3 T multi-shell data (example dataset): posterior and anterior ventral tegmental area (VTA) → hippocampus | 0.01 | Value used for the example dataset |
 | Corridor workflow, VTA → accumbens (other users of the atlas) | 0.01 | Reported to reconstruct the tract |
 | Atlas construction, 7 T: VTA → hippocampus and VTA → accumbens | 0.06 | Value used to build the atlas |
 | Atlas construction, 7 T: hippocampus → accumbens and hippocampus → ventral pallidum | 0.08 | Value used to build the atlas |
@@ -52,7 +52,7 @@ The script reports streamlines selected, streamlines generated and mean length f
 | P4 | L | 88 | 309 | 1000 | 1000 |
 | P4 | R | 731 | 1000 | 1000 | 1000 |
 
-*Note.* Target 1,000 streamlines; seed limit 5 million. P1 to P4 = pilot participants with all four cutoffs completed; the fifth pilot participant was run at 0.06 and 0.01 only and reached the target at both. L = left; R = right.
+*Note.* Target 1,000 streamlines; seed limit 5 million. P1 to P4 = pilot participants; L = left; R = right.
 
 ## Side-by-side comparison
 

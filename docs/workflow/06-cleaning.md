@@ -186,7 +186,7 @@ print(f"covariate table -> {table}")
 
 ## Retention
 
-In the example dataset, cleaning retained 26% to 58% of streamlines (*M* = 39%), with a minimum cleaned count of 659. These values are typical for the thresholds in Table 1, and every participant retained several hundred streamlines. Figures 1 and 2 present the comparison referred to in Step 4: the cleaned 0.01 bundle is more compact than the uncleaned 0.06 bundle, with length standard deviations of approximately 3.5 to 4.5 mm for cleaned bundles against 5 to 7 mm for either uncleaned condition.
+With the thresholds in Table 1, cleaning typically retains 25% to 60% of streamlines, several hundred per participant. Figures 1 and 2 present the comparison referred to in Step 4: the cleaned 0.01 bundle is more compact than the uncleaned 0.06 bundle, with length standard deviations of approximately 3.5 to 4.5 mm for cleaned bundles against 5 to 7 mm for either uncleaned condition.
 
 **Figure 1**
 
