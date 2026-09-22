@@ -3,7 +3,7 @@
 Documentation site for the MesoConnect Atlas, a 7 T probabilistic atlas of mesolimbic white-matter pathways. The site describes corridor-constrained tractography: a tract atlas is warped into each participant and dilated into a corridor, the participant's own MRtrix3 tractography is run within it, the bundle is cleaned with pyAFQ, microstructure is profiled at 100 nodes, and group-level models are fitted at the whole-tract, quartile and node level. A 3 T dataset (57 participants, ventral tegmental area → hippocampus) serves as the example.
 
 Site: https://diffusiontensorimaging-repos.github.io/MesoConnect-Tutorial/
-Preprocessing prerequisite: https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/
+Preprocessing prerequisite: https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/
 
 ## Layout
 

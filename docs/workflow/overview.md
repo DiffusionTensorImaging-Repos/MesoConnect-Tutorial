@@ -13,7 +13,7 @@ The workflow comprises nine steps applied to one tract at a time (Figure 1). Ste
 
 ```mermaid
 flowchart TD
-  A[Preprocessed diffusion data and T1<br/>TUBRIC or QSIPrep] --> B[Step 1 Registration<br/>ANTs SyN, MNI to T1]
+  A[Preprocessed diffusion data and T1<br/>preprocessing tutorial or QSIPrep] --> B[Step 1 Registration<br/>ANTs SyN, MNI to T1]
   B --> C[Step 2 Region warping<br/>seed, target, atlas]
   C --> D[Step 3 Corridor construction<br/>dilate, add seed and target, invert]
   D --> E[Step 4 Cutoff selection<br/>pilot sweep and comparison]

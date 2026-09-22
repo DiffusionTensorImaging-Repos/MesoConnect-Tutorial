@@ -16,7 +16,7 @@ Two alternative uses of the atlas, averaging a scalar map within the warped atla
 
 ## Prerequisites
 
-The tutorial assumes preprocessed diffusion data (denoised, corrected for susceptibility and eddy-current distortion, and brain-masked), a T1-weighted anatomical image, and a Unix environment with FSL (Jenkinson et al., 2012), ANTs (Avants et al., 2008), MRtrix3 (Tournier et al., 2019) and Python with DIPY (Garyfallidis et al., 2014) and pyAFQ (Kruper et al., 2021). Preprocessing is documented in the [TUBRIC DTI tutorial](https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/); QSIPrep produces equivalent inputs. Estimation of fibre orientation distributions, which that pipeline does not include, is described on the [software page](reference/software).
+The tutorial assumes preprocessed diffusion data (denoised, corrected for susceptibility and eddy-current distortion, and brain-masked), a T1-weighted anatomical image, and a Unix environment with FSL (Jenkinson et al., 2012), ANTs (Avants et al., 2008), MRtrix3 (Tournier et al., 2019) and Python with DIPY (Garyfallidis et al., 2014) and pyAFQ (Kruper et al., 2021). Preprocessing is documented in the [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro), which ends with the exact set of files this workflow expects; its [output contract](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/output-contract) lists them and names the step that produces each. QSIPrep produces equivalent inputs.
 
 ## Organization
 

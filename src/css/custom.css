@@ -1,5 +1,5 @@
 /**
- * TUBRIC DTI Tutorial — Custom Styles
+ * MesoConnect Atlas Tutorial — custom styles
  * Clean, professional palette — Temple Cherry as a subtle accent only
  */
 
@@ -20,11 +20,11 @@
   --docusaurus-highlighted-code-line-bg: rgba(58, 107, 140, 0.07);
 
   /* Temple Cherry — accent only */
-  --tubric-cherry: #9D2235;
-  --tubric-cherry-soft: #C7657A;
-  --tubric-bg-subtle: #f8f9fb;
-  --tubric-border: #e4e7ec;
-  --tubric-accent-gold: #C8A951;
+  --mc-cherry: #9D2235;
+  --mc-cherry-soft: #C7657A;
+  --mc-bg-subtle: #f8f9fb;
+  --mc-border: #e4e7ec;
+  --mc-accent-gold: #C8A951;
 }
 
 [data-theme='dark'] {
@@ -37,8 +37,8 @@
   --ifm-color-primary-lightest: #C2DBEC;
   --docusaurus-highlighted-code-line-bg: rgba(130, 180, 212, 0.1);
 
-  --tubric-bg-subtle: rgba(255, 255, 255, 0.03);
-  --tubric-border: rgba(255, 255, 255, 0.08);
+  --mc-bg-subtle: rgba(255, 255, 255, 0.03);
+  --mc-border: rgba(255, 255, 255, 0.08);
 }
 
 /* Hero banner — soft gradient, not overpowering */
@@ -61,7 +61,7 @@
 /* Feature cards */
 .feature-card {
   background: var(--ifm-card-background-color);
-  border: 1px solid var(--tubric-border);
+  border: 1px solid var(--mc-border);
   border-radius: 12px;
   padding: 2rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -112,7 +112,7 @@ table {
 }
 
 table th {
-  background: var(--tubric-bg-subtle);
+  background: var(--mc-bg-subtle);
 }
 
 [data-theme='dark'] table th {
@@ -132,7 +132,7 @@ table th {
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  border: 1px solid var(--tubric-border);
+  border: 1px solid var(--mc-border);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -142,7 +142,7 @@ table th {
 
 .pipeline-explorer__stage:hover {
   border-color: var(--ifm-color-primary);
-  background: var(--tubric-bg-subtle);
+  background: var(--mc-bg-subtle);
   transform: translateX(4px);
   text-decoration: none;
   color: inherit;

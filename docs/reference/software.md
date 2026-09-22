@@ -24,7 +24,9 @@ Table 1 lists the software used in the workflow. The workflow depends on FSL (Je
 
 ## Fibre orientation distribution estimation
 
-When preprocessing ends at the tensor fit, as in the TUBRIC pipeline, the following MRtrix3 commands produce the normalized white-matter fibre orientation distribution (FOD) image required by the workflow. Response functions are estimated per participant with the unsupervised method of Dhollander et al. (2016), averaged across participants, and used for multi-shell multi-tissue constrained spherical deconvolution (Jeurissen et al., 2014) followed by intensity normalisation (Raffelt et al., 2017). The script `00b_fod_estimation.sh`, shown below, runs these commands across participants.
+The [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro) covers this as its Steps 11 and 12 ([response functions](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/response-functions), [FOD estimation](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/fod-estimation)) and is the fuller description. The commands are repeated here for readers whose preprocessing ended at the tensor fit and who arrive without a `wm_fod_norm.mif`.
+
+Response functions are estimated per participant with the unsupervised method of Dhollander et al. (2016), averaged across participants, and used for multi-shell multi-tissue constrained spherical deconvolution (Jeurissen et al., 2014) followed by intensity normalisation (Raffelt et al., 2017). The group average ties the cohort together: adding participants later changes it, so their fibre orientation distributions are comparable with the earlier ones only if every participant is refitted. The script `00b_fod_estimation.sh`, shown below, runs these commands across participants.
 
 ```bash
 # 1. conversion with gradients embedded

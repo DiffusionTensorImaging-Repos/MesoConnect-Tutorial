@@ -45,7 +45,7 @@ function Pipeline() {
   return (<section className={styles.pipelineSection}><div className="container">
     <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>Workflow</Heading>
     <p className="text--center" style={{marginBottom: '2rem', color: 'var(--ifm-color-emphasis-600)'}}>
-      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/">TUBRIC DTI tutorial</a>. The steps below begin from a T1-weighted image, a white-matter fibre orientation distribution and a brain mask.
+      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro">Diffusion MRI Preprocessing tutorial</a>. The steps below begin from a T1-weighted image, a white-matter fibre orientation distribution and a brain mask.
     </p>
     <div className="pipeline-explorer">{STEPS.map((s, i) => (<div key={s.num}>
       <Link to={s.link} className="pipeline-explorer__stage">

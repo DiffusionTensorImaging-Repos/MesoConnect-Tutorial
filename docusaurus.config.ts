@@ -31,7 +31,7 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'tutorialSidebar', position: 'left', label: 'Tutorial'},
         {to: '/docs/atlas/downloads', label: 'Downloads', position: 'left'},
         {href: 'pathname:///MesoConnect-Tutorial/explorer/', label: 'Explorer', position: 'left'},
-        {href: 'https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/', label: 'Preprocessing (TUBRIC)', position: 'right'},
+        {href: 'https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/', label: 'Preprocessing', position: 'right'},
         {href: 'https://github.com/DiffusionTensorImaging-Repos/MesoConnect-Tutorial', label: 'GitHub', position: 'right'},
       ],
     },
@@ -53,7 +53,7 @@ const config: Config = {
           {label: 'AMICO', href: 'https://github.com/daducci/AMICO'},
         ]},
         {title: 'Related', items: [
-          {label: 'TUBRIC DTI preprocessing tutorial', href: 'https://diffusiontensorimaging-repos.github.io/TUBRIC-DTI/'},
+          {label: 'Diffusion MRI preprocessing tutorial', href: 'https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/'},
           {label: 'Worked example repository (IMPACT)', href: 'https://github.com/DiffusionTensorImaging-Repos/SDN-IMPACT-DTI'},
           {label: 'Temple University', href: 'https://www.temple.edu'},
         ]},
