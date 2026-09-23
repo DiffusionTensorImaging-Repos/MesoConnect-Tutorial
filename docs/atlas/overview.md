@@ -27,8 +27,6 @@ The 50% threshold is the default for corridor construction. Higher thresholds (7
 
 ## Modes of use
 
-Three modes of use are supported.
-
 1. *Corridor-constrained tractography.* The warped and dilated atlas defines the region within which participant-level tractography may travel. Streamlines are estimated from the participant's own data. This mode supports along-tract analysis and is the subject of the workflow section.
 2. *Whole-tract extraction.* A scalar map is averaged within the warped atlas mask. This mode is suitable for descriptive summaries; spatial variation along the tract is not retained. See the [appendix](../appendix/whole-tract).
 3. *Atlas-guided synthetic streamlines.* A centerline scaffold constructed inside the warped atlas is sampled at 100 nodes. This mode is suitable when participant-level tractography fails in a subset of the sample. The scaffold is a sampling coordinate system rather than a reconstruction. See the [appendix](../appendix/synthetic-streamlines).
