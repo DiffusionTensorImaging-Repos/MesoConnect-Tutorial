@@ -8,6 +8,8 @@
 # Outputs: $PROJECT/dwi/<ID>/{wm,gm,csf}_fod_norm.mif and $PROJECT/dwi/group_*_response.txt
 # Run:     bash 00b_fod_estimation.sh   (FORCE=1 redoes everything; hours, use tmux)
 # =============================================================================
+# Single-shell data cannot use this multi-tissue model: use dwi2response tournier and
+# dwi2fod csd (single-shell CSD) instead, as described on the software page.
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
 read_subjects

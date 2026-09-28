@@ -2,7 +2,7 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     'intro',
-    {type: 'category', label: 'Atlas', collapsed: false, items: ['atlas/overview', 'atlas/tracts', 'atlas/downloads']},
+    {type: 'category', label: 'Atlas', collapsed: false, items: ['atlas/overview', 'atlas/construction', 'atlas/tracts', 'atlas/downloads']},
     {type: 'category', label: 'Workflow', collapsed: false, items: [
       'workflow/overview', 'workflow/registration', 'workflow/warp-rois', 'workflow/corridor-mask',
       'workflow/tune-cutoff', 'workflow/tractography', 'workflow/cleaning', 'workflow/visual-qc',

@@ -13,7 +13,8 @@ docs/            tutorial pages (Docusaurus markdown)
   workflow/      the nine steps
   appendix/      whole-tract extraction, synthetic streamlines
   reference/     parameters, troubleshooting, software, scripts, citation
-static/atlas/    VTA-hippocampus ROIs and atlases (MNI 1 mm)
+static/atlas/    seed and target regions for the example (MNI 1 mm)
+static/downloads/  the MesoConnect atlas package (mirror of the authors' release)
 static/scripts/  step scripts 00b to 09c, driven by 00_config.sh
 static/explorer/ Node-wise Tract Explorer (self-contained HTML) and sample data
 static/img/      example-dataset figures (de-identified)

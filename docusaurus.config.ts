@@ -53,6 +53,7 @@ const config: Config = {
           {label: 'AMICO', href: 'https://github.com/daducci/AMICO'},
         ]},
         {title: 'Related', items: [
+          {label: 'MesoConnect atlas repository', href: 'https://github.com/blelliott23/MesoConnect'},
           {label: 'Diffusion MRI preprocessing tutorial', href: 'https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/'},
           {label: 'Worked example repository (IMPACT)', href: 'https://github.com/DiffusionTensorImaging-Repos/SDN-IMPACT-DTI'},
           {label: 'Temple University', href: 'https://www.temple.edu'},

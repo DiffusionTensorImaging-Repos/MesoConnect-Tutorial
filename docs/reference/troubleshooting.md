@@ -15,10 +15,10 @@ Table 1 lists common problems, their likely causes and remedies. A quality-assur
 |---|---|---|
 | Warped atlas displaced anteriorly or posteriorly | Poor T1 → MNI registration, or mismatched coverage (skull-stripped participant image with a whole-head template) | Check brain extraction; use the brain template; overlay the warped template on the T1 before warping labels |
 | Left and right appear reversed | Incorrect transform, header orientation error, mislabelled hemisphere | Check with `fslorient` and `fslhd`; overlay known asymmetric anatomy |
-| Atlas mask empty after warping | Threshold too strict after linear interpolation, or grid mismatch | Inspect the probability map before thresholding; use the 25% map; warp the binary map with nearest-neighbour interpolation |
+| Atlas mask empty after warping | Threshold too strict after linear interpolation, or grid mismatch | Inspect the probability map before thresholding; derive a 25% map from the `_overlap_prop` file (downloads page); warp the binary map with nearest-neighbour interpolation |
 | Mask includes ventricle or gray matter | Registration error or excessive dilation | Reduce dilation; inspect in native space |
 | VTA in the cerebral peduncle or pons | Local registration failure | Rerun registration for the participant; consider a midbrain-weighted mask via `-x` |
-| `tckgen` reaches far fewer streamlines than the target | Cutoff too high for the field strength; corridor too narrow; seed or target disconnected from the corridor | Run the pilot sweep; confirm the seed and target lie within the inclusion zone; try the 25% atlas or one additional voxel of dilation |
+| `tckgen` reaches far fewer streamlines than the target | Cutoff too high for the field strength; corridor too narrow; seed or target disconnected from the corridor | Run the pilot sweep; confirm the seed and target lie within the inclusion zone; try a 25% map derived from the `_overlap_prop` file, or one additional voxel of dilation |
 | Tract appears thick at a permissive cutoff | Expected before cleaning | Compare cleaned bundles; if still thick, reduce dilation |
 | Cleaning removes nearly all streamlines | Two bundles cleaned as one, or a sparse raw tract | Apply the QuickBundles division; check the raw streamline count |
 | Profile endpoints reversed in some participants | Orientation failed | Assign node 0 by the seed region; check centroid orientation per participant |

@@ -20,7 +20,6 @@ Table 1 lists the software used in the workflow. The workflow depends on FSL (Je
 | AMICO | NODDI fitting |
 | R with readr, dplyr, stringr, tibble, foreach, doParallel | `09b_nodewise_permutation.R` |
 | FSLeyes, mrview or ITK-SNAP | Inspection |
-| TractSeg (Wasserthal et al., 2018; optional) | Fornix and control tracts |
 
 ## Fibre orientation distribution estimation
 
@@ -49,11 +48,11 @@ dwi2fod msmt_csd dwi.mif group_wm_response.txt wm_fod.mif \
 mtnormalise wm_fod.mif wm_fod_norm.mif gm_fod.mif gm_fod_norm.mif csf_fod.mif csf_fod_norm.mif -mask mask.mif
 ```
 
-Single-shell data may use `dwi2response tournier` and `dwi2fod csd`. The corridor workflow is independent of how the FOD image was estimated.
+Single-shell data require single-shell constrained spherical deconvolution (`dwi2response tournier`, `dwi2fod csd`) rather than the multi-shell multi-tissue model used for the atlas and the example dataset. The corridor workflow is independent of how the FOD image was estimated.
 
 <!-- script:00b_fod_estimation.sh -->
 <details>
-<summary>Script <code>00b_fod_estimation.sh</code> (96 lines)</summary>
+<summary>Script <code>00b_fod_estimation.sh</code> (98 lines)</summary>
 
 ```bash title="00b_fod_estimation.sh"
 #!/bin/bash
@@ -66,6 +65,8 @@ Single-shell data may use `dwi2response tournier` and `dwi2fod csd`. The corrido
 # Outputs: $PROJECT/dwi/<ID>/{wm,gm,csf}_fod_norm.mif and $PROJECT/dwi/group_*_response.txt
 # Run:     bash 00b_fod_estimation.sh   (FORCE=1 redoes everything; hours, use tmux)
 # =============================================================================
+# Single-shell data cannot use this multi-tissue model: use dwi2response tournier and
+# dwi2fod csd (single-shell CSD) instead, as described on the software page.
 source "$(dirname "$0")/00_config.sh"
 start_log "$0"
 read_subjects

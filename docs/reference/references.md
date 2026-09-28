@@ -47,8 +47,6 @@ Tziortzi, A. C., Haber, S. N., Searle, G. E., Tsoumpas, C., Long, C. J., Shotbol
 
 Vu, A. T., Auerbach, E., Lenglet, C., Moeller, S., Sotiropoulos, S. N., Jbabdi, S., Andersson, J., Yacoub, E., & Ugurbil, K. (2015). High resolution whole brain diffusion imaging at 7T for the Human Connectome Project. *NeuroImage, 122*, 318–331. https://doi.org/10.1016/j.neuroimage.2015.08.004
 
-Wasserthal, J., Neher, P., & Maier-Hein, K. H. (2018). TractSeg: Fast and accurate white matter tract segmentation. *NeuroImage, 183*, 239–253. https://doi.org/10.1016/j.neuroimage.2018.07.070
-
 Winkler, A. M., Ridgway, G. R., Webster, M. A., Smith, S. M., & Nichols, T. E. (2014). Permutation inference for the general linear model. *NeuroImage, 92*, 381–397. https://doi.org/10.1016/j.neuroimage.2014.01.060
 
 Yeatman, J. D., Dougherty, R. F., Myall, N. J., Wandell, B. A., & Feldman, H. M. (2012). Tract profiles of white matter properties: Automating fiber-tract quantification. *PLoS ONE, 7*(11), e49790. https://doi.org/10.1371/journal.pone.0049790

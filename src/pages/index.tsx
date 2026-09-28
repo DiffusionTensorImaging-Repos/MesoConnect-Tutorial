@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
 const STEPS = [
@@ -26,7 +27,7 @@ const ChartIcon = () => (<svg {...iconProps} aria-hidden="true"><path d="M3 3v18
 
 type FeatureItem = {title: string; icon: ReactNode; description: ReactNode; link: string; linkText: string; external?: boolean};
 const FEATURES: FeatureItem[] = [
-  {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Ten mesolimbic tract families in MNI 1 mm space, the seed and target regions, and their sources.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
+  {title: 'Atlas', icon: <DatabaseIcon/>, description: <>Seven bilateral mesolimbic pathways in standard (MNI) 1 mm space, how the atlas was constructed, the seed and target regions, and the complete package for download.</>, link: '/docs/atlas/overview', linkText: 'Atlas and downloads'},
   {title: 'Workflow', icon: <StepsIcon/>, description: <>Nine steps: registration, region warping, corridor construction, cutoff selection, tractography, bundle cleaning, quality control, along-tract profiling and group-level inference. Each step gives the procedure, the full script, verification criteria and illustrative output from an example dataset.</>, link: '/docs/workflow/overview', linkText: 'Workflow'},
   {title: 'Node-wise Tract Explorer', icon: <ChartIcon/>, description: <>A browser-based viewer for along-tract results. It reads a results file locally and presents t-value profiles, clusters and the left–right comparison for each analysis.</>, link: 'pathname:///MesoConnect-Tutorial/explorer/', linkText: 'Open the Explorer', external: true},
 ];
@@ -39,6 +40,13 @@ function Feature({title, icon, description, link, linkText, external}: FeatureIt
         <Heading as="h3">{title}</Heading><p>{description}</p>
         <Link className="button button--primary button--sm" to={link}>{linkText}</Link>
       </div></div></div>);
+}
+
+function AtlasFigure() {
+  return (<section><div className="container" style={{maxWidth: '1000px', padding: '2rem 1rem 0'}}>
+    <img src={useBaseUrl('/img/fig_atlas_pathways.png')} alt="The seven pathways of the MesoConnect Atlas with their regions of interest" style={{width: '100%', height: 'auto', borderRadius: '6px'}}/>
+    <p className="text--center" style={{marginTop: '0.75rem', color: 'var(--ifm-color-emphasis-600)', fontSize: '0.9rem'}}>The seven bilateral pathways at the 50% threshold, in the three groupings used by the atlas authors. Figure from the MesoConnect repository (CC BY 4.0).</p>
+  </div></section>);
 }
 
 function Pipeline() {
@@ -64,12 +72,14 @@ function Header() {
     <div className={styles.buttons}>
       <Link className="button button--secondary button--lg" to="/docs/">Introduction</Link>
       <Link className="button button--outline button--lg" to="/docs/workflow/overview" style={{color: 'white', borderColor: 'rgba(255,255,255,0.5)', marginLeft: '1rem'}}>Workflow</Link>
+      <Link className="button button--outline button--lg" href="pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip" style={{color: 'white', borderColor: 'rgba(255,255,255,0.5)', marginLeft: '1rem'}}>Download the atlas (.zip)</Link>
     </div></div></div></header>);
 }
 
 export default function Home(): ReactNode {
   return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: participant-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
     <Header/><main>
+      <AtlasFigure/>
       <section className={styles.features}><div className="container"><div className="row" style={{gap: '1.5rem 0'}}>{FEATURES.map((p, i) => <Feature key={i} {...p}/>)}</div></div></section>
       <Pipeline/></main></Layout>);
 }

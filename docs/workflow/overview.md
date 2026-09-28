@@ -106,7 +106,7 @@ The configuration file follows.
 
 <!-- script:00_config.sh -->
 <details>
-<summary>Script <code>00_config.sh</code> (81 lines)</summary>
+<summary>Script <code>00_config.sh</code> (80 lines)</summary>
 
 ```bash title="00_config.sh"
 #!/bin/bash
@@ -120,7 +120,7 @@ The configuration file follows.
 # --- project -----------------------------------------------------------------
 export PROJECT="/path/to/project"
 export SUBJECTS_FILE="$PROJECT/subjects.txt"     # one participant ID per line
-export ATLAS_DIR="/path/to/MesoConnectAtlas"     # atlas and region files, MNI 1 mm
+export ATLAS_DIR="/path/to/MesoConnect_Atlas"    # unzipped atlas package, plus roi_maps/
 export OUT="$PROJECT/derivatives/mesoconnect"    # everything this workflow writes
 export FORCE="${FORCE:-0}"                        # 1 = recompute existing outputs
 
@@ -128,8 +128,7 @@ export FORCE="${FORCE:-0}"                        # 1 = recompute existing outpu
 export TRACT="l_vta_l_hipp"                      # name used for all outputs
 export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"
 export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"
-export ATLAS_MNI="$ATLAS_DIR/tracts_thresholded_binary_50/\
-l_vta_l_hipp_1mm_MNI_GroupMean_thr50.nii.gz"
+export ATLAS_MNI="$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz"
 
 # --- T1 -> DWI transform (Step 2): "matrix" = xfm/<subj>/str2diff.mat, "header" = same grid
 export T1_TO_DWI="matrix"

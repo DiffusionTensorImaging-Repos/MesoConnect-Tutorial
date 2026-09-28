@@ -45,10 +45,12 @@ Table 1 gives the rationale for each option, and Table 2 the values used per tra
 | Family | Cutoff with the corridor | Cutoff at 7 T (atlas construction) | Length bounds | Notes |
 |---|---|---|---|---|
 | VTA → hippocampus, posterior and anterior | 0.01 | 0.06 | 35–65 mm | Used for the example dataset at 3 T. |
-| VTA → amygdala | 0.01, confirm by pilot | 0.06 | determine by pilot | Shorter tract; lower bounds expected. |
-| VTA → accumbens, superior and inferior | 0.01 | 0.06 | determine by pilot | 0.01 has been used with the corridor by other users of the atlas. |
-| Ventral pallidum → VTA | 0.01, confirm by pilot | 0.06 | determine by pilot | |
-| Hippocampus → accumbens; hippocampus → ventral pallidum | 0.01, confirm by pilot | 0.08 | determine by pilot | Frequently reconstructs as two clusters; see Step 6. |
+| VTA → amygdala | 0.01, confirm by pilot | 0.08 | 27–40 mm at 7 T; confirm by pilot | Shorter tract. |
+| VTA → nucleus accumbens, inferior and superior | 0.01 | 0.03 | 8–35 mm at 7 T; confirm by pilot | 0.01 has been used with the corridor by other users of the atlas; the atlas authors' worked example uses 0.05. The inferior pathway was generated with a 7° angle and 0.25 mm step. |
+| Ventral pallidum → VTA | 0.01, confirm by pilot | 0.03 | 15–25 mm at 7 T; confirm by pilot | Generated with a 15° angle. |
+| Hippocampus → nucleus accumbens → ventral pallidum | 0.01, confirm by pilot | 0.04 | minimum 5 mm at 7 T; confirm by pilot | The accumbens is a required waypoint. Frequently reconstructs as two clusters; see Step 6. |
+
+*Note.* The 7 T values are the atlas-generation settings ([Atlas construction](../atlas/construction), Table 1); the corridor cutoff is the value in routine use with the corridor mask (Step 4).
 
 *Note.* Where a pilot is indicated, the length bounds are taken from the mean lengths reported in the Step 4 summary.
 

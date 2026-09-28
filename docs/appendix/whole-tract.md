@@ -9,9 +9,10 @@ In this approach an atlas map is warped into a participant and a scalar map is a
 
 ## Procedure
 
-The 50% binary map provides a conservative core; the probabilistic map supports probability-weighted extraction. The map is warped to T1 space with the Step 1 transforms, using nearest-neighbour interpolation for binary maps and linear interpolation followed by thresholding for probabilistic maps.
+The 50% binary map (`_thr50`) provides a conservative core; the probabilistic map (`_overlap_prop`, both in the atlas package) supports probability-weighted extraction. The map is warped to T1 space with the Step 1 transforms, using nearest-neighbour interpolation for binary maps and linear interpolation followed by thresholding for probabilistic maps.
 
 ```bash
+ATLAS_PROB="$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_overlap_prop.nii.gz"
 antsApplyTransforms -d 3 -i "$ATLAS_PROB" -r "$T1" -o prob_in_T1.nii.gz \
   -t mni2t1_1Warp.nii.gz -t mni2t1_0GenericAffine.mat -n Linear
 fslmaths prob_in_T1.nii.gz -thr 0.50 -bin prob50_in_T1_bin.nii.gz

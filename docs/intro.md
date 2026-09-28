@@ -6,7 +6,7 @@ slug: /
 
 # Introduction
 
-The MesoConnect Atlas is a probabilistic atlas of mesolimbic white-matter pathways derived from 7 T diffusion magnetic resonance imaging data of the Human Connectome Project (HCP; Vu et al., 2015). It covers connections among the ventral tegmental area (VTA), hippocampus, nucleus accumbens, ventral pallidum and amygdala. This tutorial describes how to reconstruct those pathways in new participants using the atlas as an anatomical constraint on participant-level tractography, and how to quantify microstructure along the reconstructed bundles.
+The MesoConnect Atlas is a probabilistic atlas of mesolimbic white-matter pathways derived from 7 T diffusion magnetic resonance imaging data of the Human Connectome Project (HCP; Vu et al., 2015). It comprises seven bilateral pathways connecting the ventral tegmental area (VTA), hippocampus, nucleus accumbens, ventral pallidum and amygdala, distributed as a single package ([Downloads](atlas/downloads)). This tutorial describes how to reconstruct those pathways in new participants using the atlas as an anatomical constraint on participant-level tractography, and how to quantify microstructure along the reconstructed bundles.
 
 ## Scope
 
@@ -16,7 +16,7 @@ Two alternative uses of the atlas, averaging a scalar map within the warped atla
 
 ## Prerequisites
 
-The tutorial assumes preprocessed diffusion data (denoised, corrected for susceptibility and eddy-current distortion, and brain-masked), a T1-weighted anatomical image, and a Unix environment with FSL (Jenkinson et al., 2012), ANTs (Avants et al., 2008), MRtrix3 (Tournier et al., 2019) and Python with DIPY (Garyfallidis et al., 2014) and pyAFQ (Kruper et al., 2021). Preprocessing is documented in the [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro), which ends with the exact set of files this workflow expects; its [output contract](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/output-contract) lists them and names the step that produces each. QSIPrep produces equivalent inputs.
+The tutorial assumes preprocessed diffusion data (denoised, corrected for susceptibility and eddy-current distortion, and brain-masked), a T1-weighted anatomical image, and a Unix environment with FSL (Jenkinson et al., 2012), ANTs (Avants et al., 2008), MRtrix3 (Tournier et al., 2019) and Python with DIPY (Garyfallidis et al., 2014) and pyAFQ (Kruper et al., 2021). Preprocessing is documented in the [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro), which ends with the exact set of files this workflow expects; its [list of required outputs](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/required-outputs) lists them and names the step that produces each. QSIPrep produces equivalent inputs.
 
 ## Organization
 
@@ -28,7 +28,7 @@ Table 1 summarizes the sections of the site.
 
 | Section | Contents |
 |---|---|
-| Atlas | File types, tract families, sources of the seed and target regions, downloads |
+| Atlas | The seven pathways, how the atlas was constructed, sources of the seed and target regions, the complete package for download |
 | Workflow | The nine steps, each with parameters, verification criteria, the full script, and illustrative output from an example dataset |
 | Explorer | The results viewer and its input format |
 | Alternative approaches | Whole-tract extraction; atlas-guided synthetic streamlines |
