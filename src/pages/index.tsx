@@ -6,12 +6,6 @@ import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
-const FACTS = [
-  {value: '7', label: 'bilateral pathways'},
-  {value: '7 T', label: 'Human Connectome Project diffusion MRI'},
-  {value: '166–173', label: 'participants behind each map'},
-  {value: '1 mm', label: 'FSL MNI152 grid'},
-];
 
 const STAGES = [
   {
@@ -57,14 +51,6 @@ function Header() {
               Download the atlas (.zip)
             </Link>
           </div>
-        </div>
-        <div className={styles.facts}>
-          {FACTS.map((f) => (
-            <div key={f.label} className={styles.fact}>
-              <p className={styles.factValue}>{f.value}</p>
-              <p className={styles.factLabel}>{f.label}</p>
-            </div>
-          ))}
         </div>
       </div>
     </header>

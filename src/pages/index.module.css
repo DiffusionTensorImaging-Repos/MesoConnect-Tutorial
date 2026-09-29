@@ -1,5 +1,5 @@
 .heroBanner {
-  padding: 5rem 0 0;
+  padding: 5rem 0 4rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -28,40 +28,16 @@
   gap: 0.75rem;
 }
 
-/* Facts sit on the hero itself rather than in a band of their own. */
-.facts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 3.5rem auto 0;
-  padding: 1.5rem 0 2.5rem;
-  border-top: 1px solid rgba(148, 197, 230, 0.18);
-}
-
-.factValue {
-  margin: 0;
-  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-}
-
-.factLabel {
-  margin: 0.2rem 0 0;
-  font-size: 0.8rem;
-  line-height: 1.35;
-  color: rgba(226, 238, 249, 0.62);
-}
-
 .atlasSection {
-  padding: 4rem 0 1rem;
+  padding: 5rem 0 3rem;
+  background: var(--ifm-card-background-color);
+  border-bottom: 1px solid var(--surface-border);
 }
 
-/* The source figure is 2048 px wide. It is a composite plate, so it needs room for
-   its own panels to stay legible: no frame around it, and whitespace instead. */
+/* The plate carries its own margins, so it needs no frame, padding or rounding here:
+   any of those cut into its border. Full size lives on the atlas pages. */
 .atlasFigure {
-  max-width: 920px;
+  max-width: 840px;
   margin: 0 auto;
   padding: 0;
 }
@@ -70,7 +46,10 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 6px;
+}
+
+[data-theme='dark'] .atlasFigure img {
+  border-radius: 4px;
 }
 
 .atlasCaption {
@@ -148,12 +127,7 @@
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 3rem 1rem 0;
-  }
-
-  .facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 2.5rem;
+    padding: 3rem 1rem;
   }
 
   .atlasSection,
