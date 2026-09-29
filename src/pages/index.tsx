@@ -63,7 +63,7 @@ function AtlasFigure() {
       <div className="container">
         <figure className={styles.atlasFigure}>
           <img
-            src={useBaseUrl('/img/fig_atlas_pathways.png')}
+            src={useBaseUrl('/img/fig_atlas_pathways_v2.png')}
             alt="The seven bilateral pathways of the MesoConnect Atlas with their regions of interest"
             loading="lazy"
           />

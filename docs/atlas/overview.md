@@ -13,7 +13,7 @@ The atlas authors organize the seven pathways into three groupings (Figure 1): r
 
 *The Seven Pathways of the MesoConnect Atlas*
 
-![The seven pathways of the MesoConnect Atlas with their regions of interest](/img/fig_atlas_pathways.png)
+![The seven pathways of the MesoConnect Atlas with their regions of interest](/img/fig_atlas_pathways_v2.png)
 
 *Note.* Orange indicates each group-average pathway at the 50% threshold; region colours are given in the figure. Figure from the MesoConnect repository (CC BY 4.0).
 
