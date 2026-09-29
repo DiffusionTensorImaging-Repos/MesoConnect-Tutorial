@@ -34,22 +34,15 @@
   gap: 0.75rem;
 }
 
-.features {
-  display: flex;
-  align-items: stretch;
-  padding: 3.5rem 0 3rem;
-  width: 100%;
-}
-
 .atlasSection {
-  padding: 1rem 0 3.5rem;
+  padding: 3rem 0 3.5rem;
 }
 
 /* The source figure is 2048 px wide; cap it well below that so the page is not
    dominated by it, while the panel labels stay readable. */
 .atlasFigure {
   max-width: 860px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.75rem;
 }
 
 .pipelineSection {
