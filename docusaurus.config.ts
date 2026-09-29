@@ -26,8 +26,8 @@ const config: Config = {
     image: 'img/social-card.jpg',
     colorMode: {defaultMode: 'light', respectPrefersColorScheme: true},
     navbar: {
-      title: 'MesoConnect Atlas',
-      logo: {alt: 'MesoConnect', src: 'img/logo.svg'},
+      title: 'MesoConnect Atlas Tutorial',
+      logo: {alt: 'MesoConnect Atlas', src: 'img/logo.svg'},
       items: [
         {type: 'docSidebar', sidebarId: 'tutorialSidebar', position: 'left', label: 'Tutorial'},
         {to: '/docs/atlas/downloads', label: 'Downloads', position: 'left'},
@@ -56,8 +56,6 @@ const config: Config = {
         {title: 'Related', items: [
           {label: 'MesoConnect atlas repository', href: 'https://github.com/blelliott23/MesoConnect'},
           {label: 'Diffusion MRI preprocessing tutorial', href: 'https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/'},
-          {label: 'Worked example repository (IMPACT)', href: 'https://github.com/DiffusionTensorImaging-Repos/SDN-IMPACT-DTI'},
-          {label: 'Temple University', href: 'https://www.temple.edu'},
         ]},
       ],
       copyright: `Built with Docusaurus.`,

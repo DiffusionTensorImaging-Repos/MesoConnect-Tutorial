@@ -203,32 +203,7 @@ html {
   color: var(--ifm-color-primary);
 }
 
-/* ------------------------------------------------------- Figure panels */
-
-.figure-panel {
-  background: var(--ifm-card-background-color);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  box-shadow: var(--card-shadow);
-  padding: 1.25rem;
-  overflow: hidden;
-}
-
-.figure-panel img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.figure-panel__caption {
-  margin: 0.9rem 0 0;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--ifm-color-emphasis-600);
-}
-
-/* Large manuscript figures inside doc pages: keep them from dominating the page */
+/* Large figures inside doc pages: never wider than the column. */
 .markdown img {
   max-width: 100%;
   height: auto;
@@ -432,34 +407,4 @@ table th {
 
 [data-theme='dark'] table th {
   background: rgba(98, 182, 232, 0.08);
-}
-
-/* KaTeX math formulas — ensure visibility in both modes */
-.katex,
-.katex-display {
-  color: var(--ifm-font-color-base);
-}
-
-.katex .mord,
-.katex .mbin,
-.katex .mrel,
-.katex .mopen,
-.katex .mclose,
-.katex .mfrac .frac-line,
-.katex .overline .overline-line,
-.katex .sqrt .sqrt-line {
-  color: inherit;
-}
-
-.katex svg {
-  fill: var(--ifm-font-color-base);
-  stroke: var(--ifm-font-color-base);
-}
-
-.katex .sqrt-sign svg path {
-  fill: var(--ifm-font-color-base);
-}
-
-table .katex {
-  font-size: 0.9em;
 }
