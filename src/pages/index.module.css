@@ -29,9 +29,7 @@
 }
 
 .atlasSection {
-  padding: 5rem 0 3rem;
-  background: var(--ifm-card-background-color);
-  border-bottom: 1px solid var(--surface-border);
+  padding: 4.5rem 0 3rem;
 }
 
 /* The plate carries its own margins, so it needs no frame, padding or rounding here:
@@ -46,10 +44,6 @@
   display: block;
   width: 100%;
   height: auto;
-}
-
-[data-theme='dark'] .atlasFigure img {
-  border-radius: 4px;
 }
 
 .atlasCaption {
@@ -85,14 +79,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* A fixed box so the four line up; no tile behind them, so figures sit on the
+     page here exactly as they do on the step pages. */
   height: 190px;
-  padding: 0.75rem;
-  /* The figures are matplotlib output on white; a white tile keeps the four
-     consistent instead of reading as four different backgrounds. */
-  background: #ffffff;
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  overflow: hidden;
 }
 
 .stageImage img {
