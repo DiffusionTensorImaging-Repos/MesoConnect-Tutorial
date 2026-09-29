@@ -32,22 +32,26 @@
   padding: 4.5rem 0 3rem;
 }
 
-/* The plate carries its own margins, so it needs no frame, padding or rounding here:
-   any of those cut into its border. Full size lives on the atlas pages. */
+/* Card, using the same tokens as every other card on the site. */
 .atlasFigure {
-  max-width: 840px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 0;
+  padding: 1rem;
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
 }
 
 .atlasFigure img {
   display: block;
   width: 100%;
   height: auto;
+  border-radius: 8px;
 }
 
 .atlasCaption {
-  margin: 1.1rem auto 0;
+  margin: 1rem auto 0.25rem;
   max-width: 660px;
   text-align: center;
   font-size: 0.85rem;
@@ -74,14 +78,23 @@
   margin: 0 auto;
 }
 
-/* Fixed box, image contained: every figure is shown whole, none cropped or stretched. */
+/* Each stage is a card. The image box is a fixed height so the four line up, and
+   the image is contained inside it, so none is cropped or stretched. */
+.stage {
+  padding: 1rem 1rem 1.25rem;
+  background: var(--ifm-card-background-color);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+}
+
 .stageImage {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* A fixed box so the four line up; no tile behind them, so figures sit on the
-     page here exactly as they do on the step pages. */
   height: 190px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .stageImage img {
@@ -93,7 +106,7 @@
 }
 
 .stageTitle {
-  margin: 0.9rem 0 0.25rem;
+  margin: 1rem 0 0.3rem;
   font-weight: 600;
   font-size: 1.02rem;
   color: var(--ifm-heading-color);
