@@ -17,25 +17,25 @@ const STAGES = [
   {
     img: 'fig_regions_ortho.png',
     alt: 'Seed, target and atlas warped into one participant, shown in three planes',
-    title: 'Warp the atlas into the participant',
+    title: 'Registration and region warping',
     text: 'The pathway map and its seed and target regions move from standard space to the participant’s diffusion grid.',
   },
   {
     img: 'fig_inclusion_zone.png',
     alt: 'The dilated atlas with the seed and target, forming the corridor',
-    title: 'Dilate it into a corridor',
-    text: 'The warped map, widened and joined to the endpoints, becomes the only region tracking may occupy.',
+    title: 'Corridor construction',
+    text: 'The warped map is dilated and joined to the endpoints, and the region outside it is excluded from tracking.',
   },
   {
     img: 'fig_cleaned_posterior.png',
     alt: 'A cleaned VTA to hippocampus bundle over the mean b = 0 image',
-    title: 'Track inside it, then clean',
+    title: 'Tractography and bundle cleaning',
     text: 'Streamlines are estimated from the participant’s own data, and outlying streamlines are removed.',
   },
   {
     img: 'fig_profile_ndi.png',
     alt: 'Neurite density sampled at 100 nodes along the bundle',
-    title: 'Profile along the bundle',
+    title: 'Along-tract profiling',
     text: 'Each scalar map is sampled at 100 nodes, giving the values that enter the group-level models.',
   },
 ];
@@ -104,7 +104,8 @@ function Method() {
         <p
           className="text--center"
           style={{margin: '0 auto 2.5rem', maxWidth: '620px', color: 'var(--ifm-color-emphasis-600)'}}>
-          The atlas constrains where tracking may go; the streamlines are the participant&rsquo;s own.
+          The warped atlas confines tracking to one corridor. The streamlines are estimated from each
+          participant&rsquo;s own diffusion data.
         </p>
         <div className={styles.stageGrid}>
           {STAGES.map((s) => (
