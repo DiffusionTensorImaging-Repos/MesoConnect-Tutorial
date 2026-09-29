@@ -23,6 +23,7 @@ const config: Config = {
     } satisfies Preset.Options],
   ],
   themeConfig: {
+    image: 'img/social-card.jpg',
     colorMode: {defaultMode: 'light', respectPrefersColorScheme: true},
     navbar: {
       title: 'MesoConnect Atlas',

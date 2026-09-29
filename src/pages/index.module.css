@@ -1,8 +1,67 @@
-.heroBanner{padding:5rem 0 4rem;text-align:center;position:relative;overflow:hidden}
-.heroInner{max-width:820px;margin:0 auto}
-.heroLabel{font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;margin-bottom:.5rem;font-weight:500}
-@media screen and (max-width:996px){.heroBanner{padding:3rem 1rem}}
-.buttons{display:flex;align-items:center;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;gap:.5rem}
-.features{display:flex;align-items:stretch;padding:3rem 0;width:100%}
-.pipelineSection{padding:3rem 0 4rem;background:var(--ifm-background-surface-color)}
-@media screen and (max-width:996px){.pipelineSection{padding:2rem 1rem}}
+.heroBanner {
+  padding: 5rem 0 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroInner {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.heroLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(148, 197, 230, 0.85);
+  margin-bottom: 0.6rem;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 3rem 1rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.features {
+  display: flex;
+  align-items: stretch;
+  padding: 3.5rem 0 3rem;
+  width: 100%;
+}
+
+.atlasSection {
+  padding: 1rem 0 3.5rem;
+}
+
+/* The source figure is 2048 px wide; cap it well below that so the page is not
+   dominated by it, while the panel labels stay readable. */
+.atlasFigure {
+  max-width: 860px;
+  margin: 0 auto 2rem;
+}
+
+.pipelineSection {
+  padding: 3rem 0 4rem;
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--surface-border);
+}
+
+@media screen and (max-width: 996px) {
+  .atlasSection,
+  .pipelineSection {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

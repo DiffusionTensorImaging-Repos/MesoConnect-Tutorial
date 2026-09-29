@@ -43,9 +43,11 @@ function Feature({title, icon, description, link, linkText, external}: FeatureIt
 }
 
 function AtlasFigure() {
-  return (<section><div className="container" style={{maxWidth: '1000px', padding: '2rem 1rem 0'}}>
-    <img src={useBaseUrl('/img/fig_atlas_pathways.png')} alt="The seven pathways of the MesoConnect Atlas with their regions of interest" style={{width: '100%', height: 'auto', borderRadius: '6px'}}/>
-    <p className="text--center" style={{marginTop: '0.75rem', color: 'var(--ifm-color-emphasis-600)', fontSize: '0.9rem'}}>The seven bilateral pathways at the 50% threshold, in the three groupings used by the atlas authors. Figure from the MesoConnect repository (CC BY 4.0).</p>
+  return (<section className={styles.atlasSection}><div className="container">
+    <div className={styles.atlasFigure}><div className="figure-panel">
+      <img src={useBaseUrl('/img/fig_atlas_pathways.png')} alt="The seven bilateral pathways of the MesoConnect Atlas with their regions of interest" loading="lazy"/>
+      <p className="figure-panel__caption">The seven bilateral pathways at the 50% threshold, in the three groupings used by the atlas authors. Figure from the MesoConnect repository (CC BY 4.0).</p>
+    </div></div>
   </div></section>);
 }
 
