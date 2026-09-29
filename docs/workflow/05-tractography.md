@@ -5,7 +5,7 @@ title: "Step 5. Tractography"
 
 # Step 5. Corridor-constrained tractography
 
-Tractography is performed with `tckgen` using second-order integration over fibre orientation distributions (iFOD2; Tournier et al., 2010). Seeding is unidirectional from the seed region, the target region is required, and the inverted corridor from Step 3 is supplied as the exclusion mask.
+Tractography is performed with `tckgen` using second-order integration over fibre orientation distributions (iFOD2; Tournier et al., 2010). The FOD image is the last output of preprocessing ([Diffusion MRI Preprocessing](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/fod-estimation), Step 12); `00b_fod_estimation.sh` here is a fallback for data that stopped at the tensor. Seeding is unidirectional from the seed region, the target region is required, and the inverted corridor from Step 3 is supplied as the exclusion mask.
 
 ## Procedure
 

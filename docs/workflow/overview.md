@@ -29,7 +29,7 @@ flowchart TD
 
 ## Inputs
 
-Table 1 lists the per-participant inputs. When the T1 image is already aligned to the diffusion image, as in Human Connectome Project data, no affine matrix is needed: `T1_TO_DWI` is set to `header` in the configuration and the warp script resamples by image header. With the default, `matrix`, a participant without a matrix is reported as missing an input.
+Every input below comes from preprocessing; the [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro) produces them, and its [required outputs page](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/required-outputs) names the step that writes each one. Table 1 lists them per participant. When the T1 image is already aligned to the diffusion image, as in Human Connectome Project data, no affine matrix is needed: `T1_TO_DWI` is set to `header` in the configuration and the warp script resamples by image header. With the default, `matrix`, a participant without a matrix is reported as missing an input.
 
 **Table 1**
 

@@ -29,6 +29,9 @@ Table 1 lists common problems, their likely causes and remedies. A quality-assur
 
 *Note.* MNI = Montreal Neurological Institute; VTA = ventral tegmental area; NDI = neurite density index.
 
+
+Symptoms that appear at Step 1 or Step 2 often originate upstream, in the brain mask, the skull strip or the T1-to-diffusion transform; those steps are documented in the [Diffusion MRI Preprocessing tutorial](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro).
+
 ## Quality-assurance checklist
 
 - Record atlas version, threshold, dilation, interpolation, transforms, cutoff, scalar maps, covariates and software versions.

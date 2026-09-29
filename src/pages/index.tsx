@@ -6,60 +6,139 @@ import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
-const STEPS = [
-  {num: 1, title: 'Registration', tools: 'ANTs', link: '/docs/workflow/registration'},
-  {num: 2, title: 'Region warping', tools: 'ANTs · FSL', link: '/docs/workflow/warp-rois'},
-  {num: 3, title: 'Corridor construction', tools: 'FSL', link: '/docs/workflow/corridor-mask'},
-  {num: 4, title: 'Cutoff selection', tools: 'MRtrix3 · Python', link: '/docs/workflow/tune-cutoff'},
-  {num: 5, title: 'Tractography', tools: 'MRtrix3', link: '/docs/workflow/tractography'},
-  {num: 6, title: 'Bundle cleaning', tools: 'pyAFQ · DIPY', link: '/docs/workflow/cleaning'},
-  {num: 7, title: 'Quality control', tools: 'Python · FSLeyes', link: '/docs/workflow/visual-qc'},
-  {num: 8, title: 'Node profiles', tools: 'DIPY', link: '/docs/workflow/node-profiles'},
-  {num: 9, title: 'Group-level inference', tools: 'R · Python', link: '/docs/workflow/nodewise-stats'},
+const FACTS = [
+  {value: '7', label: 'bilateral pathways'},
+  {value: '7 T', label: 'Human Connectome Project diffusion MRI'},
+  {value: '166–173', label: 'participants behind each map'},
+  {value: '1 mm', label: 'FSL MNI152 grid'},
 ];
 
-function AtlasFigure() {
-  return (<section className={styles.atlasSection}><div className="container">
-    <div className={styles.atlasFigure}><div className="figure-panel">
-      <img src={useBaseUrl('/img/fig_atlas_pathways.png')} alt="The seven bilateral pathways of the MesoConnect Atlas with their regions of interest" loading="lazy"/>
-      <p className="figure-panel__caption">The seven bilateral pathways at the 50% threshold, in the three groupings used by the atlas authors. Figure from the MesoConnect repository (CC BY 4.0).</p>
-    </div></div>
-  </div></section>);
-}
-
-function Pipeline() {
-  return (<section className={styles.pipelineSection}><div className="container">
-    <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>Workflow</Heading>
-    <p className="text--center" style={{marginBottom: '2rem', color: 'var(--ifm-color-emphasis-600)'}}>
-      Preprocessing is documented in the <a href="https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro">Diffusion MRI Preprocessing tutorial</a>. The steps below begin from a T1-weighted image, a white-matter fibre orientation distribution and a brain mask.
-    </p>
-    <div className="pipeline-explorer pipeline-explorer--narrow">{STEPS.map((s) => (<div key={s.num}>
-      <Link to={s.link} className="pipeline-explorer__stage">
-        <div className="pipeline-explorer__number">{s.num}</div>
-        <div className="pipeline-explorer__content"><p className="pipeline-explorer__title">{s.title}</p><p className="pipeline-explorer__tools">{s.tools}</p></div>
-      </Link><div className="pipeline-explorer__arrow">&darr;</div></div>))}
-      <Link to="pathname:///MesoConnect-Tutorial/explorer/" className="pipeline-explorer__stage">
-        <div className="pipeline-explorer__number">&#9656;</div>
-        <div className="pipeline-explorer__content"><p className="pipeline-explorer__title">Node-wise Tract Explorer</p><p className="pipeline-explorer__tools">Read the results file in the browser</p></div>
-      </Link></div>
-  </div></section>);
-}
+const STAGES = [
+  {
+    img: 'fig_regions_ortho.png',
+    alt: 'Seed, target and atlas warped into one participant, shown in three planes',
+    title: 'Warp the atlas into the participant',
+    text: 'The pathway map and its seed and target regions move from standard space to the participant’s diffusion grid.',
+  },
+  {
+    img: 'fig_inclusion_zone.png',
+    alt: 'The dilated atlas with the seed and target, forming the corridor',
+    title: 'Dilate it into a corridor',
+    text: 'The warped map, widened and joined to the endpoints, becomes the only region tracking may occupy.',
+  },
+  {
+    img: 'fig_cleaned_posterior.png',
+    alt: 'A cleaned VTA to hippocampus bundle over the mean b = 0 image',
+    title: 'Track inside it, then clean',
+    text: 'Streamlines are estimated from the participant’s own data, and outlying streamlines are removed.',
+  },
+  {
+    img: 'fig_profile_ndi.png',
+    alt: 'Neurite density sampled at 100 nodes along the bundle',
+    title: 'Profile along the bundle',
+    text: 'Each scalar map is sampled at 100 nodes, giving the values that enter the group-level models.',
+  },
+];
 
 function Header() {
   const {siteConfig} = useDocusaurusContext();
-  return (<header className={`hero hero--primary ${styles.heroBanner}`}><div className="container"><div className={styles.heroInner}>
-    <p className={styles.heroLabel}>7 T mesolimbic connectivity atlas</p>
-    <Heading as="h1" className="hero__title">{siteConfig.title}</Heading>
-    <p className="hero__subtitle">{siteConfig.tagline}</p>
-    <div className={styles.buttons}>
-      <Link className="button button--secondary button--lg" to="/docs/">Start the tutorial</Link>
-      <Link className="button button--outline button--lg" to="pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip">Download the atlas (.zip)</Link>
-    </div></div></div></header>);
+  return (
+    <header className={`hero hero--primary ${styles.heroBanner}`}>
+      <div className="container">
+        <div className={styles.heroInner}>
+          <p className={styles.heroLabel}>7 T mesolimbic connectivity atlas</p>
+          <Heading as="h1" className="hero__title">{siteConfig.title}</Heading>
+          <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <div className={styles.buttons}>
+            <Link className="button button--secondary button--lg" to="/docs/">Start the tutorial</Link>
+            <Link
+              className="button button--outline button--lg"
+              to="pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip">
+              Download the atlas (.zip)
+            </Link>
+          </div>
+        </div>
+        <div className={styles.facts}>
+          {FACTS.map((f) => (
+            <div key={f.label} className={styles.fact}>
+              <p className={styles.factValue}>{f.value}</p>
+              <p className={styles.factLabel}>{f.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function AtlasFigure() {
+  return (
+    <section className={styles.atlasSection}>
+      <div className="container">
+        <figure className={styles.atlasFigure}>
+          <img
+            src={useBaseUrl('/img/fig_atlas_pathways.png')}
+            alt="The seven bilateral pathways of the MesoConnect Atlas with their regions of interest"
+            loading="lazy"
+          />
+          <figcaption className={styles.atlasCaption}>
+            The seven bilateral pathways at the 50% threshold, in the three groupings used by the
+            atlas authors. Figure from the MesoConnect repository (CC BY 4.0).
+          </figcaption>
+        </figure>
+        <p className={styles.atlasMore}>
+          <Link to="/docs/atlas/construction">How the atlas was built &rarr;</Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function Method() {
+  return (
+    <section className={styles.methodSection}>
+      <div className="container">
+        <Heading as="h2" className="text--center" style={{marginBottom: '0.5rem'}}>
+          Corridor-constrained tractography
+        </Heading>
+        <p
+          className="text--center"
+          style={{margin: '0 auto 2.5rem', maxWidth: '620px', color: 'var(--ifm-color-emphasis-600)'}}>
+          The atlas constrains where tracking may go; the streamlines are the participant&rsquo;s own.
+        </p>
+        <div className={styles.stageGrid}>
+          {STAGES.map((s) => (
+            <div key={s.title} className={styles.stage}>
+              <div className={styles.stageImage}>
+                <img src={useBaseUrl(`/img/${s.img}`)} alt={s.alt} loading="lazy" />
+              </div>
+              <p className={styles.stageTitle}>{s.title}</p>
+              <p className={styles.stageText}>{s.text}</p>
+            </div>
+          ))}
+        </div>
+        <p className={styles.methodFoot}>
+          Diffusion data reach this workflow already corrected, from the{' '}
+          <Link to="https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/intro">
+            Diffusion MRI Preprocessing tutorial
+          </Link>{' '}
+          or an equivalent pipeline.
+        </p>
+      </div>
+    </section>
+  );
 }
 
 export default function Home(): ReactNode {
-  return (<Layout title="Home" description="Tutorial for the MesoConnect Atlas: participant-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
-    <Header/><main>
-      <AtlasFigure/>
-      <Pipeline/></main></Layout>);
+  return (
+    <Layout
+      title="Home"
+      description="Tutorial for the MesoConnect Atlas: participant-level tractography, bundle cleaning and along-tract microstructure for mesolimbic pathways.">
+      <Header />
+      <main>
+        <AtlasFigure />
+        <Method />
+      </main>
+    </Layout>
+  );
 }

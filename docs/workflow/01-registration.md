@@ -22,7 +22,7 @@ antsRegistrationSyNQuick.sh -d 3 \
 
 The outputs are the affine component (`mni2t1_0GenericAffine.mat`), the forward warp from MNI to T1 (`mni2t1_1Warp.nii.gz`, used in Step 2), the inverse warp from T1 to MNI (`mni2t1_1InverseWarp.nii.gz`, used to return participant-level results to atlas space) and the template resampled into participant space (`mni2t1_Warped.nii.gz`).
 
-If the T1 image has not been skull-stripped, this should be done first; atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion image, this warp is the only transform required (`T1_TO_DWI=header` in the configuration).
+If the T1 image has not been skull-stripped, this should be done first ([Diffusion MRI Preprocessing](https://diffusiontensorimaging-repos.github.io/Diffusion-MRI-Preprocessing/docs/pipeline/skull-stripping)); atlas construction used SynthStrip (Hoopes et al., 2022) and the example dataset used ANTs brain extraction. If the T1 image is already aligned to the diffusion image, this warp is the only transform required (`T1_TO_DWI=header` in the configuration).
 
 The full script follows. Each participant requires approximately 10 to 15 min with four threads, and the script runs four participants concurrently.
 

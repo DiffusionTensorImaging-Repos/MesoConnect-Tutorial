@@ -1,5 +1,5 @@
 .heroBanner {
-  padding: 5rem 0 4rem;
+  padding: 5rem 0 0;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -19,12 +19,6 @@
   margin-bottom: 0.6rem;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 3rem 1rem;
-  }
-}
-
 .buttons {
   display: flex;
   align-items: center;
@@ -34,27 +28,141 @@
   gap: 0.75rem;
 }
 
+/* Facts sit on the hero itself rather than in a band of their own. */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 3.5rem auto 0;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid rgba(148, 197, 230, 0.18);
+}
+
+.factValue {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.factLabel {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: rgba(226, 238, 249, 0.62);
+}
+
 .atlasSection {
-  padding: 3rem 0 3.5rem;
+  padding: 4rem 0 1rem;
 }
 
-/* The source figure is 2048 px wide; cap it well below that so the page is not
-   dominated by it, while the panel labels stay readable. */
+/* The source figure is 2048 px wide. It is a composite plate, so it needs room for
+   its own panels to stay legible: no frame around it, and whitespace instead. */
 .atlasFigure {
-  max-width: 860px;
-  margin: 0 auto 1.75rem;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0;
 }
 
-.pipelineSection {
-  padding: 3rem 0 4rem;
-  background: var(--ifm-background-surface-color);
-  border-top: 1px solid var(--surface-border);
+.atlasFigure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.atlasCaption {
+  margin: 1.1rem auto 0;
+  max-width: 660px;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.atlasMore {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.methodSection {
+  padding: 3.5rem 0 4rem;
+}
+
+.stageGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 2rem;
+  max-width: 940px;
+  margin: 0 auto;
+}
+
+/* Fixed box, image contained: every figure is shown whole, none cropped or stretched. */
+.stageImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 190px;
+  padding: 0.75rem;
+  /* The figures are matplotlib output on white; a white tile keeps the four
+     consistent instead of reading as four different backgrounds. */
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stageImage img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.stageTitle {
+  margin: 0.9rem 0 0.25rem;
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--ifm-heading-color);
+}
+
+.stageText {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.methodFoot {
+  margin: 2.75rem auto 0;
+  max-width: 620px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-600);
 }
 
 @media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 3rem 1rem 0;
+  }
+
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 2.5rem;
+  }
+
   .atlasSection,
-  .pipelineSection {
+  .methodSection {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .stageGrid {
+    grid-template-columns: 1fr;
   }
 }
