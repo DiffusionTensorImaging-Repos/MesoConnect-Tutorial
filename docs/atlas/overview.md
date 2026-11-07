@@ -7,7 +7,7 @@ title: "Atlas overview"
 
 The MesoConnect Atlas comprises group probabilistic maps of seven bilateral mesolimbic pathways connecting the ventral tegmental area (VTA), hippocampus, nucleus accumbens (NAc), ventral pallidum (VP) and amygdala. The maps were generated from Human Connectome Project (HCP) 7 T diffusion data (Vu et al., 2015) using probabilistic tractography (Tournier et al., 2010) with pathway-specific anatomical constraints, streamline cleaning and group-level probabilistic mapping (see [Atlas construction](construction)), and are distributed in Montreal Neurological Institute (MNI) space, as maps on the FSL MNI152 1 mm grid (182 × 218 × 182 voxels) and as group-average streamlines in the same space.
 
-The atlas authors organize the seven pathways into three groupings (Figure 1): regulation of motivated behaviour (hippocampus → NAc → VP; VP → VTA), motivated memory (VTA → anterior hippocampus; VTA → posterior hippocampus), and motivated salience and learning (inferior VTA → NAc; superior VTA → NAc; VTA → amygdala). The groupings organize the atlas for navigation; they do not imply a fixed one-pathway, one-function mapping, and the pathways are overlapping components of a broader circuit.
+The seven pathways are organized into three groupings (Figure 1): regulation of motivated behaviour (hippocampus → NAc → VP; VP → VTA), motivated memory (VTA → anterior hippocampus; VTA → posterior hippocampus), and motivated salience and learning (inferior VTA → NAc; superior VTA → NAc; VTA → amygdala). The groupings organize the atlas for navigation; they do not imply a fixed one-pathway, one-function mapping, and the pathways are overlapping components of a broader circuit.
 
 **Figure 1**
 

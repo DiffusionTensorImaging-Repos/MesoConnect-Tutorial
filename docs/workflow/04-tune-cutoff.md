@@ -23,7 +23,7 @@ The value in routine use with the corridor mask is 0.01, and it is the default i
 | Atlas construction, 7 T: VTA → amygdala | 0.08 | Value used to build the atlas |
 | Atlas construction, 7 T: hippocampus → accumbens → ventral pallidum | 0.04 | Value used to build the atlas |
 | Atlas construction, 7 T: VTA → accumbens (both divisions) and ventral pallidum → VTA | 0.03 | Value used to build the atlas |
-| Corridor workflow, atlas authors' worked example (inferior VTA → accumbens, 2 mm-dilated 50% corridor, 1,000 streamlines) | 0.05 | Value used in the atlas repository's example |
+| Corridor workflow, the atlas repository's worked example (inferior VTA → accumbens, 2 mm-dilated 50% corridor, 1,000 streamlines) | 0.05 | Value used in the atlas repository's example |
 | MRtrix3 default for FOD-based tracking | 0.05 | For reference |
 
 *Note.* A cutoff of 0.01 is usable only with the corridor's exclusion mask. Without the mask it produces streamlines throughout the brain.

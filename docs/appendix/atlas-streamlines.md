@@ -7,7 +7,7 @@ title: "Warping the atlas streamlines"
 
 Alongside the volumetric maps, the atlas package distributes the group-average streamlines of each pathway as MRtrix tractograms (`.tck`), two per pathway, one per hemisphere. In this approach those streamlines are carried into a participant with a registration and microstructure is sampled along them, so along-tract profiles are obtained without reconstructing the tract in the participant's own data.
 
-The trajectory represents the group rather than the participant, so this approach suits studies whose outcome is microstructure measured along a pathway. For questions about tract geometry, an individual's trajectory or connectivity, tractography in the participant's own data remains the recommended method and is documented in this site's workflow section. Accuracy depends on the registration: where registration is poor, or anatomy varies between participants, the streamlines sample tissue displaced from the intended location, and this displacement is spatially systematic rather than random noise. The atlas authors report that warped streamlines recover node-wise profiles similar to those obtained by tracking in the participant's own data, while identifying registration uncertainty and between-participant anatomical variation as the principal concerns in using these files.
+The trajectory represents the group rather than the participant, so this approach suits studies whose outcome is microstructure measured along a pathway. For questions about tract geometry, an individual's trajectory or connectivity, tractography in the participant's own data remains the recommended method and is documented in this site's workflow section. Accuracy depends on the registration: where registration is poor, or anatomy varies between participants, the streamlines sample tissue displaced from the intended location, and this displacement is spatially systematic rather than random noise. Warped streamlines nevertheless recover node-wise profiles similar to those obtained by tracking in the participant's own data.
 
 ## Procedure
 
@@ -190,7 +190,7 @@ The script transforms every vertex of every streamline in a single call and comp
 
 The script reports, per participant, the proportion of warped vertices inside the non-zero part of that participant's T1-weighted brain image. This proportion is interpreted relative to the sample: a value well below those of other participants indicates a failed registration.
 
-The warped streamlines are overlaid on the participant's own image to confirm that their endpoints occupy the intended anatomical regions. No numeric summary substitutes for this visual inspection of the trajectory. The atlas authors identify registration accuracy as the principal concern in using these files.
+The warped streamlines are overlaid on the participant's own image to confirm that their endpoints occupy the intended anatomical regions. No numeric summary substitutes for this visual inspection of the trajectory.
 
 The warp preserves vertex order within each streamline, carrying the source atlas file's orientation unchanged into every participant. When hemisphere profiles are combined, the two source files are checked for the same anatomical direction. If their directions differ, node 1 in one hemisphere corresponds to the opposite tract end from node 1 in the other, so averaging combines anatomically opposite positions.
 
@@ -200,7 +200,7 @@ The first check automatically reports failure and prevents file creation. Poor b
 
 Streamline registration is not specific to ANTs; MRtrix `tcktransform` applies a warp field to a tractogram and serves the same purpose.
 
-For data that already has a whole-brain tractogram, RecoBundles, implemented in DIPY (Garyfallidis et al., 2014), can extract bundles matching an atlas template. The atlas authors report that whole-brain settings often fail to reconstruct these pathways, whose small size makes them sensitive to fibre orientation distribution amplitude and termination criteria, and that amplitude thresholds had to be relaxed. It is therefore a possible route for existing tractograms rather than a substitute for targeted tractography, and what it extracts should be inspected against the intended pathway.
+For data that already has a whole-brain tractogram, RecoBundles, implemented in DIPY (Garyfallidis et al., 2014), can extract bundles matching an atlas template. Standard whole-brain tracking settings often fail to reconstruct these pathways because their small size makes them sensitive to fibre orientation distribution amplitude thresholds and termination criteria; relaxing the amplitude threshold enables reconstruction. RecoBundles is therefore a possible route for existing tractograms rather than a reliable substitute for tractography targeted at the pathway, and the extracted bundles require inspection against the intended pathway.
 
 ## Reporting
 

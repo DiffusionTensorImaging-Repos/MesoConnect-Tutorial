@@ -7,7 +7,7 @@ title: "Downloads"
 
 ## Complete atlas
 
-The MesoConnect Atlas is distributed as one package, [MesoConnect_Atlas.zip](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip) (46 MB). The canonical copy and the individual files are in the atlas authors' [GitHub repository](https://github.com/blelliott23/MesoConnect); the copy served here is identical (SHA-256 [checksum file](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip.sha256)).
+The MesoConnect Atlas is distributed as one package, [MesoConnect_Atlas.zip](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip) (46 MB). The canonical copy and the individual files are in the atlas [GitHub repository](https://github.com/blelliott23/MesoConnect); the copy served here is identical (SHA-256 [checksum file](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip.sha256)).
 
 The package contains the 28 atlas maps and the 14 pathway tractograms (seven pathways, two hemispheres, two map types and one streamline file each), `mesoconnect_subject_counts.csv`, the FSL MNI152 1 mm brain template (Montreal Neurological Institute, MNI) used as the spatial reference, a README and the licence notice:
 
@@ -37,7 +37,7 @@ The package's terms are scoped by material: the Human Connectome Project (HCP)-d
 
 ## Seed and target regions
 
-The atlas package does not redistribute the third-party regions used as seeds and targets during atlas construction (Harvard–Oxford hippocampus, amygdala and nucleus accumbens; the ventral tegmental area (VTA) of Trutti et al., 2021; the ventral pallidum of Pauli et al., 2018). The atlas authors' [region-of-interest resources page](https://github.com/blelliott23/MesoConnect/blob/main/ROI_RESOURCES.md) gives the download locations, thresholds and citations. The four regions used for the VTA → hippocampus example on this site are provided here (Table 2), thresholded and binarized on the same MNI 1 mm grid.
+The atlas package does not redistribute the third-party regions used as seeds and targets during atlas construction (Harvard–Oxford hippocampus, amygdala and nucleus accumbens; the ventral tegmental area (VTA) of Trutti et al., 2021; the ventral pallidum of Pauli et al., 2018). The atlas repository's [region-of-interest resources page](https://github.com/blelliott23/MesoConnect/blob/main/ROI_RESOURCES.md) gives the download locations, thresholds and citations. The four regions used for the VTA → hippocampus example on this site are provided here (Table 2), thresholded and binarized on the same MNI 1 mm grid.
 
 **Table 2**
 

@@ -46,7 +46,7 @@ Table 1 gives the rationale for each option, and Table 2 the values used per tra
 |---|---|---|---|---|
 | VTA → hippocampus, posterior and anterior | 0.01 | 0.06 | 35–65 mm | Used for the example dataset at 3 T. |
 | VTA → amygdala | 0.01, confirm by pilot | 0.08 | 27–40 mm at 7 T; confirm by pilot | Shorter tract. |
-| VTA → nucleus accumbens, inferior and superior | 0.01 | 0.03 | 8–35 mm at 7 T; confirm by pilot | 0.01 has been used with the corridor by other users of the atlas; the atlas authors' worked example uses 0.05. The inferior pathway was generated with a 7° angle and 0.25 mm step. |
+| VTA → nucleus accumbens, inferior and superior | 0.01 | 0.03 | 8–35 mm at 7 T; confirm by pilot | 0.01 has been used with the corridor by other users of the atlas; the atlas repository's worked example uses 0.05. The inferior pathway was generated with a 7° angle and 0.25 mm step. |
 | Ventral pallidum → VTA | 0.01, confirm by pilot | 0.03 | 15–25 mm at 7 T; confirm by pilot | Generated with a 15° angle. |
 | Hippocampus → nucleus accumbens → ventral pallidum | 0.01, confirm by pilot | 0.04 | minimum 5 mm at 7 T; confirm by pilot | The accumbens is a required waypoint. Frequently reconstructs as two clusters; see Step 6. |
 
