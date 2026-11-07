@@ -1,11 +1,11 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: "Atlas-guided synthetic streamlines"
 ---
 
 # Atlas-guided synthetic streamlines
 
-This approach is intended for studies that require along-tract profiles but cannot reconstruct the tract in every participant. The warped atlas serves as a geometric scaffold: an ordered centerline is estimated from one endpoint to the other within the mask, 100 nodes are placed along it, jittered streamlines may be generated within the mask, and scalar maps are sampled at each node. The resulting streamlines constitute a reproducible sampling coordinate system rather than a tractography reconstruction, and the approach is less established than corridor-constrained tractography.
+This approach is intended for studies that require along-tract profiles but cannot reconstruct the tract in every participant. Where the pathway's group-average streamlines are used directly, [warping the atlas streamlines](atlas-streamlines) is the more direct route to the same kind of profile; the approach described here builds a scaffold from the atlas mask instead, and applies when a mask is the only atlas input available. The warped atlas serves as a geometric scaffold: an ordered centerline is estimated from one endpoint to the other within the mask, 100 nodes are placed along it, jittered streamlines may be generated within the mask, and scalar maps are sampled at each node. The resulting streamlines constitute a reproducible sampling coordinate system rather than a tractography reconstruction, and the approach is less established than corridor-constrained tractography.
 
 ## Procedure
 

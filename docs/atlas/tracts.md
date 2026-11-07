@@ -21,7 +21,7 @@ The atlas contains seven bilateral pathways (Table 1). Each is processed with th
 | Hippocampus → NAc → VP | Regulation of motivated behaviour | `left_hpc_nac_vp`, `right_hpc_nac_vp` | hippocampus | VP, with the NAc as a required waypoint | Frequently reconstructs as two bundles; see Step 6. |
 | VP → VTA | Regulation of motivated behaviour | `left_vp_vta`, `right_vp_vta` | VP | VTA | |
 
-*Note.* File stems are those of the atlas package (`<stem>_mni152_1mm_thr50.nii.gz` and `<stem>_mni152_1mm_overlap_prop.nii.gz`). The atlas-generation settings of each pathway are on the [construction page](construction); the number of contributing participants is listed there as well.
+*Note.* File stems are those of the atlas package (`<stem>_mni152_1mm_thr50.nii.gz`, `<stem>_mni152_1mm_overlap_prop.nii.gz` and `<stem>_mni152_1mm.tck`). The atlas-generation settings of each pathway are on the [construction page](construction); the number of contributing participants is listed there as well.
 
 ## Regions of interest
 

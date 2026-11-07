@@ -7,9 +7,9 @@ title: "Downloads"
 
 ## Complete atlas
 
-The MesoConnect Atlas is distributed as one package, [MesoConnect_Atlas.zip](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip) (3.4 MB). The canonical copy and the individual files are in the atlas authors' [GitHub repository](https://github.com/blelliott23/MesoConnect); the copy served here is identical (SHA-256 [checksum file](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip.sha256)).
+The MesoConnect Atlas is distributed as one package, [MesoConnect_Atlas.zip](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip) (46 MB). The canonical copy and the individual files are in the atlas authors' [GitHub repository](https://github.com/blelliott23/MesoConnect); the copy served here is identical (SHA-256 [checksum file](pathname:///MesoConnect-Tutorial/downloads/MesoConnect_Atlas.zip.sha256)).
 
-The package contains the 28 atlas maps (seven pathways, two hemispheres, two map types), `mesoconnect_subject_counts.csv`, the FSL MNI152 1 mm brain template (Montreal Neurological Institute, MNI) used as the spatial reference, a README and the licence notice:
+The package contains the 28 atlas maps and the 14 pathway tractograms (seven pathways, two hemispheres, two map types and one streamline file each), `mesoconnect_subject_counts.csv`, the FSL MNI152 1 mm brain template (Montreal Neurological Institute, MNI) used as the spatial reference, a README and the licence notice:
 
 ```
 MesoConnect_Atlas/
@@ -19,16 +19,17 @@ MesoConnect_Atlas/
   vta_posterior_hpc/  hpc_nac_vp/         vp_vta/
 ```
 
-Each pathway folder holds four files named `{hemisphere}_{pathway}_mni152_1mm_{map_type}.nii.gz`, for example `vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz`. Table 1 gives the two map types. All maps are on the FSL MNI152 1 mm grid (182 × 218 × 182 voxels, 1 mm isotropic) as compressed NIfTI-1.
+Each pathway folder holds six files: four maps named `{hemisphere}_{pathway}_mni152_1mm_{map_type}.nii.gz`, for example `vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz`, and two streamline files named `{hemisphere}_{pathway}_mni152_1mm.tck`, which carry no map-type field. Table 1 gives the three file types. The maps are on the FSL MNI152 1 mm grid (182 × 218 × 182 voxels, 1 mm isotropic) as compressed NIfTI-1; the streamline files hold vertex coordinates in millimetres in the same space and are not on a voxel grid.
 
 **Table 1**
 
-*Map Types in the Atlas Package*
+*File Types in the Atlas Package*
 
 | File suffix | Contents | Use |
 |---|---|---|
 | `_overlap_prop.nii.gz` | Probabilistic map. Each voxel holds the proportion of contributing participants whose binarized tract included it (0 to 1). | Visualization, custom thresholds, probability-weighted extraction |
 | `_thr50.nii.gz` | Binary map. A voxel is 1 when the tract was present in at least half of the contributing participants. | Corridor construction (this tutorial), whole-tract extraction |
+| `.tck` | Group-average streamlines of the pathway as an MRtrix tractogram. Each streamline carries 100 vertices. | Warping into a participant for along-tract sampling ([appendix](../appendix/atlas-streamlines)) |
 
 *Note.* `mesoconnect_subject_counts.csv` gives the number of contributing participants for every pathway and hemisphere, the denominator of the corresponding overlap-proportion map. Binary maps are warped with nearest-neighbour interpolation. A map at another threshold is made from the overlap-proportion map and kept outside the package folders, for example `fslmaths left_vta_posterior_hpc_mni152_1mm_overlap_prop.nii.gz -thr 0.25 -bin derived/left_vta_posterior_hpc_thr25.nii.gz`.
 
@@ -63,7 +64,7 @@ for f in left_VTA_0.25_bin right_VTA_0.25_bin HPC_L_0.5_bin HPC_R_0.5_bin; do
 done
 ```
 
-In `00_config.sh`, `ATLAS_DIR` then points at `MesoConnect_Atlas`, and the atlas map of a tract is named by its package path, for example `$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz`.
+In `00_config.sh`, `ATLAS_DIR` then points at `MesoConnect_Atlas`, and the atlas map of a tract is named by its package path, for example `$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz`. `ATLAS_STREAMLINES_MNI` names the matching `.tck` file and is read only by the atlas-streamline route.
 
 ## Source atlases
 

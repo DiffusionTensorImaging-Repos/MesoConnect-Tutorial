@@ -21,3 +21,6 @@ yarn-error.log*
 node_modules
 build
 __pycache__/
+
+# Collaborator scripts, kept local: one contains unreleased test-retest results
+streamline_atlas_code/

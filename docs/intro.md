@@ -12,7 +12,7 @@ The MesoConnect Atlas is a probabilistic atlas of mesolimbic white-matter pathwa
 
 The procedure comprises nine steps. The atlas map for a tract is registered to each participant and dilated into a corridor; probabilistic tractography is run through the corridor from the pathway's seed region to its target; the resulting bundle is cleaned of outlying streamlines; and scalar maps, fractional anisotropy (FA) and the indices of neurite orientation dispersion and density imaging (NODDI; Zhang et al., 2012), are sampled at 100 equidistant points along the bundle. Group-level inference may be performed at three resolutions, the whole tract, quartiles of the tract, or individual nodes, and the tutorial describes the model and correction appropriate to each. Node-wise results may be inspected in the Node-wise Tract Explorer, a browser-based viewer distributed with this site that renders *t*-value profiles, clusters and hemispheric comparisons from a results file.
 
-Two alternative uses of the atlas, averaging a scalar map within the warped atlas mask and sampling along an atlas-derived centerline, are described in the appendix. Corridor-constrained tractography is presented as the primary method because the streamlines are estimated from each participant's own data and support along-tract analysis.
+Three alternative uses of the atlas, averaging a scalar map within the warped atlas mask, warping the group-average streamlines distributed with the atlas into each participant, and sampling along an atlas-derived centerline, are described in the appendix. Corridor-constrained tractography is presented as the primary method because the streamlines are estimated from each participant's own data and support along-tract analysis.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ Table 1 summarizes the sections of the site.
 | Atlas | The seven pathways, how the atlas was constructed, sources of the seed and target regions, the complete package for download |
 | Workflow | The nine steps, each with parameters, verification criteria, the full script, and illustrative output from an example dataset |
 | Explorer | The results viewer and its input format |
-| Alternative approaches | Whole-tract extraction; atlas-guided synthetic streamlines |
+| Alternative approaches | Warping the atlas streamlines; whole-tract extraction; atlas-guided synthetic streamlines |
 | Reference | Consolidated parameters, troubleshooting, software, scripts, suggested methods text, abbreviations, citation, references |
 
 ## Example dataset

@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]; DOCS=ROOT/"docs"; IMG=ROOT/"static"/"i
 SITE="https://diffusiontensorimaging-repos.github.io/MesoConnect-Tutorial"
 ORDER=["intro.md","atlas/overview.md","atlas/tracts.md","atlas/downloads.md","workflow/overview.md","workflow/01-registration.md","workflow/02-warp-rois.md",
  "workflow/03-corridor-mask.md","workflow/04-tune-cutoff.md","workflow/05-tractography.md","workflow/06-cleaning.md","workflow/07-visual-qc.md","workflow/08-node-profiles.md",
- "workflow/09-nodewise-stats.md","explorer.md","appendix/whole-tract.md","appendix/synthetic-streamlines.md","reference/parameters.md","reference/troubleshooting.md",
+ "workflow/09-nodewise-stats.md","explorer.md","appendix/atlas-streamlines.md","appendix/whole-tract.md","appendix/synthetic-streamlines.md","reference/parameters.md","reference/troubleshooting.md",
  "reference/software.md","reference/scripts.md","reference/methods-text.md","reference/abbreviations.md","reference/citation.md","reference/references.md"]
 FLOW="""1. Step 1. Registration of the MNI template to native T1 space (ANTs SyN).
 2. Step 2. Warping of the seed, target and atlas into diffusion space.

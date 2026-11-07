@@ -106,7 +106,7 @@ The configuration file follows.
 
 <!-- script:00_config.sh -->
 <details>
-<summary>Script <code>00_config.sh</code> (80 lines)</summary>
+<summary>Script <code>00_config.sh</code> (82 lines)</summary>
 
 ```bash title="00_config.sh"
 #!/bin/bash
@@ -124,11 +124,13 @@ export ATLAS_DIR="/path/to/MesoConnect_Atlas"    # unzipped atlas package, plus 
 export OUT="$PROJECT/derivatives/mesoconnect"    # everything this workflow writes
 export FORCE="${FORCE:-0}"                        # 1 = recompute existing outputs
 
-# --- tract definition (one tract per run; change these four lines and rerun Steps 2-9) ---
+# --- tract definition (one tract per run; change these lines and rerun Steps 2-9) ---
 export TRACT="l_vta_l_hipp"                      # name used for all outputs
 export SEED_MNI="$ATLAS_DIR/roi_maps/left_VTA_0.25_bin.nii.gz"
 export TARGET_MNI="$ATLAS_DIR/roi_maps/HPC_L_0.5_bin.nii.gz"
 export ATLAS_MNI="$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm_thr50.nii.gz"
+# Streamline file of the same pathway; read only by the atlas-streamline route (appendix).
+export ATLAS_STREAMLINES_MNI="$ATLAS_DIR/vta_posterior_hpc/left_vta_posterior_hpc_mni152_1mm.tck"
 
 # --- T1 -> DWI transform (Step 2): "matrix" = xfm/<subj>/str2diff.mat, "header" = same grid
 export T1_TO_DWI="matrix"

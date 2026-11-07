@@ -19,11 +19,13 @@ title: "Abbreviations"
 | HCP | Human Connectome Project |
 | ICV | intracranial volume |
 | iFOD2 | second-order integration over fibre orientation distributions |
+| LPS | left-posterior-superior (coordinate order) |
 | MNI | Montreal Neurological Institute |
 | NDI | neurite density index |
 | NODDI | neurite orientation dispersion and density imaging |
 | ODI | orientation dispersion index |
 | pyAFQ | Python Automated Fiber Quantification |
+| RAS | right-anterior-superior (coordinate order) |
 | ROI | region of interest |
 | SN | substantia nigra |
 | TDI | tract-density image |

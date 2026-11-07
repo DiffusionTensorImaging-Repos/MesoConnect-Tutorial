@@ -5,7 +5,7 @@ title: "Atlas overview"
 
 # Atlas overview
 
-The MesoConnect Atlas comprises group probabilistic maps of seven bilateral mesolimbic pathways connecting the ventral tegmental area (VTA), hippocampus, nucleus accumbens (NAc), ventral pallidum (VP) and amygdala. The maps were generated from Human Connectome Project (HCP) 7 T diffusion data (Vu et al., 2015) using probabilistic tractography (Tournier et al., 2010) with pathway-specific anatomical constraints, streamline cleaning and group-level probabilistic mapping (see [Atlas construction](construction)), and are distributed in Montreal Neurological Institute (MNI) space on the FSL MNI152 1 mm grid (182 × 218 × 182 voxels).
+The MesoConnect Atlas comprises group probabilistic maps of seven bilateral mesolimbic pathways connecting the ventral tegmental area (VTA), hippocampus, nucleus accumbens (NAc), ventral pallidum (VP) and amygdala. The maps were generated from Human Connectome Project (HCP) 7 T diffusion data (Vu et al., 2015) using probabilistic tractography (Tournier et al., 2010) with pathway-specific anatomical constraints, streamline cleaning and group-level probabilistic mapping (see [Atlas construction](construction)), and are distributed in Montreal Neurological Institute (MNI) space, as maps on the FSL MNI152 1 mm grid (182 × 218 × 182 voxels) and as group-average streamlines in the same space.
 
 The atlas authors organize the seven pathways into three groupings (Figure 1): regulation of motivated behaviour (hippocampus → NAc → VP; VP → VTA), motivated memory (VTA → anterior hippocampus; VTA → posterior hippocampus), and motivated salience and learning (inferior VTA → NAc; superior VTA → NAc; VTA → amygdala). The groupings organize the atlas for navigation; they do not imply a fixed one-pathway, one-function mapping, and the pathways are overlapping components of a broader circuit.
 
@@ -21,7 +21,7 @@ The atlas represents plausible streamline trajectories. It does not establish mo
 
 ## File types
 
-Each pathway is distributed as two maps per hemisphere (Table 1); the [downloads page](downloads) gives the package layout and file names.
+Each pathway is distributed as two maps and one streamline file per hemisphere (Table 1); the [downloads page](downloads) gives the package layout and file names.
 
 **Table 1**
 
@@ -31,6 +31,7 @@ Each pathway is distributed as two maps per hemisphere (Table 1); the [downloads
 |---|---|---|
 | `*_overlap_prop.nii.gz` | Probabilistic map. Each voxel holds the proportion of contributing participants whose binarized tract included it (range 0 to 1). | Visualization, threshold selection, probability-weighted extraction |
 | `*_thr50.nii.gz` | Binary map of voxels present in at least 50% of contributing participants. | Corridor construction, whole-tract extraction |
+| `*.tck` | Group-average streamlines of the pathway, as an MRtrix tractogram of vertex coordinates in MNI millimetres. | Warping into a participant for along-tract sampling |
 
 The 50% threshold is the default for corridor construction. A stricter threshold (75%) reduces overreach but may omit legitimate between-participant variation. The 25% threshold retains greater extent and is appropriate when a warped 50% core is short or discontinuous; maps at other thresholds are made from the overlap-proportion map (downloads page).
 
@@ -38,7 +39,8 @@ The 50% threshold is the default for corridor construction. A stricter threshold
 
 1. *Corridor-constrained tractography.* The warped and dilated atlas defines the region within which participant-level tractography may travel. Streamlines are estimated from the participant's own data. This mode supports along-tract analysis and is the subject of the workflow section.
 2. *Whole-tract extraction.* A scalar map is averaged within the warped atlas mask. This mode is suitable for descriptive summaries; spatial variation along the tract is not retained. See the [appendix](../appendix/whole-tract).
-3. *Atlas-guided synthetic streamlines.* A centerline scaffold constructed inside the warped atlas is sampled at 100 nodes. This mode is suitable when participant-level tractography fails in a subset of the sample. The scaffold is a sampling coordinate system rather than a reconstruction. See the [appendix](../appendix/synthetic-streamlines).
+3. *Warped atlas streamlines.* The group-average streamlines distributed with the atlas are carried into a participant by a registration and sampled at their 100 nodes. This mode is suitable when the outcome is microstructure along a pathway and participant-level tractography is not available. The trajectory is the group's rather than the participant's, and its accuracy depends on the registration. See the [appendix](../appendix/atlas-streamlines).
+4. *Atlas-guided synthetic streamlines.* A centerline scaffold constructed inside the warped atlas is sampled at 100 nodes. This mode is suitable when participant-level tractography fails in a subset of the sample and the distributed streamlines are not used. The scaffold is a sampling coordinate system rather than a reconstruction. See the [appendix](../appendix/synthetic-streamlines).
 
 ## Coordinate spaces and interpolation
 
@@ -48,4 +50,4 @@ Probabilistic maps are warped with linear interpolation and thresholded in nativ
 
 ## Interpretive limits
 
-A group atlas warped to native space does not substitute for participant-level tractography when the research question depends on individual anatomy. Dilation increases sensitivity at the cost of specificity, and the smallest dilation that supports reliable tracking should be used. Whole-tract averages are summary descriptors. Synthetic streamlines are sampling scaffolds and should be described as such in reports.
+A group atlas warped to native space does not substitute for participant-level tractography when the research question depends on individual anatomy. Dilation increases sensitivity at the cost of specificity, and the smallest dilation that supports reliable tracking should be used. Whole-tract averages are summary descriptors. Warped atlas streamlines carry the group trajectory rather than the participant's, so registration quality bounds what they can show. Synthetic streamlines are sampling scaffolds and should be described as such in reports.
