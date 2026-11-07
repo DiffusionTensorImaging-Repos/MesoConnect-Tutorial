@@ -7,7 +7,7 @@ title: "Warping the atlas streamlines"
 
 Alongside the volumetric maps, the atlas package distributes the group-average streamlines of each pathway as MRtrix tractograms (`.tck`), two per pathway, one per hemisphere. In this approach those streamlines are carried into a participant with a registration and microstructure is sampled along them, so along-tract profiles are obtained without reconstructing the tract in the participant's own data.
 
-The approach answers a different question from corridor-constrained tractography. Because the trajectory comes from the group rather than the participant, it is suited to studies whose outcome is microstructure along a pathway, and not to questions about tract geometry, individual trajectory or connectivity, for which participant-level tractography remains the recommended method and is the subject of the workflow section. Its accuracy depends on the registration: where registration is poor, or where anatomy varies between participants, the streamlines sample systematically displaced tissue, and the error is spatially structured rather than random. The atlas authors report that the warped streamlines recover node-wise profiles similar to those from participant-level tracking, and state that registration uncertainty and between-participant anatomical variation are the principal concerns in using these files.
+The trajectory represents the group rather than the participant, so this approach suits studies whose outcome is microstructure measured along a pathway. For questions about tract geometry, an individual's trajectory or connectivity, tractography in the participant's own data remains the recommended method and is documented in this site's workflow section. Accuracy depends on the registration: where registration is poor, or anatomy varies between participants, the streamlines sample tissue displaced from the intended location, and this displacement is spatially systematic rather than random noise. The atlas authors report that warped streamlines recover node-wise profiles similar to those obtained by tracking in the participant's own data, while identifying registration uncertainty and between-participant anatomical variation as the principal concerns in using these files.
 
 ## Procedure
 
@@ -186,15 +186,15 @@ Each scalar map is then sampled at 100 nodes along the bundle, with the profiler
 
 ## Verification
 
-Four properties are worth confirming before the profiles are used, because each of them fails silently.
+The script transforms every vertex of every streamline in a single call and compares the returned array's shape with the input's. A different vertex count or any non-finite coordinate stops processing for that participant without writing a file. This failure indicates a wrong or missing transform rather than an inaccurate one.
 
-The transform must return every vertex, finite. The script stops a participant whose vertex count changes or whose coordinates contain a non-finite value, which is the signature of a wrong or missing transform rather than a poor one.
+The script reports, per participant, the proportion of warped vertices inside the non-zero part of that participant's T1-weighted brain image. This proportion is interpreted relative to the sample: a value well below those of other participants indicates a failed registration.
 
-The warped bundle must lie inside the brain. The script reports the share of vertices falling in the non-zero part of the T1 brain image; a share well below the rest of the sample indicates a failed registration for that participant.
+The warped streamlines are overlaid on the participant's own image to confirm that their endpoints occupy the intended anatomical regions. No numeric summary substitutes for this visual inspection of the trajectory. The atlas authors identify registration accuracy as the principal concern in using these files.
 
-The trajectory must be inspected, which no numeric check replaces. Overlaying the warped streamlines on the participant's own image, and confirming that the endpoints sit in the intended regions, is the check the atlas authors emphasize.
+The warp preserves vertex order within each streamline, carrying the source atlas file's orientation unchanged into every participant. When hemisphere profiles are combined, the two source files are checked for the same anatomical direction. If their directions differ, node 1 in one hemisphere corresponds to the opposite tract end from node 1 in the other, so averaging combines anatomically opposite positions.
 
-The node order must be consistent across participants and hemispheres, or profiles are averaged end-to-end. Because the warp preserves vertex order, consistency in the source file carries through to every participant; where left and right profiles are combined, the two files' orientation should be confirmed to run in the same anatomical direction rather than assumed.
+The first check automatically reports failure and prevents file creation. Poor but unbroken registration, misplaced endpoints, and reversed hemispheric correspondence all pass that check: files are written, profiles are computed, and numbers are returned without an error, leaving these failures undetected unless the remaining checks are performed.
 
 ## Other routes
 
