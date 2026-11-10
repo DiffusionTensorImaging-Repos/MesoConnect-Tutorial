@@ -7,6 +7,8 @@ title: "Workflow overview"
 
 The workflow comprises nine steps applied to one tract at a time (Figure 1). Step 1 is performed once per participant and reused across tracts. Steps 2 through 9 are repeated for each tract by changing the tract name and the seed, target and atlas files in the configuration.
 
+Every figure and every illustrative value on the nine workflow pages derives from the ventral tegmental area (VTA) to hippocampus pathway, including its anterior and posterior divisions in both hemispheres. This pathway illustrates the procedure, which applies unchanged to all seven bilateral pathways. Recommended fibre orientation distribution amplitude cutoffs and length ranges are specified for each pathway elsewhere on the site, alongside seed and target regions and their sources.
+
 **Figure 1**
 
 *Sequence of the Corridor Workflow*
